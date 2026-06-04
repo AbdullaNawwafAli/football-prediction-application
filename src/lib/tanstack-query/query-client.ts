@@ -4,7 +4,7 @@ export function createQueryClient() {
   return new QueryClient()
 }
 
-export function getContext() {
+export function getQueryClient() {
   const queryClient = createQueryClient()
 
   return {
