@@ -13,6 +13,7 @@ export interface RouterContext {
   profile: Profile | null
 }
 
+
 export function createAppRouter() {
   const queryClient = getQueryClient()
 
