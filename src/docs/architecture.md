@@ -17,14 +17,17 @@ Each major directory also contains its own `README.md` with more detailed guidan
 - **Drag and drop** — dnd-kit (Feature 1 group stage predictions)
 - **Package manager** — pnpm
 - **Type safety** — Supabase CLI (`supabase gen types`)
-- **Serving** — nginx container (PWA)
+- **Build / PWA** — Vite (`vite-plugin-pwa`); production served via nginx container
 
 ---
 
 ## Folder Overview
 
 ```
+├── index.html                # Vite SPA entry (loads src/main.tsx)
 ├── src/
+│   ├── main.tsx              # React mount, QueryClientProvider, PWA registration
+│   ├── router.tsx            # TanStack Router factory
 │   ├── routes/               # TanStack Router — file-based route tree
 │   │   ├── __root.tsx        # Root layout (auth guard, global providers)
 │   │   ├── index.tsx         # Redirects to /dashboard or /login

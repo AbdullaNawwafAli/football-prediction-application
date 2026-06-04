@@ -11,7 +11,6 @@ See `src/docs/architecture.md` for the full layout and stack (Supabase, TanStack
 
 - `supabase.ts` — Supabase browser client singleton
 - `query-client.ts` — TanStack Query client factory and router context (`getContext`)
-- `query-devtools.tsx` — TanStack Query devtools plugin for `@tanstack/react-devtools`
 - Any other SDK that needs one-time setup before use
 
 Router factory may live in `src/router.tsx` until extracted to `lib/router.ts`.
@@ -29,7 +28,6 @@ Router factory may live in `src/router.tsx` until extracted to `lib/router.ts`.
 lib/
 ├── supabase.ts
 ├── query-client.ts
-├── query-devtools.tsx
 └── shadcn/
     └── utils/
         └── utils.ts      # shadcn-owned cn() helper — do not move or rename
