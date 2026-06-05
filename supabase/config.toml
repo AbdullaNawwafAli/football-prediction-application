@@ -411,3 +411,10 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 # declarative_schema_path = "./database"
 # JSON string passed through to pg-delta SQL formatting.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":80,\"commaStyle\":\"trailing\"}"
+
+# TODO: REMOVE
+[auth.external.azure]
+enabled = true
+client_id = "env(AZURE_CLIENT_ID)"
+secret = "env(AZURE_SECRET)"
+url = "env(AZURE_TENANT_ID)"
