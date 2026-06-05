@@ -1,36 +1,20 @@
-import type { UseQueryOptions } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query"
+import { supabase } from "#/lib/supabase/supabase"
+import type { Tables } from "#/types/database.types"
 
-export default function createBioQueryOptions<TData = bioData, TError = Error>(
-  options?: Omit<
-    UseQueryOptions<bioData, TError, TData>,
-    "queryKey" | "queryFn"
-  >
-) {
+export type Team = Tables<"teams">
+
+export default function createTeamsQueryOptions() {
   return queryOptions({
-    ...options,
-    queryKey: ["bio"],
-    queryFn: () => getBioApi(),
+    queryKey: ["teams"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("teams")
+        .select("id, name, crest_url, tla, group_name")
+        .order("name")
+
+      if (error) throw error
+      return data as Team[]
+    },
   })
 }
-
-/** 
- * example of a the structure with params
- * 
-interface params {
-  page: number
-}
-export default function createBioQueryOptions<TData = bioData, TError = Error>(
-    params?:params,
-  options?: Omit<
-    UseQueryOptions<bioData, TError, TData>,
-    "queryKey" | "queryFn"
-  >
-) {
-  return queryOptions({
-    ...options,
-    queryKey: ["bio",params],
-    queryFn: () => getBio(params),
-  })
-}
-*/
