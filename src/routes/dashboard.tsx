@@ -5,6 +5,7 @@ export const Route = createFileRoute('/dashboard')({
         if (!context.session) {
             throw redirect({ to: '/' })
         }
+
         // Redirect to onboarding if profile not set up
         if (!context.profile) {
             throw redirect({ to: '/onboarding' })
