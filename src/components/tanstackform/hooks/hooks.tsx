@@ -1,6 +1,7 @@
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form"
 import FormInput from "../components/FormInput"
 import FormFileInput from "../components/FormFileInput"
+import FormCombobox from "../components/FormCombobox"
 
 
 const { fieldContext, formContext, useFieldContext, useFormContext } =
@@ -10,6 +11,7 @@ const { useAppForm } = createFormHook({
   fieldComponents: {
     Input: FormInput,
     FileInput: FormFileInput,
+    Combobox: FormCombobox,
   },
   formComponents: {},
   fieldContext,
