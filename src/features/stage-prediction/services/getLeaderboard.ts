@@ -10,7 +10,7 @@ export async function getLeaderboardApi(): Promise<LeaderboardEntry[]> {
   if (error) throw error
 
   return data.map((row, index) => {
-    const profile = row.profiles as { id: string; display_name: string; avatar_url: string }
+    const profile = row.profiles
     return {
       rank: index + 1,
       userId: profile.id,
