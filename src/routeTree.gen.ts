@@ -12,6 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StagePredictionIndexRouteImport } from './routes/stage-prediction/index'
+import { Route as StagePredictionKnockoutRouteImport } from './routes/stage-prediction/knockout'
+import { Route as StagePredictionGroupRouteImport } from './routes/stage-prediction/group'
 
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
@@ -28,35 +31,81 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StagePredictionIndexRoute = StagePredictionIndexRouteImport.update({
+  id: '/stage-prediction/',
+  path: '/stage-prediction/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StagePredictionKnockoutRoute = StagePredictionKnockoutRouteImport.update({
+  id: '/stage-prediction/knockout',
+  path: '/stage-prediction/knockout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StagePredictionGroupRoute = StagePredictionGroupRouteImport.update({
+  id: '/stage-prediction/group',
+  path: '/stage-prediction/group',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/onboarding': typeof OnboardingRoute
+  '/stage-prediction/group': typeof StagePredictionGroupRoute
+  '/stage-prediction/knockout': typeof StagePredictionKnockoutRoute
+  '/stage-prediction/': typeof StagePredictionIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/onboarding': typeof OnboardingRoute
+  '/stage-prediction/group': typeof StagePredictionGroupRoute
+  '/stage-prediction/knockout': typeof StagePredictionKnockoutRoute
+  '/stage-prediction': typeof StagePredictionIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/onboarding': typeof OnboardingRoute
+  '/stage-prediction/group': typeof StagePredictionGroupRoute
+  '/stage-prediction/knockout': typeof StagePredictionKnockoutRoute
+  '/stage-prediction/': typeof StagePredictionIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/onboarding'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/onboarding'
+    | '/stage-prediction/group'
+    | '/stage-prediction/knockout'
+    | '/stage-prediction/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/onboarding'
-  id: '__root__' | '/' | '/dashboard' | '/onboarding'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/onboarding'
+    | '/stage-prediction/group'
+    | '/stage-prediction/knockout'
+    | '/stage-prediction'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/onboarding'
+    | '/stage-prediction/group'
+    | '/stage-prediction/knockout'
+    | '/stage-prediction/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
   OnboardingRoute: typeof OnboardingRoute
+  StagePredictionGroupRoute: typeof StagePredictionGroupRoute
+  StagePredictionKnockoutRoute: typeof StagePredictionKnockoutRoute
+  StagePredictionIndexRoute: typeof StagePredictionIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +131,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stage-prediction/': {
+      id: '/stage-prediction/'
+      path: '/stage-prediction'
+      fullPath: '/stage-prediction/'
+      preLoaderRoute: typeof StagePredictionIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stage-prediction/knockout': {
+      id: '/stage-prediction/knockout'
+      path: '/stage-prediction/knockout'
+      fullPath: '/stage-prediction/knockout'
+      preLoaderRoute: typeof StagePredictionKnockoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stage-prediction/group': {
+      id: '/stage-prediction/group'
+      path: '/stage-prediction/group'
+      fullPath: '/stage-prediction/group'
+      preLoaderRoute: typeof StagePredictionGroupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +159,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
   OnboardingRoute: OnboardingRoute,
+  StagePredictionGroupRoute: StagePredictionGroupRoute,
+  StagePredictionKnockoutRoute: StagePredictionKnockoutRoute,
+  StagePredictionIndexRoute: StagePredictionIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
