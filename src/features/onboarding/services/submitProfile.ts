@@ -2,6 +2,7 @@ import { supabase } from "#/lib/supabase/supabase";
 import type { Database } from "#/types/database.types";
 
 type ProfileInsert = Database["public"]["Tables"]["profiles"]["Insert"];
+type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
 
 interface SubmitProfileParams {
   userId: string;
@@ -17,7 +18,7 @@ export async function submitProfile({
   profilePicture,
   teamId,
   email,
-}: SubmitProfileParams): Promise<void> {
+}: SubmitProfileParams): Promise<ProfileRow> {
   let avatarUrl: string | null = null;
 
   // Upload profile picture if provided
@@ -31,25 +32,28 @@ export async function submitProfile({
 
     if (uploadError) throw uploadError;
 
-    // Get the public URL
     const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
     avatarUrl = data.publicUrl;
   }
 
-  // Insert or update profile
+  if (!avatarUrl) throw new Error("Profile picture upload failed");
+
   const profile: ProfileInsert = {
     id: userId,
     display_name: displayName,
     favorite_team: teamId,
     email: email,
     avatar_url: avatarUrl,
-   
   };
 
 
-  const { error: profileError } = await supabase
+  const { data: savedProfile, error: profileError } = await supabase
     .from("profiles")
-    .upsert(profile, { onConflict: "id" });
+    .upsert(profile, { onConflict: "id" })
+    .select()
+    .single();
 
   if (profileError) throw profileError;
+
+  return savedProfile;
 }

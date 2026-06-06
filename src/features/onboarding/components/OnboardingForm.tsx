@@ -15,8 +15,10 @@ import createTeamsQueryOptions from '../hooks/createTeamsQueryOptions'
 import { submitProfile } from '../services/submitProfile'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { Suspense, useState } from 'react'
+import { flushSync } from 'react-dom'
 import type { ComboboxOption } from '#/components/tanstackform/components/FormCombobox'
 import AvatarPreview from '#/features/onboarding/components/AvatarPreview'
+import { Spinner } from '#/components/shadcn/ui/spinner'
 
 const OnboardingForm = () => {
   return (
@@ -34,7 +36,7 @@ const OnboardingForm = () => {
 }
 
 function OnboardingFormContent() {
-  const { user } = useAuthStore()
+  const { user, setProfile } = useAuthStore()
   const navigate = useNavigate()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -68,7 +70,7 @@ function OnboardingFormContent() {
         setIsSubmitting(true)
         setError(null)
 
-        await submitProfile({
+        const profile = await submitProfile({
           userId: user.id,
           displayName: value.display_name,
           profilePicture: value.profile_picture,
@@ -76,6 +78,8 @@ function OnboardingFormContent() {
           email: user.email,
         })
 
+        flushSync(() => setProfile(profile))
+        form.setFieldValue('profile_picture', undefined)
         navigate({ to: '/dashboard', replace: true })
       } catch (err) {
         setError(
@@ -140,7 +144,8 @@ function OnboardingFormContent() {
       )}
 
       <Button type="submit" disabled={isSubmitting} className="w-full">
-        {isSubmitting ? 'Completing...' : 'Complete Onboarding'}
+        {isSubmitting && <Spinner />}
+        {isSubmitting ? 'Creating Profile...' : 'Create Profile'}
       </Button>
     </form>
   )
