@@ -6,6 +6,7 @@ import { flushSync } from 'react-dom'
 import { supabase } from '#/lib/supabase/supabase'
 import { useAuthStore } from '#/stores/auth.store'
 import type { RouterContext } from '#/router'
+import { Toaster } from '#/components/shadcn/ui/sonner'
 
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -57,6 +58,7 @@ function RootLayout() {
   return (
     <div className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)] min-h-dvh">
       <Outlet />
+      <Toaster />
       {import.meta.env.DEV ? (
         <>
           <TanStackRouterDevtools position="bottom-right" />
