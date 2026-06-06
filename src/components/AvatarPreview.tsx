@@ -1,18 +1,16 @@
 import { useEffect, useId, useState } from "react"
-import { UserRound } from "lucide-react"
+import { Camera, UserRound } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "#/components/shadcn/ui/avatar"
 import { cn } from "#/lib/shadcn/utils/utils"
-import { FieldContent, FieldDescription } from "./shadcn/ui/field"
-
+import { FieldDescription } from "./shadcn/ui/field"
 
 type AvatarPreviewProps = {
   file: File | undefined
   onChange: (file: File | undefined) => void
-  size?: "sm" | "default" | "lg"
   className?: string
 }
 
-const AvatarPreview = ({ file, onChange, size = "lg", className }: AvatarPreviewProps) => {
+const AvatarPreview = ({ file, onChange, className }: AvatarPreviewProps) => {
   const id = useId()
   const [previewUrl, setPreviewUrl] = useState<string | undefined>()
 
@@ -29,22 +27,29 @@ const AvatarPreview = ({ file, onChange, size = "lg", className }: AvatarPreview
   }, [file])
 
   return (
-    <label htmlFor={id} className="cursor-pointer">
-      <Avatar className={cn("size-24", className)}>
-        <AvatarImage src={previewUrl} alt="Profile picture preview" />
-        <AvatarFallback>
-          <UserRound className="size-1/2 text-muted-foreground" />
-        </AvatarFallback>
-      </Avatar>
-      <input
-        id={id}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => onChange(e.target.files?.[0])}
-      />
-    
-    </label>
+    <div className="flex flex-col items-center gap-2">
+      <label htmlFor={id} className="group cursor-pointer">
+        <div className="relative">
+          <Avatar className={cn("size-24", className)}>
+            <AvatarImage src={previewUrl} alt="Profile picture preview" />
+            <AvatarFallback>
+              <UserRound className="size-1/2 text-muted-foreground" />
+            </AvatarFallback>
+          </Avatar>
+          <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+            <Camera className="size-6 text-white" />
+          </div>
+        </div>
+        <input
+          id={id}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => onChange(e.target.files?.[0])}
+        />
+      </label>
+      <FieldDescription>Click to upload a photo</FieldDescription>
+    </div>
   )
 }
 
