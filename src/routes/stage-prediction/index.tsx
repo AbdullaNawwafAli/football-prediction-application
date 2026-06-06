@@ -9,7 +9,6 @@ export const Route = createFileRoute('/stage-prediction/')({
   beforeLoad: ({ context }) => {
     if (!context.session) throw redirect({ to: '/' })
     if (!context.profile) throw redirect({ to: '/onboarding' })
-  
   },
   component: Feature1HomePage,
 })
@@ -18,13 +17,19 @@ function Feature1HomePage() {
   const profile = useAuthStore((s) => s.profile)
   const currentUserId = profile?.id ?? ''
 
-  const { data: entries } = useSuspenseQuery(createLeaderboardQueryOptions())
+  const { data: entries, isPending } = useSuspenseQuery(
+    createLeaderboardQueryOptions(),
+  )
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 space-y-8">
       <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">Group & Knockout Leaderboard</h1>
-        <p className="text-sm text-muted-foreground">Live rankings based on group and knockout stage predictions.</p>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Group & Knockout Leaderboard
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Live rankings based on group and knockout stage predictions.
+        </p>
       </div>
 
       <div className="flex gap-2">
@@ -40,6 +45,7 @@ function Feature1HomePage() {
         <LeaderboardTable
           entries={entries}
           currentUserId={currentUserId}
+          isPending={isPending}
         />
       </div>
     </div>

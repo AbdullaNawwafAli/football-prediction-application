@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/shadcn/ui/avatar'
+import { Button } from '#/components/shadcn/ui/button'
 import { Skeleton } from '#/components/shadcn/ui/skeleton'
 import {
   Table,
@@ -15,7 +16,7 @@ import { UserHoverCard } from './UserHoverCard'
 type Props = {
   entries: LeaderboardEntry[]
   currentUserId: string
-  isLoading?: boolean
+  isPending: boolean
 }
 
 function RankBadge({ rank }: { rank: number }) {
@@ -25,8 +26,8 @@ function RankBadge({ rank }: { rank: number }) {
   return <span className="text-sm text-muted-foreground">{rank}</span>
 }
 
-export function LeaderboardTable({ entries, currentUserId, isLoading }: Props) {
-  if (isLoading) {
+export function LeaderboardTable({ entries, currentUserId, isPending }: Props) {
+  if (isPending) {
     return (
       <div className="space-y-2">
         {Array.from({ length: 8 }).map((_, i) => (
@@ -67,7 +68,7 @@ export function LeaderboardTable({ entries, currentUserId, isLoading }: Props) {
               </TableCell>
               <TableCell>
                 <UserHoverCard entry={entry}>
-                  <button className="flex items-center gap-2.5 hover:opacity-80 transition-opacity text-left">
+                  <Button variant='ghost' className="flex items-center gap-2.5  transition-opacity text-left">
                     <Avatar size="sm">
                       <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
                       <AvatarFallback>{initials}</AvatarFallback>
@@ -78,7 +79,7 @@ export function LeaderboardTable({ entries, currentUserId, isLoading }: Props) {
                         <span className="ml-1.5 text-xs text-primary font-normal">(you)</span>
                       )}
                     </span>
-                  </button>
+                  </Button>
                 </UserHoverCard>
               </TableCell>
               <TableCell className="text-right font-mono font-medium tabular-nums">
