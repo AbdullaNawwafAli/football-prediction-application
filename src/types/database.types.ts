@@ -77,6 +77,62 @@ export type Database = {
           },
         ]
       }
+      group_standings: {
+        Row: {
+          drawn: number
+          goal_difference: number | null
+          goals_against: number
+          goals_for: number
+          group_name: string
+          id: number
+          lost: number
+          played: number
+          points: number | null
+          position: number
+          team_api_id: number
+          updated_at: string | null
+          won: number
+        }
+        Insert: {
+          drawn?: number
+          goal_difference?: number | null
+          goals_against?: number
+          goals_for?: number
+          group_name: string
+          id?: number
+          lost?: number
+          played?: number
+          points?: number | null
+          position?: number
+          team_api_id: number
+          updated_at?: string | null
+          won?: number
+        }
+        Update: {
+          drawn?: number
+          goal_difference?: number | null
+          goals_against?: number
+          goals_for?: number
+          group_name?: string
+          id?: number
+          lost?: number
+          played?: number
+          points?: number | null
+          position?: number
+          team_api_id?: number
+          updated_at?: string | null
+          won?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_standings_team_api_id_fkey"
+            columns: ["team_api_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["api_id"]
+          },
+        ]
+      }
       knockout_predictions: {
         Row: {
           created_at: string | null
@@ -336,6 +392,7 @@ export type Database = {
       group_stage_open: { Args: never; Returns: boolean }
       knockout_stage_open: { Args: never; Returns: boolean }
       match_open: { Args: { match_ext_id: number }; Returns: boolean }
+      recalculate_group_standings: { Args: never; Returns: undefined }
       rollup_user_scores: { Args: never; Returns: undefined }
     }
     Enums: {

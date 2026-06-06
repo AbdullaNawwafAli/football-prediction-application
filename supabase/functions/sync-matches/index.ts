@@ -28,6 +28,8 @@ Deno.serve(async ()=>{
       onConflict: "external_id"
     });
     if (upsertError) throw upsertError;
+    // 1b. Sync teams + groups derived from match data (no extra API call needed)
+    await syncTeamsFromMatches(supabase, rows);
     // 2. Only matches that are live or finished can affect points
     const activeMatches = rows.filter((m)=>m.status === "IN_PLAY" || m.status === "PAUSED" || m.status === "FINISHED");
     // 3. Recalculate per-prediction points for those matches
@@ -37,7 +39,12 @@ Deno.serve(async ()=>{
     }
     // 4. Roll per-prediction points up into user_scores
     if (activeMatches.length > 0) {
+      // Check if any group stage matches are active/finished
+      const hasGroupMatches = activeMatches.some((m)=>m.stage === "GROUP_STAGE");
       await rollupUserScores(supabase);
+      if (hasGroupMatches) {
+        await recalculateGroupStandings(supabase);
+      }
     }
     return json({
       ok: true,
@@ -146,6 +153,42 @@ function json(body, status = 200) {
       "Content-Type": "application/json"
     }
   });
+}
+// ---------------------------------------------------------------------------
+// Sync teams from matches (group derived from group-stage matches)
+// ---------------------------------------------------------------------------
+async function syncTeamsFromMatches(supabase, matches) {
+  const teamMap = new Map();
+  for (const m of matches){
+    // Skip placeholder matches where teams aren't determined yet
+    if (!m.home_team_id || !m.away_team_id) continue; // 👈 add this
+    const home = teamMap.get(m.home_team_id) ?? {
+      api_id: m.home_team_id,
+      name: m.home_team_name,
+      group_name: null
+    };
+    if (m.group) home.group_name = m.group;
+    teamMap.set(m.home_team_id, home);
+    const away = teamMap.get(m.away_team_id) ?? {
+      api_id: m.away_team_id,
+      name: m.away_team_name,
+      group_name: null
+    };
+    if (m.group) away.group_name = m.group;
+    teamMap.set(m.away_team_id, away);
+  }
+  const rows = [
+    ...teamMap.values()
+  ];
+  if (!rows.length) return; // nothing to upsert
+  const { error } = await supabase.from("teams").upsert(rows, {
+    onConflict: "api_id"
+  });
+  if (error) throw error;
+}
+async function recalculateGroupStandings(supabase) {
+  const { error } = await supabase.rpc("recalculate_group_standings");
+  if (error) throw error;
 } /*
 -- ===========================================================================
 -- Companion SQL — run once in the SQL editor.
