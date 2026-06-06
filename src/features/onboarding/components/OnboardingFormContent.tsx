@@ -9,8 +9,8 @@ import { flushSync } from 'react-dom'
 import { toast } from 'sonner'
 import createTeamsQueryOptions from '../hooks/createTeamsQueryOptions'
 import { onboardingSchema } from '../schema/onboardingSchema'
-import { submitProfile } from '../services/submitProfile'
-import type { ProfileRow, SubmitProfileParams } from '../types/profile'
+import { createProfileApi } from '../services/createProfile'
+import type { ProfileData, CreateProfileDto } from '../../../types/profile-data'
 import AvatarPreview from './AvatarPreview'
 import { Button } from '#/components/shadcn/ui/button'
 
@@ -19,11 +19,11 @@ function OnboardingFormContent() {
   const navigate = useNavigate()
 
   const { mutateAsync, isPending } = useMutation<
-    ProfileRow,
+    ProfileData,
     Error,
-    SubmitProfileParams
+    CreateProfileDto
   >({
-    mutationFn: submitProfile,
+    mutationFn: createProfileApi,
     onSuccess: (profile) => {
       flushSync(() => setProfile(profile))
       form.setFieldValue('profile_picture', undefined)
