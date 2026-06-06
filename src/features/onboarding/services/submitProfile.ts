@@ -21,7 +21,7 @@ export async function submitProfile({
     if (uploadError) throw uploadError
 
     const { data } = supabase.storage.from("avatars").getPublicUrl(filePath)
-    avatarUrl = null
+    avatarUrl = data.publicUrl
   }
 
   if (!avatarUrl) throw new Error("Profile picture upload failed")
