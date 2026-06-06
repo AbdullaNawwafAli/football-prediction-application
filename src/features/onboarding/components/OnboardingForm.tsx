@@ -9,16 +9,17 @@ import { FieldGroup } from '#/components/shadcn/ui/field'
 import { useAppForm } from '#/components/tanstackform/hooks/hooks'
 import { useAuthStore } from '#/stores/auth.store'
 import { useNavigate } from '@tanstack/react-router'
-import { supabase } from '#/lib/supabase/supabase'
 import { onboardingSchema } from '../schema/onboardingSchema'
 import createTeamsQueryOptions from '../hooks/createTeamsQueryOptions'
-import { submitProfile } from '../services/submitProfile'
-import { useSuspenseQuery } from '@tanstack/react-query'
-import { Suspense, useState } from 'react'
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { Suspense } from 'react'
 import { flushSync } from 'react-dom'
+import { toast } from 'sonner'
 import type { ComboboxOption } from '#/components/tanstackform/components/FormCombobox'
 import AvatarPreview from '#/features/onboarding/components/AvatarPreview'
 import { Spinner } from '#/components/shadcn/ui/spinner'
+import { submitProfile } from '../services/submitProfile'
+import type { ProfileRow, SubmitProfileParams } from '../types/profile'
 
 const OnboardingForm = () => {
   return (
@@ -38,8 +39,18 @@ const OnboardingForm = () => {
 function OnboardingFormContent() {
   const { user, setProfile } = useAuthStore()
   const navigate = useNavigate()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+
+  const { mutateAsync,isPending } = useMutation<ProfileRow, Error, SubmitProfileParams>({
+    mutationFn: submitProfile,
+    onSuccess: (profile) => {
+      flushSync(() => setProfile(profile))
+      form.setFieldValue('profile_picture', undefined)
+      navigate({ to: '/dashboard', replace: true })
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
   const { data: teams } = useSuspenseQuery(createTeamsQueryOptions())
 
   const teamOptions: ComboboxOption[] = teams.map((team) => ({
@@ -55,38 +66,15 @@ function OnboardingFormContent() {
       team_id: '',
     },
     validators: { onSubmit: onboardingSchema },
-    onSubmit: async ({ value }) => {
-      if (!user?.id) {
-        setError('User not authenticated')
-        return
-      }
-
-      if (!user.email) {
-        setError('User not authenticated')
-        return
-      }
-
-      try {
-        setIsSubmitting(true)
-        setError(null)
-
-        const profile = await submitProfile({
-          userId: user.id,
-          displayName: value.display_name,
-          profilePicture: value.profile_picture,
-          teamId: value.team_id,
-          email: user.email,
-        })
-
-        flushSync(() => setProfile(profile))
-        form.setFieldValue('profile_picture', undefined)
-        navigate({ to: '/dashboard', replace: true })
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Failed to complete onboarding',
-        )
-        setIsSubmitting(false)
-      }
+    onSubmit: ({ value }) => {
+      if (!user?.id || !user.email) return
+      mutateAsync({
+        userId: user.id,
+        displayName: value.display_name,
+        profilePicture: value.profile_picture,
+        teamId: value.team_id,
+        email: user.email,
+      })
     },
   })
 
@@ -100,20 +88,19 @@ function OnboardingFormContent() {
       className="space-y-4"
     >
       <FieldGroup>
-        <span className='flex flex-col justify-center items-center gap-2'>
-         
-        <form.AppField
-          name="profile_picture"
-        >
-          {(field) => (
-            <AvatarPreview
-              file={field.state.value}
-              onChange={field.handleChange}
-              errors={field.state.meta.errors}
-              isInvalid={field.state.meta.isTouched && !field.state.meta.isValid}
-            />
-          )}
-        </form.AppField>
+        <span className="flex flex-col justify-center items-center gap-2">
+          <form.AppField name="profile_picture">
+            {(field) => (
+              <AvatarPreview
+                file={field.state.value}
+                onChange={field.handleChange}
+                errors={field.state.meta.errors}
+                isInvalid={
+                  field.state.meta.isTouched && !field.state.meta.isValid
+                }
+              />
+            )}
+          </form.AppField>
         </span>
 
         <form.AppField name="display_name">
@@ -137,15 +124,9 @@ function OnboardingFormContent() {
         </form.AppField>
       </FieldGroup>
 
-      {error && (
-        <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
-          {error}
-        </div>
-      )}
-
-      <Button type="submit" disabled={isSubmitting} className="w-full">
-        {isSubmitting && <Spinner />}
-        {isSubmitting ? 'Creating Profile...' : 'Create Profile'}
+      <Button type="submit" disabled={isPending} className="w-full">
+        {isPending && <Spinner />}
+        {isPending ? 'Creating Profile...' : 'Create Profile'}
       </Button>
     </form>
   )
