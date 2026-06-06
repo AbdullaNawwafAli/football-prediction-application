@@ -16,11 +16,13 @@ pnpm gen:types    # regenerate src/types/database.types.ts from linked Supabase 
 ```
 
 Run a single test file:
+
 ```bash
 pnpm vitest run src/features/auth/utils/example.test.ts
 ```
 
 Add a shadcn component:
+
 ```bash
 pnpm dlx shadcn@latest add <component>
 ```
@@ -39,12 +41,12 @@ The `RouterContext` (defined in `src/router.tsx`) carries `queryClient`, `sessio
 
 ### State ownership
 
-| Data | Owner |
-|---|---|
-| Auth session / user profile | `stores/auth.store.ts` (Zustand) |
-| All Supabase data (matches, predictions, leaderboard) | TanStack Query |
-| Realtime connection status (online/offline banner) | `stores/realtime.store.ts` (Zustand) |
-| Unsaved drag-and-drop order | Local component `useState` |
+| Data                                                  | Owner                                |
+| ----------------------------------------------------- | ------------------------------------ |
+| Auth session / user profile                           | `stores/auth.store.ts` (Zustand)     |
+| All Supabase data (matches, predictions, leaderboard) | TanStack Query                       |
+| Realtime connection status (online/offline banner)    | `stores/realtime.store.ts` (Zustand) |
+| Unsaved drag-and-drop order                           | Local component `useState`           |
 
 **Rule:** never put server data in Zustand. On a Supabase Realtime event, invalidate the TanStack Query cache key — do not store the payload in Zustand.
 

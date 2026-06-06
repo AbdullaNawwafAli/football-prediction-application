@@ -4,6 +4,6 @@ export type LeaderboardEntry = {
   displayName: string
   avatarUrl: string
   feature1Points: number
-  feature2Points:number
+  feature2Points: number
   totalPoints: number | null
 }
