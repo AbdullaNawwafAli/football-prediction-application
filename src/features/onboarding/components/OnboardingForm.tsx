@@ -16,7 +16,7 @@ import { submitProfile } from '../services/submitProfile'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { Suspense, useState } from 'react'
 import type { ComboboxOption } from '#/components/tanstackform/components/FormCombobox'
-import AvatarPreview from '#/components/AvatarPreview'
+import AvatarPreview from '#/features/onboarding/components/AvatarPreview'
 
 const OnboardingForm = () => {
   return (
@@ -98,7 +98,9 @@ function OnboardingFormContent() {
       <FieldGroup>
         <span className='flex flex-col justify-center items-center gap-2'>
          
-        <form.AppField name="profile_picture">
+        <form.AppField
+          name="profile_picture"
+        >
           {(field) => (
             <AvatarPreview
               file={field.state.value}
