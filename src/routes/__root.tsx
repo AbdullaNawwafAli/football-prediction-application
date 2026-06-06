@@ -7,6 +7,7 @@ import { supabase } from '#/lib/supabase/supabase'
 import { useAuthStore } from '#/stores/auth.store'
 import type { RouterContext } from '#/router'
 import { Toaster } from '#/components/shadcn/ui/sonner'
+import getProfileApi from '#/services/getProfile'
 
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -29,12 +30,7 @@ function RootLayout() {
         setSession(session)
 
         if (event === 'SIGNED_IN' && session) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single()
-      
+          const profile = getProfileApi(session.user.id)
           if (!profile) {
             // No profile yet — send to onboarding
             navigate({ to: '/onboarding' })
