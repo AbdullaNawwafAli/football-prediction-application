@@ -34,10 +34,9 @@ function RootLayout() {
             .select('*')
             .eq('id', session.user.id)
             .single()
-  
+      
           if (!profile) {
             // No profile yet — send to onboarding
-            console.log('im activating')
             navigate({ to: '/onboarding' })
           } else {
             flushSync(() => setProfile(profile))
