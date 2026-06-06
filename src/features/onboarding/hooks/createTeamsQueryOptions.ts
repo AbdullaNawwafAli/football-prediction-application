@@ -1,20 +1,14 @@
 import { queryOptions } from "@tanstack/react-query"
-import { supabase } from "#/lib/supabase/supabase"
-import type { Tables } from "#/types/database.types"
+import type { UseQueryOptions } from "@tanstack/react-query"
+import type { Team } from "#/features/onboarding/types/teams"
+import { getTeamsApi } from "#/features/onboarding/services/getTeams"
 
-export type Team = Tables<"teams">
-
-export default function createTeamsQueryOptions() {
+export default function createTeamsQueryOptions<TData = Team[], TError = Error>(
+  options?: Omit<UseQueryOptions<Team[], TError, TData>, "queryKey" | "queryFn">
+) {
   return queryOptions({
+    ...options,
     queryKey: ["teams"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("teams")
-        .select("id, name, crest_url, tla, group_name")
-        .order("name")
-
-      if (error) throw error
-      return data as Team[]
-    },
+    queryFn: () => getTeamsApi(),
   })
 }
