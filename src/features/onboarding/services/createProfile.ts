@@ -1,13 +1,13 @@
 import { supabase } from "#/lib/supabase/supabase"
-import type { ProfileInsert, ProfileRow, SubmitProfileParams } from "#/features/onboarding/types/profile"
+import type { ProfileInsert, ProfileData, CreateProfileDto } from "#/types/profile-data"
 
-export async function submitProfile({
+export async function createProfileApi({
   userId,
   displayName,
   profilePicture,
   teamId,
   email,
-}: SubmitProfileParams): Promise<ProfileRow> {
+}: CreateProfileDto): Promise<ProfileData> {
   let avatarUrl: string | null = null
 
   if (profilePicture) {
