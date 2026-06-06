@@ -30,7 +30,7 @@ function RootLayout() {
         setSession(session)
 
         if (event === 'SIGNED_IN' && session) {
-          const profile = getProfileApi(session.user.id)
+          const profile = await getProfileApi(session.user.id)
           if (!profile) {
             // No profile yet — send to onboarding
             navigate({ to: '/onboarding' })
