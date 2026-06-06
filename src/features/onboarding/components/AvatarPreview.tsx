@@ -1,8 +1,10 @@
-import { useEffect, useId, useState } from "react"
+import { useEffect, useId, useRef, useState } from "react"
 import { Camera, UserRound } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "#/components/shadcn/ui/avatar"
 import { cn } from "#/lib/shadcn/utils/utils"
-import { FieldDescription, FieldError } from "./shadcn/ui/field"
+import { FieldDescription, FieldError } from "../../../components/shadcn/ui/field"
+
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"]
 
 type AvatarPreviewProps = {
   file: File | undefined
@@ -14,7 +16,9 @@ type AvatarPreviewProps = {
 
 const AvatarPreview = ({ file, onChange, errors, isInvalid, className }: AvatarPreviewProps) => {
   const id = useId()
+  const inputRef = useRef<HTMLInputElement>(null)
   const [previewUrl, setPreviewUrl] = useState<string | undefined>()
+  const [typeError, setTypeError] = useState<string | undefined>()
 
   useEffect(() => {
     if (!file) {
@@ -28,11 +32,33 @@ const AvatarPreview = ({ file, onChange, errors, isInvalid, className }: AvatarP
     return () => URL.revokeObjectURL(url)
   }, [file])
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0]
+
+    if (!selected) {
+      onChange(undefined)
+      setTypeError(undefined)
+      return
+    }
+
+    if (!ALLOWED_TYPES.includes(selected.type)) {
+      setTypeError("Only JPG, PNG, and WebP images are allowed")
+      onChange(undefined)
+      if (inputRef.current) inputRef.current.value = ""
+      return
+    }
+
+    setTypeError(undefined)
+    onChange(selected)
+  }
+
+  const hasError = !!typeError || isInvalid
+
   return (
     <div className="flex flex-col items-center gap-2">
       <label htmlFor={id} className="group cursor-pointer">
         <div className="relative">
-          <Avatar className={cn("size-24", isInvalid && "ring-2 ring-destructive ring-offset-2", className)}>
+          <Avatar className={cn("size-24", hasError && "ring-2 ring-destructive ring-offset-2", className)}>
             <AvatarImage src={previewUrl} alt="Profile picture preview" />
             <AvatarFallback>
               <UserRound className="size-1/2 text-muted-foreground" />
@@ -43,15 +69,17 @@ const AvatarPreview = ({ file, onChange, errors, isInvalid, className }: AvatarP
           </div>
         </div>
         <input
+          ref={inputRef}
           id={id}
           type="file"
           accept="image/jpeg,image/png,image/webp"
           className="hidden"
-          onChange={(e) => onChange(e.target.files?.[0])}
+          onChange={handleChange}
         />
       </label>
       <FieldDescription>Click to upload a photo · JPG, PNG, or WebP</FieldDescription>
-      {isInvalid && <FieldError errors={errors} />}
+      {typeError && <FieldError errors={[{ message: typeError }]} />}
+      {!typeError && isInvalid && <FieldError errors={errors} />}
     </div>
   )
 }
