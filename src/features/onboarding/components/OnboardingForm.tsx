@@ -99,13 +99,15 @@ function OnboardingFormContent() {
         <span className='flex flex-col justify-center items-center gap-2'>
          
         <form.AppField name="profile_picture">
-  {(field) => (
-    <AvatarPreview
-      file={field.state.value}
-      onChange={field.handleChange}
-    />
-  )}
-</form.AppField>
+          {(field) => (
+            <AvatarPreview
+              file={field.state.value}
+              onChange={field.handleChange}
+              errors={field.state.meta.errors}
+              isInvalid={field.state.meta.isTouched && !field.state.meta.isValid}
+            />
+          )}
+        </form.AppField>
         </span>
 
         <form.AppField name="display_name">

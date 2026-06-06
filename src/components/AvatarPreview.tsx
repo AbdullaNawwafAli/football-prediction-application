@@ -2,15 +2,17 @@ import { useEffect, useId, useState } from "react"
 import { Camera, UserRound } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "#/components/shadcn/ui/avatar"
 import { cn } from "#/lib/shadcn/utils/utils"
-import { FieldDescription } from "./shadcn/ui/field"
+import { FieldDescription, FieldError } from "./shadcn/ui/field"
 
 type AvatarPreviewProps = {
   file: File | undefined
   onChange: (file: File | undefined) => void
+  errors?: Array<{ message?: string } | undefined>
+  isInvalid?: boolean
   className?: string
 }
 
-const AvatarPreview = ({ file, onChange, className }: AvatarPreviewProps) => {
+const AvatarPreview = ({ file, onChange, errors, isInvalid, className }: AvatarPreviewProps) => {
   const id = useId()
   const [previewUrl, setPreviewUrl] = useState<string | undefined>()
 
@@ -30,7 +32,7 @@ const AvatarPreview = ({ file, onChange, className }: AvatarPreviewProps) => {
     <div className="flex flex-col items-center gap-2">
       <label htmlFor={id} className="group cursor-pointer">
         <div className="relative">
-          <Avatar className={cn("size-24", className)}>
+          <Avatar className={cn("size-24", isInvalid && "ring-2 ring-destructive ring-offset-2", className)}>
             <AvatarImage src={previewUrl} alt="Profile picture preview" />
             <AvatarFallback>
               <UserRound className="size-1/2 text-muted-foreground" />
@@ -43,12 +45,13 @@ const AvatarPreview = ({ file, onChange, className }: AvatarPreviewProps) => {
         <input
           id={id}
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp"
           className="hidden"
           onChange={(e) => onChange(e.target.files?.[0])}
         />
       </label>
-      <FieldDescription>Click to upload a photo</FieldDescription>
+      <FieldDescription>Click to upload a photo · JPG, PNG, or WebP</FieldDescription>
+      {isInvalid && <FieldError errors={errors} />}
     </div>
   )
 }
