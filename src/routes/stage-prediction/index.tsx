@@ -34,10 +34,10 @@ function Feature1HomePage() {
 
       <div className="flex gap-2">
         <Button asChild variant="default" size="sm">
-          <Link to="/stage-prediction/group">Set Group Predictions</Link>
+          <Link to="/stage-prediction/my-group">Set Group Predictions</Link>
         </Button>
         <Button asChild variant="outline" size="sm">
-          <Link to="/stage-prediction/knockout">Set Knockout Predictions</Link>
+          <Link to="/stage-prediction/my-knockout">Set Knockout Predictions</Link>
         </Button>
       </div>
 

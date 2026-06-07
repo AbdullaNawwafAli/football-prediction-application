@@ -1,9 +1,14 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
+import { GroupPredictionsForm } from '#/features/group-predictions'
 
 export const Route = createFileRoute('/stage-prediction/my-group')({
-  component: RouteComponent,
+  beforeLoad: ({ context }) => {
+    if (!context.session) throw redirect({ to: '/' })
+    if (!context.profile) throw redirect({ to: '/onboarding' })
+  },
+  component: MyGroupPage,
 })
 
-function RouteComponent() {
-  return <div>Hello "/stage-prediction/group-prediction"!</div>
+function MyGroupPage() {
+  return <GroupPredictionsForm />
 }

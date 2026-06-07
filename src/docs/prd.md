@@ -101,10 +101,10 @@ Each page below uses this structure — fill in the blanks marked **❓**:
 
 ## Set Group Stage Predictions page
 
-- **Route:** `/stage-prediction/groups`
+- **Route:** `/stage-prediction/my-group`
 - **Purpose:** Drag teams into predicted finishing order for each group; submit before lock.
 - **Serves:** "put in predictions for the group stage before the start of the first group stage match."
-- **Data needed:** read `matches`/`teams` to build groups; read existing `group_stage_predictions`; upsert on submit.
+- **Data needed:** read `matches(to find the first group_stage matches start time)`/`teams(build the groups using this)` to build groups; read existing `group_stage_predictions`; upsert on submit.
 - **Components:** one draggable list per group (dnd-kit), submit button, lock countdown banner.
 - **States:** loading, editable, **locked** (read-only after deadline), saving, offline (block submit), error.
 - **Behaviour:** editable until lock; one row per (user, group) stored as ordered team IDs.
@@ -114,7 +114,7 @@ Each page below uses this structure — fill in the blanks marked **❓**:
 
 ## Set Knockout Stage Predictions page
 
-- **Route:** `/stage-prediction/knockout`
+- **Route:** `/stage-prediction/my-knockout`
 - **Purpose:** Pick the winner of each knockout match to fill the bracket.
 - **Serves:** "put my knockout stage predictions before the first knockout stage match begins."
 - **Data needed:** knockout fixtures; existing `knockout_predictions`; upsert on submit.
