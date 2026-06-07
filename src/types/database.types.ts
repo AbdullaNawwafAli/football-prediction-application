@@ -39,32 +39,65 @@ export type Database = {
   }
   public: {
     Tables: {
+      group_stage_prediction_picks: {
+        Row: {
+          id: string
+          is_correct: boolean
+          predicted_position: number
+          prediction_id: string
+          team_id: number
+        }
+        Insert: {
+          id?: string
+          is_correct?: boolean
+          predicted_position: number
+          prediction_id: string
+          team_id: number
+        }
+        Update: {
+          id?: string
+          is_correct?: boolean
+          predicted_position?: number
+          prediction_id?: string
+          team_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_stage_prediction_picks_prediction_id_fkey"
+            columns: ["prediction_id"]
+            isOneToOne: false
+            referencedRelation: "group_stage_predictions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_stage_prediction_picks_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       group_stage_predictions: {
         Row: {
-          created_at: string | null
-          group: string
+          group_name: string
+          group_points: number
           id: string
-          points: number
-          predicted_order: number[]
-          updated_at: string | null
+          updated_at: string
           user_id: string
         }
         Insert: {
-          created_at?: string | null
-          group: string
+          group_name: string
+          group_points?: number
           id?: string
-          points?: number
-          predicted_order: number[]
-          updated_at?: string | null
+          updated_at?: string
           user_id: string
         }
         Update: {
-          created_at?: string | null
-          group?: string
+          group_name?: string
+          group_points?: number
           id?: string
-          points?: number
-          predicted_order?: number[]
-          updated_at?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: [
@@ -79,98 +112,102 @@ export type Database = {
       }
       group_standings: {
         Row: {
+          booking_points: number
           drawn: number
-          goal_difference: number | null
+          goal_difference: number
           goals_against: number
           goals_for: number
           group_name: string
-          id: number
+          group_position: number | null
           lost: number
           played: number
-          points: number | null
-          position: number
-          team_api_id: number
-          updated_at: string | null
+          points: number
+          team_id: number
           won: number
         }
         Insert: {
+          booking_points?: number
           drawn?: number
-          goal_difference?: number | null
+          goal_difference?: number
           goals_against?: number
           goals_for?: number
           group_name: string
-          id?: number
+          group_position?: number | null
           lost?: number
           played?: number
-          points?: number | null
-          position?: number
-          team_api_id: number
-          updated_at?: string | null
+          points?: number
+          team_id: number
           won?: number
         }
         Update: {
+          booking_points?: number
           drawn?: number
-          goal_difference?: number | null
+          goal_difference?: number
           goals_against?: number
           goals_for?: number
           group_name?: string
-          id?: number
+          group_position?: number | null
           lost?: number
           played?: number
-          points?: number | null
-          position?: number
-          team_api_id?: number
-          updated_at?: string | null
+          points?: number
+          team_id?: number
           won?: number
         }
         Relationships: [
           {
-            foreignKeyName: "group_standings_team_api_id_fkey"
-            columns: ["team_api_id"]
-            isOneToOne: false
+            foreignKeyName: "group_standings_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: true
             referencedRelation: "teams"
-            referencedColumns: ["api_id"]
+            referencedColumns: ["id"]
           },
         ]
       }
       knockout_predictions: {
         Row: {
-          created_at: string | null
+          created_at: string
           id: string
-          last_calculated_at: string | null
-          match_external_id: number
-          points: number
-          predicted_winner: string
-          updated_at: string | null
+          is_correct: boolean
+          match_id: number
+          points_awarded: number
+          predicted_winner_id: number
+          updated_at: string
           user_id: string
         }
         Insert: {
-          created_at?: string | null
+          created_at?: string
           id?: string
-          last_calculated_at?: string | null
-          match_external_id: number
-          points?: number
-          predicted_winner: string
-          updated_at?: string | null
+          is_correct?: boolean
+          match_id: number
+          points_awarded?: number
+          predicted_winner_id: number
+          updated_at?: string
           user_id: string
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           id?: string
-          last_calculated_at?: string | null
-          match_external_id?: number
-          points?: number
-          predicted_winner?: string
-          updated_at?: string | null
+          is_correct?: boolean
+          match_id?: number
+          points_awarded?: number
+          predicted_winner_id?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "knockout_predictions_match_external_id_fkey"
-            columns: ["match_external_id"]
+            foreignKeyName: "knockout_predictions_match_id_fkey"
+            columns: ["match_id"]
             isOneToOne: false
             referencedRelation: "matches"
-            referencedColumns: ["external_id"]
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "knockout_predictions_predicted_winner_id_fkey"
+            columns: ["predicted_winner_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "knockout_predictions_user_id_fkey"
@@ -181,59 +218,136 @@ export type Database = {
           },
         ]
       }
-      matches: {
+      knockout_round_points: {
         Row: {
-          away_score: number | null
-          away_team_id: number | null
-          away_team_name: string | null
-          external_id: number
-          group: string | null
-          home_score: number | null
-          home_team_id: number | null
-          home_team_name: string | null
-          id: string
-          minute: number | null
+          points: number
           stage: string
-          status: string
-          updated_at: string | null
-          utc_date: string
-          winner: string | null
         }
         Insert: {
-          away_score?: number | null
-          away_team_id?: number | null
-          away_team_name?: string | null
-          external_id: number
-          group?: string | null
-          home_score?: number | null
-          home_team_id?: number | null
-          home_team_name?: string | null
-          id?: string
-          minute?: number | null
+          points: number
           stage: string
-          status?: string
-          updated_at?: string | null
-          utc_date: string
-          winner?: string | null
         }
         Update: {
-          away_score?: number | null
-          away_team_id?: number | null
-          away_team_name?: string | null
-          external_id?: number
-          group?: string | null
-          home_score?: number | null
-          home_team_id?: number | null
-          home_team_name?: string | null
-          id?: string
-          minute?: number | null
+          points?: number
           stage?: string
-          status?: string
-          updated_at?: string | null
-          utc_date?: string
-          winner?: string | null
         }
         Relationships: []
+      }
+      matches: {
+        Row: {
+          away_booking_score: number | null
+          away_team_id: number | null
+          duration: Database["public"]["Enums"]["match_duration"] | null
+          full_time_away: number | null
+          full_time_home: number | null
+          group_name: string | null
+          half_time_away: number | null
+          half_time_home: number | null
+          home_booking_score: number | null
+          home_team_id: number | null
+          id: number
+          last_match_away_id: number | null
+          last_match_away_team_id: number | null
+          last_match_home_id: number | null
+          last_match_home_team_id: number | null
+          stage: string
+          status: Database["public"]["Enums"]["match_status"] | null
+          utc_date: string
+          winner_id: number | null
+        }
+        Insert: {
+          away_booking_score?: number | null
+          away_team_id?: number | null
+          duration?: Database["public"]["Enums"]["match_duration"] | null
+          full_time_away?: number | null
+          full_time_home?: number | null
+          group_name?: string | null
+          half_time_away?: number | null
+          half_time_home?: number | null
+          home_booking_score?: number | null
+          home_team_id?: number | null
+          id: number
+          last_match_away_id?: number | null
+          last_match_away_team_id?: number | null
+          last_match_home_id?: number | null
+          last_match_home_team_id?: number | null
+          stage: string
+          status?: Database["public"]["Enums"]["match_status"] | null
+          utc_date: string
+          winner_id?: number | null
+        }
+        Update: {
+          away_booking_score?: number | null
+          away_team_id?: number | null
+          duration?: Database["public"]["Enums"]["match_duration"] | null
+          full_time_away?: number | null
+          full_time_home?: number | null
+          group_name?: string | null
+          half_time_away?: number | null
+          half_time_home?: number | null
+          home_booking_score?: number | null
+          home_team_id?: number | null
+          id?: number
+          last_match_away_id?: number | null
+          last_match_away_team_id?: number | null
+          last_match_home_id?: number | null
+          last_match_home_team_id?: number | null
+          stage?: string
+          status?: Database["public"]["Enums"]["match_status"] | null
+          utc_date?: string
+          winner_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matches_away_team_id_fkey"
+            columns: ["away_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_home_team_id_fkey"
+            columns: ["home_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_last_match_away_id_fkey"
+            columns: ["last_match_away_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_last_match_away_team_id_fkey"
+            columns: ["last_match_away_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_last_match_home_id_fkey"
+            columns: ["last_match_home_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_last_match_home_team_id_fkey"
+            columns: ["last_match_home_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_winner_id_fkey"
+            columns: ["winner_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -265,60 +379,8 @@ export type Database = {
         }
         Relationships: []
       }
-      score_predictions: {
-        Row: {
-          created_at: string | null
-          id: string
-          last_calculated_at: string | null
-          match_external_id: number
-          points: number
-          predicted_away: number
-          predicted_home: number
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          last_calculated_at?: string | null
-          match_external_id: number
-          points?: number
-          predicted_away: number
-          predicted_home: number
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          last_calculated_at?: string | null
-          match_external_id?: number
-          points?: number
-          predicted_away?: number
-          predicted_home?: number
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "score_predictions_match_external_id_fkey"
-            columns: ["match_external_id"]
-            isOneToOne: false
-            referencedRelation: "matches"
-            referencedColumns: ["external_id"]
-          },
-          {
-            foreignKeyName: "score_predictions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       teams: {
         Row: {
-          api_id: number
           created_at: string | null
           crest_url: string | null
           group_name: string | null
@@ -329,18 +391,16 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
-          api_id: number
           created_at?: string | null
           crest_url?: string | null
           group_name?: string | null
-          id?: number
+          id: number
           name: string
           short_name?: string | null
           tla?: string | null
           updated_at?: string | null
         }
         Update: {
-          api_id?: number
           created_at?: string | null
           crest_url?: string | null
           group_name?: string | null
@@ -354,24 +414,30 @@ export type Database = {
       }
       user_scores: {
         Row: {
-          feature1_points: number
+          feature1_points: number | null
           feature2_points: number
+          group_stage_points: number
+          knockout_points: number
           total_points: number | null
-          updated_at: string | null
+          updated_at: string
           user_id: string
         }
         Insert: {
-          feature1_points?: number
+          feature1_points?: number | null
           feature2_points?: number
+          group_stage_points?: number
+          knockout_points?: number
           total_points?: number | null
-          updated_at?: string | null
+          updated_at?: string
           user_id: string
         }
         Update: {
-          feature1_points?: number
+          feature1_points?: number | null
           feature2_points?: number
+          group_stage_points?: number
+          knockout_points?: number
           total_points?: number | null
-          updated_at?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: [
@@ -396,7 +462,19 @@ export type Database = {
       rollup_user_scores: { Args: never; Returns: undefined }
     }
     Enums: {
-      [_ in never]: never
+      match_duration: "REGULAR" | "EXTRA_TIME" | "PENALTY_SHOOTOUT"
+      match_status:
+        | "SCHEDULED"
+        | "TIMED"
+        | "IN_PLAY"
+        | "PAUSED"
+        | "EXTRA_TIME"
+        | "PENALTY_SHOOTOUT"
+        | "FINISHED"
+        | "SUSPENDED"
+        | "POSTPONED"
+        | "CANCELLED"
+        | "AWARDED"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -526,6 +604,21 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      match_duration: ["REGULAR", "EXTRA_TIME", "PENALTY_SHOOTOUT"],
+      match_status: [
+        "SCHEDULED",
+        "TIMED",
+        "IN_PLAY",
+        "PAUSED",
+        "EXTRA_TIME",
+        "PENALTY_SHOOTOUT",
+        "FINISHED",
+        "SUSPENDED",
+        "POSTPONED",
+        "CANCELLED",
+        "AWARDED",
+      ],
+    },
   },
 } as const
