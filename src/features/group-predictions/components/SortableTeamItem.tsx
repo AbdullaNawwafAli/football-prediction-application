@@ -46,7 +46,7 @@ export function SortableTeamItem({ id, position, team, disabled }: Props) {
 
       {!disabled && (
         <GripVertical
-          className="h-4 w-4 text-muted-foreground"
+          className="h-4 w-4 touch-none text-muted-foreground"
           {...attributes}
           {...listeners}
         />
