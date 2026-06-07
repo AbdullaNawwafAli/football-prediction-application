@@ -25,40 +25,14 @@ Deno.serve(async (_req)=>{
     const awayScore = m.score.fullTime.away;
     const halfTimeHome = m.score.halfTime.home;
     const halfTimeAway = m.score.halfTime.away;
-    // Use fulltime if available, fall back to halftime
+    // Best available score for determining winner
     const effectiveHome = homeScore ?? halfTimeHome;
     const effectiveAway = awayScore ?? halfTimeAway;
     let winner_id = null;
     if (effectiveHome !== null && effectiveAway !== null) {
       if (effectiveHome > effectiveAway) winner_id = m.homeTeam.id;
       else if (effectiveAway > effectiveHome) winner_id = m.awayTeam.id;
-    }
-    // assigning
-    let home_booking_score = null;
-    let away_booking_score = null;
-    if (homeScore !== null && awayScore !== null) {
-      home_booking_score = 0;
-      away_booking_score = 0;
-      const bookings = m.bookings ?? [];
-      for (const booking of bookings){
-        let points = 0;
-        switch(booking.card){
-          case "YELLOW":
-            points = 1;
-            break;
-          case "YELLOW_RED":
-            points = 3;
-            break; // second yellow / indirect red
-          case "RED":
-            points = 4;
-            break; // straight red
-        }
-        if (booking.team.id === m.homeTeam.id) {
-          home_booking_score += points;
-        } else if (booking.team.id === m.awayTeam.id) {
-          away_booking_score += points;
-        }
-      }
+    // draw → winner_id stays null
     }
     return {
       id: m.id,
@@ -73,10 +47,7 @@ Deno.serve(async (_req)=>{
       full_time_away: awayScore,
       half_time_home: halfTimeHome,
       half_time_away: halfTimeAway,
-      winner_id,
-      home_booking_score,
-      away_booking_score,
-      next_match_id: null
+      winner_id
     };
   });
   const { error } = await supabase.from("matches").upsert(matches, {
