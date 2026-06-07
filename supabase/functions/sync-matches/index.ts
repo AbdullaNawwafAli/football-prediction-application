@@ -1,229 +1,229 @@
-// supabase/functions/sync-matches/index.ts
-//
-// Cron-invoked edge function that:
-//   1. Fetches World Cup match data from football-data.org
-//   2. Upserts it into the `matches` table
-//   3. Recalculates Feature 2 (score prediction) points based on the
-//      CURRENT match state — not only the final result (Note 2)
-//   4. Recalculates Feature 1 knockout points (predicted winner vs actual)
-//   5. Rolls everything up into the per-user `user_scores` table that the
-//      realtime leaderboards subscribe to
-//
-// Scheduled via the Supabase Cron UI (Integrations -> Cron), job type
-// "Edge Function", schedule "*/2 * * * *".
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-const FOOTBALL_DATA_URL = "https://api.football-data.org/v4";
-const COMPETITION_CODE = "WC"; // World Cup
-// ---------------------------------------------------------------------------
-// Entry point
-// ---------------------------------------------------------------------------
-Deno.serve(async ()=>{
+import { createClient } from "jsr:@supabase/supabase-js@2";
+const COUNTABLE_STATUSES = new Set([
+  "IN_PLAY",
+  "PAUSED",
+  "FINISHED",
+  "AWARDED"
+]);
+Deno.serve(async (_req)=>{
+  const FOOTBALL_API_KEY = Deno.env.get("FOOTBALL_DATA_API_KEY");
   const supabase = createClient(Deno.env.get("SUPABASE_URL"), Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"));
-  const apiKey = Deno.env.get("FOOTBALL_DATA_API_KEY");
-  try {
-    const matches = await fetchMatches(apiKey);
-    const rows = matches.map(toMatchRow);
-    // 1. Upsert all matches (insert new, update changed, by external_id)
-    const { error: upsertError } = await supabase.from("matches").upsert(rows, {
-      onConflict: "external_id"
-    });
-    if (upsertError) throw upsertError;
-    // 1b. Sync teams + groups derived from match data (no extra API call needed)
-    await syncTeamsFromMatches(supabase, rows);
-    // 2. Only matches that are live or finished can affect points
-    const activeMatches = rows.filter((m)=>m.status === "IN_PLAY" || m.status === "PAUSED" || m.status === "FINISHED");
-    // 3. Recalculate per-prediction points for those matches
-    for (const match of activeMatches){
-      await recalculateScorePoints(supabase, match); // Feature 2
-      await recalculateKnockoutPoints(supabase, match); // Feature 1 (knockout)
-    }
-    // 4. Roll per-prediction points up into user_scores
-    if (activeMatches.length > 0) {
-      // Check if any group stage matches are active/finished
-      const hasGroupMatches = activeMatches.some((m)=>m.stage === "GROUP_STAGE");
-      await rollupUserScores(supabase);
-      if (hasGroupMatches) {
-        await recalculateGroupStandings(supabase);
-      }
-    }
-    return json({
-      ok: true,
-      synced: rows.length,
-      active: activeMatches.length
-    });
-  } catch (err) {
-    console.error("sync-matches error:", err);
-    return json({
-      ok: false,
-      error: String(err)
-    }, 500);
-  }
-});
-// ---------------------------------------------------------------------------
-// Fetching
-// ---------------------------------------------------------------------------
-async function fetchMatches(apiKey) {
-  const res = await fetch(`${FOOTBALL_DATA_URL}/competitions/${COMPETITION_CODE}/matches?season=2026`, {
+  // ── 1. Fetch matches from API ────────────────────────────────────────────────
+  const res = await fetch("https://api.football-data.org/v4/competitions/WC/matches?season=2026", {
     headers: {
-      "X-Auth-Token": apiKey
+      "X-Auth-Token": FOOTBALL_API_KEY
     }
   });
-  if (!res.ok) throw new Error(`football-data.org returned ${res.status}`);
-  const { matches } = await res.json();
-  return matches;
-}
-function toMatchRow(m) {
-  return {
-    external_id: m.id,
-    stage: m.stage,
-    group: m.group ?? null,
-    home_team_id: m.homeTeam.id,
-    home_team_name: m.homeTeam.name,
-    away_team_id: m.awayTeam.id,
-    away_team_name: m.awayTeam.name,
-    utc_date: m.utcDate,
-    status: m.status,
-    home_score: m.score.fullTime.home,
-    away_score: m.score.fullTime.away,
-    winner: m.score.winner,
-    minute: m.minute ?? null
-  };
-}
-// ---------------------------------------------------------------------------
-// Feature 2 — score prediction points
-// ---------------------------------------------------------------------------
-async function recalculateScorePoints(supabase, match) {
-  if (match.home_score === null || match.away_score === null) return;
-  const { data: predictions, error } = await supabase.from("score_predictions").select("id, user_id, predicted_home, predicted_away").eq("match_external_id", match.external_id);
-  if (error) throw error;
-  if (!predictions?.length) return;
-  const updates = predictions.map((p)=>({
-      id: p.id,
-      points: scorePoints(p, match),
-      last_calculated_at: new Date().toISOString()
-    }));
-  const { error: updateError } = await supabase.from("score_predictions").upsert(updates);
-  if (updateError) throw updateError;
-}
-// 3 points for an exact score, 1 for the correct outcome (win/draw/loss), else 0.
-function scorePoints(p, match) {
-  const home = match.home_score;
-  const away = match.away_score;
-  if (p.predicted_home === home && p.predicted_away === away) return 3;
-  const predictedWinner = p.predicted_home > p.predicted_away ? "HOME_TEAM" : p.predicted_away > p.predicted_home ? "AWAY_TEAM" : "DRAW";
-  return predictedWinner === match.winner ? 1 : 0;
-}
-// ---------------------------------------------------------------------------
-// Feature 1 — knockout prediction points
-// ---------------------------------------------------------------------------
-// Group-stage standings scoring is more involved (it depends on the final
-// group table from the /standings endpoint) and belongs in its own function.
-// Knockout scoring is straightforward: did the predicted winner advance?
-async function recalculateKnockoutPoints(supabase, match) {
-  if (match.stage === "GROUP_STAGE") return;
-  if (match.status !== "FINISHED" || !match.winner) return;
-  const { data: predictions, error } = await supabase.from("knockout_predictions").select("id, user_id, predicted_winner").eq("match_external_id", match.external_id);
-  if (error) throw error;
-  if (!predictions?.length) return;
-  const updates = predictions.map((p)=>({
-      id: p.id,
-      points: p.predicted_winner === match.winner ? 2 : 0,
-      last_calculated_at: new Date().toISOString()
-    }));
-  const { error: updateError } = await supabase.from("knockout_predictions").upsert(updates);
-  if (updateError) throw updateError;
-}
-// ---------------------------------------------------------------------------
-// Rollup into user_scores
-// ---------------------------------------------------------------------------
-// Calls a Postgres function (see SQL below) that recomputes feature1_points
-// and feature2_points for every user in one transaction. total_points is a
-// generated column, so it updates automatically.
-async function rollupUserScores(supabase) {
-  const { error } = await supabase.rpc("rollup_user_scores");
-  if (error) throw error;
-}
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-function json(body, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
+  if (!res.ok) {
+    return new Response(JSON.stringify({
+      success: false,
+      error: `Football API error: ${res.status}`
+    }), {
+      headers: {
+        "Content-Type": "application/json"
+      },
+      status: 500
+    });
+  }
+  const data = await res.json();
+  // ── 2. Map API response → matches rows ──────────────────────────────────────
+  const matches = data.matches.map((m)=>{
+    const homeScore = m.score.fullTime.home;
+    const awayScore = m.score.fullTime.away;
+    const halfTimeHome = m.score.halfTime.home;
+    const halfTimeAway = m.score.halfTime.away;
+    // Best available score for determining winner
+    const effectiveHome = homeScore ?? halfTimeHome;
+    const effectiveAway = awayScore ?? halfTimeAway;
+    let winner_id = null;
+    if (effectiveHome !== null && effectiveAway !== null) {
+      if (effectiveHome > effectiveAway) winner_id = m.homeTeam.id;
+      else if (effectiveAway > effectiveHome) winner_id = m.awayTeam.id;
+    // draw → winner_id stays null
+    }
+    // Booking points only once fulltime scores are present
+    let home_booking_score = null;
+    let away_booking_score = null;
+    if (homeScore !== null && awayScore !== null) {
+      home_booking_score = 0;
+      away_booking_score = 0;
+      for (const booking of m.bookings ?? []){
+        let pts = 0;
+        switch(booking.card){
+          case "YELLOW":
+            pts = 1;
+            break;
+          case "YELLOW_RED":
+            pts = 3;
+            break; // second yellow / indirect red
+          case "RED":
+            pts = 4;
+            break; // straight red
+        }
+        if (booking.team?.id === m.homeTeam.id) home_booking_score += pts;
+        else if (booking.team?.id === m.awayTeam.id) away_booking_score += pts;
+      }
+    }
+    return {
+      id: m.id,
+      utc_date: m.utcDate,
+      status: m.status,
+      stage: m.stage,
+      group_name: m.group ?? null,
+      home_team_id: m.homeTeam.id ?? null,
+      away_team_id: m.awayTeam.id ?? null,
+      duration: m.score.duration ?? null,
+      full_time_home: homeScore,
+      full_time_away: awayScore,
+      half_time_home: halfTimeHome,
+      half_time_away: halfTimeAway,
+      winner_id,
+      home_booking_score,
+      away_booking_score,
+      next_match_id: null
+    };
+  });
+  // ── 3. Upsert matches (overwrite everything) ─────────────────────────────────
+  const { error: matchesError } = await supabase.from("matches").upsert(matches, {
+    onConflict: "id"
+  });
+  if (matchesError) {
+    return new Response(JSON.stringify({
+      success: false,
+      error: matchesError
+    }), {
+      headers: {
+        "Content-Type": "application/json"
+      },
+      status: 500
+    });
+  }
+  // ── 4. Recalculate group standings ───────────────────────────────────────────
+  const { standingsRows, error: standingsError } = buildStandings(matches);
+  if (standingsError) {
+    return new Response(JSON.stringify({
+      success: false,
+      error: standingsError
+    }), {
+      headers: {
+        "Content-Type": "application/json"
+      },
+      status: 500
+    });
+  }
+  if (standingsRows.length > 0) {
+    const { error: upsertError } = await supabase.from("group_standings").upsert(standingsRows, {
+      onConflict: "team_id"
+    });
+    if (upsertError) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: upsertError
+      }), {
+        headers: {
+          "Content-Type": "application/json"
+        },
+        status: 500
+      });
+    }
+  }
+  return new Response(JSON.stringify({
+    success: true,
+    matches_synced: matches.length,
+    standings_updated: standingsRows.length
+  }), {
     headers: {
       "Content-Type": "application/json"
     }
   });
-}
-// ---------------------------------------------------------------------------
-// Sync teams from matches (group derived from group-stage matches)
-// ---------------------------------------------------------------------------
-async function syncTeamsFromMatches(supabase, matches) {
-  const teamMap = new Map();
-  for (const m of matches){
-    // Skip placeholder matches where teams aren't determined yet
-    if (!m.home_team_id || !m.away_team_id) continue; // 👈 add this
-    const home = teamMap.get(m.home_team_id) ?? {
-      api_id: m.home_team_id,
-      name: m.home_team_name,
-      group_name: null
-    };
-    if (m.group) home.group_name = m.group;
-    teamMap.set(m.home_team_id, home);
-    const away = teamMap.get(m.away_team_id) ?? {
-      api_id: m.away_team_id,
-      name: m.away_team_name,
-      group_name: null
-    };
-    if (m.group) away.group_name = m.group;
-    teamMap.set(m.away_team_id, away);
+});
+function buildStandings(matches) {
+  // Only group-stage matches
+  const groupMatches = matches.filter((m)=>m.stage === "GROUP_STAGE" && m.group_name);
+  // Accumulate per-team stats
+  const statsMap = new Map();
+  const getOrCreate = (teamId, groupName)=>{
+    if (!statsMap.has(teamId)) {
+      statsMap.set(teamId, {
+        team_id: teamId,
+        group_name: groupName,
+        played: 0,
+        won: 0,
+        drawn: 0,
+        lost: 0,
+        goals_for: 0,
+        goals_against: 0,
+        goal_difference: 0,
+        points: 0,
+        booking_points: 0,
+        group_position: null
+      });
+    }
+    return statsMap.get(teamId);
+  };
+  for (const m of groupMatches){
+    const homeId = m.home_team_id;
+    const awayId = m.away_team_id;
+    const groupName = m.group_name;
+    if (!homeId || !awayId) continue;
+    const home = getOrCreate(homeId, groupName);
+    const away = getOrCreate(awayId, groupName);
+    // Booking points — always accumulate when non-null (even mid-game)
+    if (m.home_booking_score !== null) home.booking_points += m.home_booking_score;
+    if (m.away_booking_score !== null) away.booking_points += m.away_booking_score;
+    // Only count match results for countable statuses
+    if (!COUNTABLE_STATUSES.has(m.status ?? "")) continue;
+    home.played += 1;
+    away.played += 1;
+    const homeGoals = m.full_time_home;
+    const awayGoals = m.full_time_away;
+    if (homeGoals !== null && awayGoals !== null) {
+      home.goals_for += homeGoals;
+      home.goals_against += awayGoals;
+      away.goals_for += awayGoals;
+      away.goals_against += homeGoals;
+      if (homeGoals > awayGoals) {
+        // Home win
+        home.won += 1;
+        home.points += 3;
+        away.lost += 1;
+      } else if (awayGoals > homeGoals) {
+        // Away win
+        away.won += 1;
+        away.points += 3;
+        home.lost += 1;
+      } else {
+        // Draw
+        home.drawn += 1;
+        home.points += 1;
+        away.drawn += 1;
+        away.points += 1;
+      }
+    }
   }
-  const rows = [
-    ...teamMap.values()
-  ];
-  if (!rows.length) return; // nothing to upsert
-  const { error } = await supabase.from("teams").upsert(rows, {
-    onConflict: "api_id"
-  });
-  if (error) throw error;
+  // Compute goal_difference and assign group_position
+  // Sort within each group: points desc → goal_difference desc → goals_for desc → name (stable)
+  const byGroup = new Map();
+  for (const stats of statsMap.values()){
+    stats.goal_difference = stats.goals_for - stats.goals_against;
+    if (!byGroup.has(stats.group_name)) byGroup.set(stats.group_name, []);
+    byGroup.get(stats.group_name).push(stats);
+  }
+  const standingsRows = [];
+  for (const [, teams] of byGroup){
+    teams.sort((a, b)=>b.points - a.points || b.goal_difference - a.goal_difference || b.goals_for - a.goals_for || a.booking_points - b.booking_points // lower booking score = better position
+    );
+    teams.forEach((t, idx)=>{
+      t.group_position = idx + 1;
+      standingsRows.push(t);
+    });
+  }
+  return {
+    standingsRows,
+    error: null
+  };
 }
-async function recalculateGroupStandings(supabase) {
-  const { error } = await supabase.rpc("recalculate_group_standings");
-  if (error) throw error;
-} /*
--- ===========================================================================
--- Companion SQL — run once in the SQL editor.
--- Doing the rollup as a single Postgres function keeps it atomic and fast,
--- instead of issuing two UPDATEs from the edge function over the network.
--- ===========================================================================
-
-create or replace function rollup_user_scores()
-returns void
-language sql
-as $$
-  -- Feature 1: group stage + knockout
-  update user_scores us
-  set feature1_points = coalesce(f1.total, 0),
-      updated_at = now()
-  from (
-    select user_id, sum(points) as total
-    from (
-      select user_id, points from group_stage_predictions
-      union all
-      select user_id, points from knockout_predictions
-    ) combined
-    group by user_id
-  ) f1
-  where us.user_id = f1.user_id;
-
-  -- Feature 2: match score predictions
-  update user_scores us
-  set feature2_points = coalesce(f2.total, 0),
-      updated_at = now()
-  from (
-    select user_id, sum(points) as total
-    from score_predictions
-    group by user_id
-  ) f2
-  where us.user_id = f2.user_id;
-$$;
-*/ 
+// Type helper so TypeScript knows the shape used in buildStandings
+function buildMatchRow(m) {
+  return m;
+}
