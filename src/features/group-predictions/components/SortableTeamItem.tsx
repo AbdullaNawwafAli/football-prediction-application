@@ -42,11 +42,7 @@ export function SortableTeamItem({ id, position, team, disabled }: Props) {
         <div className="h-6 w-6 rounded-full bg-muted" />
       )}
 
-      <span className="flex-1 font-medium">{team.name}</span>
-
-      {team.tla && (
-        <span className="text-xs text-muted-foreground">{team.tla}</span>
-      )}
+      <span className="flex-1 font-medium">{team.tla ?? team.name}</span>
 
       {!disabled && (
         <GripVertical
