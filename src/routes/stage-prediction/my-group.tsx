@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/stage-prediction/group')({
+export const Route = createFileRoute('/stage-prediction/my-group')({
   component: RouteComponent,
 })
 

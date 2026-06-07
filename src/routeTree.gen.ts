@@ -13,8 +13,8 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StagePredictionIndexRouteImport } from './routes/stage-prediction/index'
-import { Route as StagePredictionKnockoutRouteImport } from './routes/stage-prediction/knockout'
-import { Route as StagePredictionGroupRouteImport } from './routes/stage-prediction/group'
+import { Route as StagePredictionMyKnockoutRouteImport } from './routes/stage-prediction/my-knockout'
+import { Route as StagePredictionMyGroupRouteImport } from './routes/stage-prediction/my-group'
 
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
@@ -36,14 +36,15 @@ const StagePredictionIndexRoute = StagePredictionIndexRouteImport.update({
   path: '/stage-prediction/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StagePredictionKnockoutRoute = StagePredictionKnockoutRouteImport.update({
-  id: '/stage-prediction/knockout',
-  path: '/stage-prediction/knockout',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StagePredictionGroupRoute = StagePredictionGroupRouteImport.update({
-  id: '/stage-prediction/group',
-  path: '/stage-prediction/group',
+const StagePredictionMyKnockoutRoute =
+  StagePredictionMyKnockoutRouteImport.update({
+    id: '/stage-prediction/my-knockout',
+    path: '/stage-prediction/my-knockout',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const StagePredictionMyGroupRoute = StagePredictionMyGroupRouteImport.update({
+  id: '/stage-prediction/my-group',
+  path: '/stage-prediction/my-group',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -51,16 +52,16 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/onboarding': typeof OnboardingRoute
-  '/stage-prediction/group': typeof StagePredictionGroupRoute
-  '/stage-prediction/knockout': typeof StagePredictionKnockoutRoute
+  '/stage-prediction/my-group': typeof StagePredictionMyGroupRoute
+  '/stage-prediction/my-knockout': typeof StagePredictionMyKnockoutRoute
   '/stage-prediction/': typeof StagePredictionIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/onboarding': typeof OnboardingRoute
-  '/stage-prediction/group': typeof StagePredictionGroupRoute
-  '/stage-prediction/knockout': typeof StagePredictionKnockoutRoute
+  '/stage-prediction/my-group': typeof StagePredictionMyGroupRoute
+  '/stage-prediction/my-knockout': typeof StagePredictionMyKnockoutRoute
   '/stage-prediction': typeof StagePredictionIndexRoute
 }
 export interface FileRoutesById {
@@ -68,8 +69,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/onboarding': typeof OnboardingRoute
-  '/stage-prediction/group': typeof StagePredictionGroupRoute
-  '/stage-prediction/knockout': typeof StagePredictionKnockoutRoute
+  '/stage-prediction/my-group': typeof StagePredictionMyGroupRoute
+  '/stage-prediction/my-knockout': typeof StagePredictionMyKnockoutRoute
   '/stage-prediction/': typeof StagePredictionIndexRoute
 }
 export interface FileRouteTypes {
@@ -78,24 +79,24 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/onboarding'
-    | '/stage-prediction/group'
-    | '/stage-prediction/knockout'
+    | '/stage-prediction/my-group'
+    | '/stage-prediction/my-knockout'
     | '/stage-prediction/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/dashboard'
     | '/onboarding'
-    | '/stage-prediction/group'
-    | '/stage-prediction/knockout'
+    | '/stage-prediction/my-group'
+    | '/stage-prediction/my-knockout'
     | '/stage-prediction'
   id:
     | '__root__'
     | '/'
     | '/dashboard'
     | '/onboarding'
-    | '/stage-prediction/group'
-    | '/stage-prediction/knockout'
+    | '/stage-prediction/my-group'
+    | '/stage-prediction/my-knockout'
     | '/stage-prediction/'
   fileRoutesById: FileRoutesById
 }
@@ -103,8 +104,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
   OnboardingRoute: typeof OnboardingRoute
-  StagePredictionGroupRoute: typeof StagePredictionGroupRoute
-  StagePredictionKnockoutRoute: typeof StagePredictionKnockoutRoute
+  StagePredictionMyGroupRoute: typeof StagePredictionMyGroupRoute
+  StagePredictionMyKnockoutRoute: typeof StagePredictionMyKnockoutRoute
   StagePredictionIndexRoute: typeof StagePredictionIndexRoute
 }
 
@@ -138,18 +139,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StagePredictionIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/stage-prediction/knockout': {
-      id: '/stage-prediction/knockout'
-      path: '/stage-prediction/knockout'
-      fullPath: '/stage-prediction/knockout'
-      preLoaderRoute: typeof StagePredictionKnockoutRouteImport
+    '/stage-prediction/my-knockout': {
+      id: '/stage-prediction/my-knockout'
+      path: '/stage-prediction/my-knockout'
+      fullPath: '/stage-prediction/my-knockout'
+      preLoaderRoute: typeof StagePredictionMyKnockoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/stage-prediction/group': {
-      id: '/stage-prediction/group'
-      path: '/stage-prediction/group'
-      fullPath: '/stage-prediction/group'
-      preLoaderRoute: typeof StagePredictionGroupRouteImport
+    '/stage-prediction/my-group': {
+      id: '/stage-prediction/my-group'
+      path: '/stage-prediction/my-group'
+      fullPath: '/stage-prediction/my-group'
+      preLoaderRoute: typeof StagePredictionMyGroupRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -159,8 +160,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
   OnboardingRoute: OnboardingRoute,
-  StagePredictionGroupRoute: StagePredictionGroupRoute,
-  StagePredictionKnockoutRoute: StagePredictionKnockoutRoute,
+  StagePredictionMyGroupRoute: StagePredictionMyGroupRoute,
+  StagePredictionMyKnockoutRoute: StagePredictionMyKnockoutRoute,
   StagePredictionIndexRoute: StagePredictionIndexRoute,
 }
 export const routeTree = rootRouteImport
