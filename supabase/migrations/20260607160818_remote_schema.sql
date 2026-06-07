@@ -48,7 +48,7 @@ alter table "public"."knockout_predictions" enable row level security;
 
 alter table "public"."knockout_round_points" enable row level security;
 
-alter table "public"."user_scores" drop column "feature1_points";
+alter table "public"."user_scores" drop column "feature1_points" CASCADE;
 
 alter table "public"."user_scores" add column "group_stage_points" integer not null default 0;
 
@@ -56,7 +56,7 @@ alter table "public"."user_scores" add column "knockout_points" integer not null
 
 alter table "public"."user_scores" add column "feature1_points" integer generated always as ((group_stage_points + knockout_points)) stored;
 
-alter table "public"."user_scores" alter column "total_points" set default ((group_stage_points + knockout_points) + feature2_points);
+alter table "public"."user_scores" add column "total_points" integer generated always as ((group_stage_points + knockout_points + feature2_points)) stored;
 
 alter table "public"."user_scores" alter column "updated_at" set not null;
 
