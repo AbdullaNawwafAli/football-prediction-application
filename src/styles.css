@@ -161,3 +161,9 @@ body {
     @apply font-sans;
   }
 }
+
+@layer components {
+  .page {
+    @apply w-full px-3 sm:px-4 py-3 space-y-6;
+  }
+}

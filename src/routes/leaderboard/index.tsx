@@ -19,7 +19,7 @@ function LeaderboardPage() {
   const { data: entries, isPending } = useSuspenseQuery(createLeaderboardQueryOptions())
 
   return (
-    <div className="w-full px-3 sm:px-4 py-6 sm:py-10 space-y-6 sm:space-y-8">
+    <div className="page">
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight">Leaderboard</h1>
         <p className="text-sm text-muted-foreground">

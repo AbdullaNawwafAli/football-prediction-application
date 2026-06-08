@@ -23,7 +23,7 @@ function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="page">
       <div className="flex flex-col items-center gap-6">
         <h1 className="text-3xl font-bold">World Cup 2026</h1>
         <p className="text-muted-foreground">Sign in to make your predictions</p>

@@ -9,7 +9,7 @@ function OnboardingPage() {
 
 
     return (
-        <div className="flex w-full min-h-dvh items-center justify-center">
+        <div className="page">
            <OnboardingForm />
         </div>
     )

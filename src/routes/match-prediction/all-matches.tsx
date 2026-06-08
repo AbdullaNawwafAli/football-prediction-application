@@ -27,7 +27,7 @@ function AllMatchesPage() {
   )
 
   return (
-    <div className="w-full px-3 sm:px-4 py-6 space-y-6">
+    <div className="page">
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight">All Matches</h1>
         <p className="text-sm text-muted-foreground">
