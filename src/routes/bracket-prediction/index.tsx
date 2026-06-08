@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Header } from '#/components/Header'
 import { Button } from '#/components/shadcn/ui/button'
 import { LeaderboardTable } from '#/components/LeaderboardTable'
 import createLeaderboardQueryOptions from '#/hooks/createLeaderboardQueryOptions'
 import { useAuthStore } from '#/stores/auth.store'
 import { GroupPredictionsSheet } from '#/features/group-predictions'
+import { KnockoutPredictionsSheet } from '#/features/knockout-predictions'
 
 export const Route = createFileRoute('/bracket-prediction/')({
   beforeLoad: ({ context }) => {
@@ -25,6 +26,7 @@ function Feature1HomePage() {
   )
 
   const [selectedUser, setSelectedUser] = useState<{ userId: string; displayName: string } | null>(null)
+  const [knockoutOpen, setKnockoutOpen] = useState(false)
 
   return (
     <div className="page">
@@ -38,8 +40,12 @@ function Feature1HomePage() {
         >
           Set Group Predictions
         </Button>
-        <Button asChild variant="outline" size="sm">
-          <Link to="/bracket-prediction/my-knockout">Set Knockout Predictions</Link>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setKnockoutOpen(true)}
+        >
+          Set Knockout Predictions
         </Button>
       </div>
 
@@ -61,6 +67,13 @@ function Feature1HomePage() {
           onOpenChange={(open) => { if (!open) setSelectedUser(null) }}
         />
       )}
+
+      <KnockoutPredictionsSheet
+        userId={currentUserId}
+        displayName={profile?.display_name ?? ''}
+        open={knockoutOpen}
+        onOpenChange={setKnockoutOpen}
+      />
     </div>
   )
 }

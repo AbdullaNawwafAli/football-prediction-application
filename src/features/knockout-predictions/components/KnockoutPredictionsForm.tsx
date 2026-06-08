@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { useAuthStore } from '#/stores/auth.store'
-import { Button } from '#/components/shadcn/ui/button'
 import { LockCountdownBanner } from '#/components/LockCountdownBanner'
 import { createKnockoutMatchesQueryOptions } from '../hooks/createKnockoutMatchesQueryOptions'
 import { createUserKnockoutPredictionsQueryOptions } from '../hooks/createUserKnockoutPredictionsQueryOptions'
@@ -30,7 +30,12 @@ function getDownstreamMatchIds(matchId: number, matchById: Map<number, KnockoutM
   return [match.nextMatchId, ...getDownstreamMatchIds(match.nextMatchId, matchById)]
 }
 
-export function KnockoutPredictionsForm() {
+type Props = {
+  submitRef?: React.RefObject<(() => void) | null>
+  onMutationStateChange?: (state: { isPending: boolean; canSubmit: boolean }) => void
+}
+
+export function KnockoutPredictionsForm({ submitRef, onMutationStateChange }: Props) {
   const profile = useAuthStore((s) => s.profile)
   const userId = profile!.id
 
@@ -68,26 +73,24 @@ export function KnockoutPredictionsForm() {
 
   const mutation = useMutation({
     mutationFn: () => upsertKnockoutPredictions(userId, picks),
+    onSuccess: () => toast.success('Predictions saved.'),
+    onError: () => toast.error('Failed to save predictions. Please try again.'),
   })
 
   const isOffline = typeof navigator !== 'undefined' && !navigator.onLine
   const canSubmit = isOpen && !isOffline && !mutation.isPending
 
+  useEffect(() => {
+    if (submitRef) submitRef.current = () => mutation.mutate()
+  })
+
+  useEffect(() => {
+    onMutationStateChange?.({ isPending: mutation.isPending, canSubmit })
+  }, [mutation.isPending, canSubmit])
+
   return (
     <div className="px-3 sm:px-4 py-6 sm:py-10 space-y-6">
       <LockCountdownBanner isOpen={isOpen} firstMatchTime={firstMatchTime} />
-
-      {mutation.isSuccess && (
-        <div className="rounded-md border border-green-300/50 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-700/50 dark:bg-green-950/20 dark:text-green-400">
-          Predictions saved.
-        </div>
-      )}
-
-      {mutation.isError && (
-        <div className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          Failed to save predictions. Please try again.
-        </div>
-      )}
 
       <KnockoutBracket
         matchesByStage={matchesByStage}
@@ -97,15 +100,6 @@ export function KnockoutPredictionsForm() {
         onPick={handlePick}
         disabled={!isOpen}
       />
-
-      <div className="flex items-center gap-3">
-        <Button onClick={() => mutation.mutate()} disabled={!canSubmit}>
-          {mutation.isPending ? 'Saving…' : 'Save Predictions'}
-        </Button>
-        {isOffline && (
-          <span className="text-sm text-muted-foreground">You are offline — saving is disabled.</span>
-        )}
-      </div>
     </div>
   )
 }
