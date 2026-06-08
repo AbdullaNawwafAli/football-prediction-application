@@ -6,20 +6,20 @@
 
 ## Tech stack
 
-| Layer | Choice |
-|---|---|
-| Frontend | React + Vite |
-| Routing | TanStack Router |
-| Data fetching | TanStack Query |
-| State | Zustand |
-| Styling | shadcn/ui (Tailwind) |
-| Auth | Supabase Auth (Microsoft / Azure provider) |
-| Backend | Supabase (Postgres, Edge Functions, Realtime) |
-| Realtime | Supabase Realtime |
-| Match data | football-data.org → Supabase Edge Function (cron) |
-| Drag & drop | dnd-kit/core (Feature 1 group ordering) |
-| Serving | nginx container |
-| Type safety | Supabase CLI + `supabase gen types` |
+| Layer         | Choice                                            |
+| ------------- | ------------------------------------------------- |
+| Frontend      | React + Vite                                      |
+| Routing       | TanStack Router                                   |
+| Data fetching | TanStack Query                                    |
+| State         | Zustand                                           |
+| Styling       | shadcn/ui (Tailwind)                              |
+| Auth          | Supabase Auth (Microsoft / Azure provider)        |
+| Backend       | Supabase (Postgres, Edge Functions, Realtime)     |
+| Realtime      | Supabase Realtime                                 |
+| Match data    | football-data.org → Supabase Edge Function (cron) |
+| Drag & drop   | dnd-kit/core (Feature 1 group ordering)           |
+| Serving       | nginx container                                   |
+| Type safety   | Supabase CLI + `supabase gen types`               |
 
 **pnpm packages:** tanstack-router, tanstack-query, shadcn, supabase-js, zustand, dnd-kit/core
 
@@ -28,7 +28,7 @@
 ## Global constraints
 
 - **Note 1 — Unique display names.** Every user's display name must be unique. Checked at onboarding.
-- **Note 2 — Live scoring.** Points are awarded based on the *current* state of the match, not only when it finishes.
+- **Note 2 — Live scoring.** Points are awarded based on the _current_ state of the match, not only when it finishes.
 - **Note 3 — No offline predictions.** Predictions cannot be submitted offline. Enforced server-side (RLS checks server time at write).
 - **Prediction locks:**
   - Group stage → locks 1 hour before the **first** group match.
@@ -39,13 +39,13 @@
 
 ## Feature map
 
-| Feature | What it is | Pages |
-|---|---|---|
-| Auth & Onboarding | Sign in + profile setup | Login, Onboarding |
-| Feature 1 | Group + knockout bracket predictions | Set Group, Set Knockout, My Predictions, F1 Leaderboard |
-| Feature 2 | Per-match score & outcome predictions | Today's Matches, F2 Leaderboard |
-| Feature 3 | Combined leaderboard (F1 + F2) | F3 Leaderboard |
-| Feature 4 | Dashboard that composes everything | Dashboard |
+| Feature           | What it is                            | Pages                                                   |
+| ----------------- | ------------------------------------- | ------------------------------------------------------- |
+| Auth & Onboarding | Sign in + profile setup               | Login, Onboarding                                       |
+| Feature 1         | Group + knockout bracket predictions  | Set Group, Set Knockout, My Predictions, F1 Leaderboard |
+| Feature 2         | Per-match score & outcome predictions | Today's Matches, F2 Leaderboard                         |
+| Feature 3         | Combined leaderboard (F1 + F2)        | F3 Leaderboard                                          |
+| Feature 4         | Dashboard that composes everything    | Dashboard                                               |
 
 ---
 
@@ -132,7 +132,7 @@ Each page below uses this structure — fill in the blanks marked **❓**:
 
 ## Today's Matches page
 
-- **Route:** `/feature2/today`
+- **Route:** `/match-prediction/today`
 - **Purpose:** Show today's matches with time left to predict; submit via modal/sheet.
 - **Serves:** "put in my match score and outcome prediction 1 hour before the match starts."
 - **Data needed:** today's `matches`; existing `score_predictions`; upsert on submit.
@@ -143,9 +143,9 @@ Each page below uses this structure — fill in the blanks marked **❓**:
   - Show other days, or strictly "today"?
   - What shows once a match is live — your prediction + live score + points so far?
 
-## Feature 2 Leaderboard page
+## Feature 2 match-prediction
 
-- **Route:** `/feature2/leaderboard`
+- **Route:** `/match-prediction`
 - **Purpose:** Ranking by score-prediction points.
 - **Serves:** "predictions tallied and shown on a leaderboard based on whether I got the score and outcome right."
 - **Data needed:** `user_scores.feature2_points`; realtime subscription.
@@ -160,7 +160,7 @@ Each page below uses this structure — fill in the blanks marked **❓**:
 
 ## Feature 3 Leaderboard page
 
-- **Route:** `/feature3/leaderboard`
+- **Route:** `/leaderboard`
 - **Purpose:** Ranking by total points (F1 + F2).
 - **Serves:** "a leaderboard for total points from Feature 1 and 2."
 - **Data needed:** `user_scores.total_points` (generated column); realtime subscription.
