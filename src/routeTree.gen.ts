@@ -18,7 +18,6 @@ import { Route as BracketPredictionIndexRouteImport } from './routes/bracket-pre
 import { Route as MatchPredictionTodaysMatchesRouteImport } from './routes/match-prediction/todays-matches'
 import { Route as MatchPredictionAllMatchesRouteImport } from './routes/match-prediction/all-matches'
 import { Route as BracketPredictionMyKnockoutRouteImport } from './routes/bracket-prediction/my-knockout'
-import { Route as BracketPredictionMyGroupRouteImport } from './routes/bracket-prediction/my-group'
 
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
@@ -68,18 +67,11 @@ const BracketPredictionMyKnockoutRoute =
     path: '/bracket-prediction/my-knockout',
     getParentRoute: () => rootRouteImport,
   } as any)
-const BracketPredictionMyGroupRoute =
-  BracketPredictionMyGroupRouteImport.update({
-    id: '/bracket-prediction/my-group',
-    path: '/bracket-prediction/my-group',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
   '/onboarding': typeof OnboardingRoute
-  '/bracket-prediction/my-group': typeof BracketPredictionMyGroupRoute
   '/bracket-prediction/my-knockout': typeof BracketPredictionMyKnockoutRoute
   '/match-prediction/all-matches': typeof MatchPredictionAllMatchesRoute
   '/match-prediction/todays-matches': typeof MatchPredictionTodaysMatchesRoute
@@ -91,7 +83,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
   '/onboarding': typeof OnboardingRoute
-  '/bracket-prediction/my-group': typeof BracketPredictionMyGroupRoute
   '/bracket-prediction/my-knockout': typeof BracketPredictionMyKnockoutRoute
   '/match-prediction/all-matches': typeof MatchPredictionAllMatchesRoute
   '/match-prediction/todays-matches': typeof MatchPredictionTodaysMatchesRoute
@@ -104,7 +95,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
   '/onboarding': typeof OnboardingRoute
-  '/bracket-prediction/my-group': typeof BracketPredictionMyGroupRoute
   '/bracket-prediction/my-knockout': typeof BracketPredictionMyKnockoutRoute
   '/match-prediction/all-matches': typeof MatchPredictionAllMatchesRoute
   '/match-prediction/todays-matches': typeof MatchPredictionTodaysMatchesRoute
@@ -118,7 +108,6 @@ export interface FileRouteTypes {
     | '/'
     | '/home'
     | '/onboarding'
-    | '/bracket-prediction/my-group'
     | '/bracket-prediction/my-knockout'
     | '/match-prediction/all-matches'
     | '/match-prediction/todays-matches'
@@ -130,7 +119,6 @@ export interface FileRouteTypes {
     | '/'
     | '/home'
     | '/onboarding'
-    | '/bracket-prediction/my-group'
     | '/bracket-prediction/my-knockout'
     | '/match-prediction/all-matches'
     | '/match-prediction/todays-matches'
@@ -142,7 +130,6 @@ export interface FileRouteTypes {
     | '/'
     | '/home'
     | '/onboarding'
-    | '/bracket-prediction/my-group'
     | '/bracket-prediction/my-knockout'
     | '/match-prediction/all-matches'
     | '/match-prediction/todays-matches'
@@ -155,7 +142,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HomeRoute: typeof HomeRoute
   OnboardingRoute: typeof OnboardingRoute
-  BracketPredictionMyGroupRoute: typeof BracketPredictionMyGroupRoute
   BracketPredictionMyKnockoutRoute: typeof BracketPredictionMyKnockoutRoute
   MatchPredictionAllMatchesRoute: typeof MatchPredictionAllMatchesRoute
   MatchPredictionTodaysMatchesRoute: typeof MatchPredictionTodaysMatchesRoute
@@ -229,13 +215,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BracketPredictionMyKnockoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/bracket-prediction/my-group': {
-      id: '/bracket-prediction/my-group'
-      path: '/bracket-prediction/my-group'
-      fullPath: '/bracket-prediction/my-group'
-      preLoaderRoute: typeof BracketPredictionMyGroupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -243,7 +222,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HomeRoute: HomeRoute,
   OnboardingRoute: OnboardingRoute,
-  BracketPredictionMyGroupRoute: BracketPredictionMyGroupRoute,
   BracketPredictionMyKnockoutRoute: BracketPredictionMyKnockoutRoute,
   MatchPredictionAllMatchesRoute: MatchPredictionAllMatchesRoute,
   MatchPredictionTodaysMatchesRoute: MatchPredictionTodaysMatchesRoute,

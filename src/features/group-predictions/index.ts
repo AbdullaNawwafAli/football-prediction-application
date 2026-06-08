@@ -1,4 +1,5 @@
 export { GroupPredictionsForm } from './components/GroupPredictionsForm'
+export { GroupPredictionsSheet } from './components/GroupPredictionsSheet'
 export { createGroupsQueryOptions } from './hooks/createGroupsQueryOptions'
 export { createUserPredictionsQueryOptions } from './hooks/createUserPredictionsQueryOptions'
 export { createLockStatusQueryOptions } from './hooks/createLockStatusQueryOptions'

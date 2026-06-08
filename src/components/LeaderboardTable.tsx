@@ -21,6 +21,7 @@ type Props = {
   currentUserId: string
   isPending: boolean
   mode: 'feature1' | 'feature2' | 'all'
+  onUserClick?: (userId: string, displayName: string) => void
 }
 
 function RankBadge({ rank }: { rank: number }) {
@@ -38,6 +39,7 @@ export function LeaderboardTable({
   currentUserId,
   isPending,
   mode,
+  onUserClick,
 }: Props) {
   if (isPending) {
     return (
@@ -88,28 +90,37 @@ export function LeaderboardTable({
               </TableCell>
               <TableCell className="max-w-0">
                 <UserHoverCard entry={entry}>
-                  <span className="flex items-center gap-2 w-full text-left hover:opacity-80 transition-opacity">
-                    <Avatar size="sm" className="shrink-0">
-                      <AvatarImage
-                        src={entry.avatarUrl}
-                        alt={entry.displayName}
-                      />
-                      <AvatarFallback>{initials}</AvatarFallback>
-                    </Avatar>
-                    <span
-                      className={cn(
-                        'text-sm truncate',
-                        isCurrentUser && 'font-semibold',
-                      )}
+                  {onUserClick ? (
+                    <button
+                      type="button"
+                      onClick={() => onUserClick(entry.userId, entry.displayName)}
+                      className="flex items-center gap-2 w-full text-left hover:opacity-80 transition-opacity"
                     >
-                      {entry.displayName}
-                      {isCurrentUser && (
-                        <span className="ml-1.5 text-xs text-primary font-normal">
-                          (you)
-                        </span>
-                      )}
+                      <Avatar size="sm" className="shrink-0">
+                        <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
+                        <AvatarFallback>{initials}</AvatarFallback>
+                      </Avatar>
+                      <span className={cn('text-sm truncate', isCurrentUser && 'font-semibold')}>
+                        {entry.displayName}
+                        {isCurrentUser && (
+                          <span className="ml-1.5 text-xs text-primary font-normal">(you)</span>
+                        )}
+                      </span>
+                    </button>
+                  ) : (
+                    <span className="flex items-center gap-2 w-full text-left hover:opacity-80 transition-opacity">
+                      <Avatar size="sm" className="shrink-0">
+                        <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
+                        <AvatarFallback>{initials}</AvatarFallback>
+                      </Avatar>
+                      <span className={cn('text-sm truncate', isCurrentUser && 'font-semibold')}>
+                        {entry.displayName}
+                        {isCurrentUser && (
+                          <span className="ml-1.5 text-xs text-primary font-normal">(you)</span>
+                        )}
+                      </span>
                     </span>
-                  </span>
+                  )}
                 </UserHoverCard>
               </TableCell>
               {mode === 'all' ? (
