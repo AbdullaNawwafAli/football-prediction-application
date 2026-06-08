@@ -75,13 +75,6 @@ export function KnockoutPredictionsForm() {
 
   return (
     <div className="px-3 sm:px-4 py-6 sm:py-10 space-y-6">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">Knockout Predictions</h1>
-        <p className="text-sm text-muted-foreground">
-          Pick the winner of each match. Your pick advances to the next round automatically.
-        </p>
-      </div>
-
       <LockCountdownBanner isOpen={isOpen} firstMatchTime={firstMatchTime} />
 
       {mutation.isSuccess && (

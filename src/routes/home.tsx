@@ -9,6 +9,7 @@ import {
 } from '#/features/match-predictions'
 import type { MatchWithTeams } from '#/features/match-predictions/types'
 import { useAuthStore } from '#/stores/auth.store'
+import { Header } from '#/components/Header'
 
 export const Route = createFileRoute('/home')({
   beforeLoad: ({ context }) => {
@@ -45,12 +46,7 @@ function DashboardPage() {
 
   return (
     <div className="page">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">Home</h1>
-        <p className="text-sm text-muted-foreground">
-          Make your predictions and climb the leaderboard.
-        </p>
-      </div>
+      <Header>Home</Header>
 
       <div className="space-y-2">
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">

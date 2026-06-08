@@ -1,5 +1,6 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { Header } from '#/components/Header'
 import { Button } from '#/components/shadcn/ui/button'
 import { LeaderboardTable } from '#/components/LeaderboardTable'
 import createLeaderboardQueryOptions from '#/hooks/createLeaderboardQueryOptions'
@@ -21,12 +22,7 @@ function MatchPredictionPage() {
 
   return (
     <div className="page">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">Matches</h1>
-        <p className="text-sm text-muted-foreground">
-          Rankings based on individual match score predictions.
-        </p>
-      </div>
+      <Header>Matches</Header>
 
       <div className="flex gap-3">
         <Button asChild>

@@ -3,9 +3,9 @@ import { IconHome, IconTournament, IconChartBar, IconScoreboard } from '@tabler/
 import { Tabs, TabsList, TabsTrigger } from '#/components/shadcn/ui/tabs'
 
 const NAV_ITEMS = [
-  { to: '/Home', label: 'Home', icon: IconHome },
-  { to: '/stage-prediction', label: 'Bracket', icon: IconTournament },
-  { to: '/match-prediction', label: 'Matches', icon: IconScoreboard },
+  { to: '/home', label: 'Home', icon: IconHome },
+  { to: '/bracket-prediction', label: 'Bracket', icon: IconTournament },
+  { to: '/match-prediction', label: 'Match', icon: IconScoreboard },
   { to: '/leaderboard', label: 'Leaderboard', icon: IconChartBar },
 ] as const
 

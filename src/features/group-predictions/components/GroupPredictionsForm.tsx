@@ -67,13 +67,6 @@ export function GroupPredictionsForm() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 space-y-8">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">Group Stage Predictions</h1>
-        <p className="text-sm text-muted-foreground">
-          Drag teams into your predicted finishing order for each group.
-        </p>
-      </div>
-
       <LockCountdownBanner isOpen={isOpen} firstMatchTime={firstMatchTime} />
 
       {mutation.isSuccess && (

@@ -1,5 +1,6 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { Header } from '#/components/Header'
 import { LeaderboardTable } from '#/components/LeaderboardTable'
 import createLeaderboardQueryOptions from '#/hooks/createLeaderboardQueryOptions'
 import { useAuthStore } from '#/stores/auth.store'
@@ -20,12 +21,7 @@ function LeaderboardPage() {
 
   return (
     <div className="page">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">Leaderboard</h1>
-        <p className="text-sm text-muted-foreground">
-          Overall rankings across all prediction categories.
-        </p>
-      </div>
+      <Header>Leaderboard</Header>
 
       <div className="rounded-lg border bg-card overflow-hidden">
         <LeaderboardTable

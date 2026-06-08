@@ -1,11 +1,12 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { Header } from '#/components/Header'
 import { Button } from '#/components/shadcn/ui/button'
 import { LeaderboardTable } from '#/components/LeaderboardTable'
 import createLeaderboardQueryOptions from '#/hooks/createLeaderboardQueryOptions'
 import { useAuthStore } from '#/stores/auth.store'
 
-export const Route = createFileRoute('/stage-prediction/')({
+export const Route = createFileRoute('/bracket-prediction/')({
   beforeLoad: ({ context }) => {
     if (!context.session) throw redirect({ to: '/' })
     if (!context.profile) throw redirect({ to: '/onboarding' })
@@ -23,21 +24,14 @@ function Feature1HomePage() {
 
   return (
     <div className="page">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">
-          Group & Knockout Leaderboard
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Live rankings based on group and knockout stage predictions.
-        </p>
-      </div>
+      <Header>Bracket</Header>
 
       <div className="flex flex-wrap gap-2">
         <Button asChild variant="default" size="sm">
-          <Link to="/stage-prediction/my-group">Set Group Predictions</Link>
+          <Link to="/bracket-prediction/my-group">Set Group Predictions</Link>
         </Button>
         <Button asChild variant="outline" size="sm">
-          <Link to="/stage-prediction/my-knockout">Set Knockout Predictions</Link>
+          <Link to="/bracket-prediction/my-knockout">Set Knockout Predictions</Link>
         </Button>
       </div>
 

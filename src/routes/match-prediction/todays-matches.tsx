@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { Header } from '#/components/Header'
 import {
   MatchList,
   MatchPredictionDrawer,
@@ -43,12 +44,7 @@ function TodaysMatchesPage() {
 
   return (
     <div className="page">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">Today's Matches</h1>
-        <p className="text-sm text-muted-foreground">
-          Predict the score for today's matches. Tap a match to enter your prediction.
-        </p>
-      </div>
+      <Header>Today's Matches</Header>
 
       {todaysMatches.length === 0 ? (
         <p className="text-sm text-center text-muted-foreground py-8">
