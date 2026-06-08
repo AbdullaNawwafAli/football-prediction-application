@@ -1,10 +1,12 @@
-import { Suspense } from 'react'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { Suspense, useRef, useState } from 'react'
+import { ArrowRight } from 'lucide-react'
 import { Skeleton } from '#/components/shadcn/ui/skeleton'
+import { Button } from '#/components/shadcn/ui/button'
 import {
   Sheet,
   SheetContent,
   SheetTitle,
+  SheetFooter,
 } from '#/components/shadcn/ui/sheet'
 import { useAuthStore } from '#/stores/auth.store'
 import { GroupPredictionsForm } from './GroupPredictionsForm'
@@ -36,8 +38,10 @@ export function GroupPredictionsSheet({ userId, displayName, open, onOpenChange 
   const currentUserId = useAuthStore((s) => s.profile?.id)
   const isOwnProfile = userId === currentUserId
 
+  const submitRef = useRef<(() => void) | null>(null) as React.RefObject<(() => void) | null>
+  const [mutationState, setMutationState] = useState({ isPending: false, canSubmit: false })
+
   return (
-   
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
@@ -62,14 +66,28 @@ export function GroupPredictionsSheet({ userId, displayName, open, onOpenChange 
         <div className="flex-1 overflow-y-auto">
           <Suspense fallback={<LoadingSkeleton />}>
             {isOwnProfile ? (
-              <GroupPredictionsForm />
+              <GroupPredictionsForm
+                submitRef={submitRef}
+                onMutationStateChange={setMutationState}
+              />
             ) : (
               <GroupPredictionsReadOnly userId={userId} />
             )}
           </Suspense>
         </div>
+
+        {isOwnProfile && (
+          <SheetFooter className="border-t px-4 py-4 shrink-0">
+            <Button
+              className="w-full"
+              onClick={() => submitRef.current?.()}
+              disabled={!mutationState.canSubmit}
+            >
+              {mutationState.isPending ? 'Saving…' : 'Save Predictions'}
+            </Button>
+          </SheetFooter>
+        )}
       </SheetContent>
     </Sheet>
-  
   )
 }

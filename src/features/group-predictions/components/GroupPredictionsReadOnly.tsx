@@ -15,7 +15,7 @@ function buildOrderedTeams(
   const result: Record<string, TeamInGroup[]> = {}
   for (const { groupName, teams } of groups) {
     const pickedIds = predictionsMap[groupName]
-    if (pickedIds && pickedIds.length === teams.length) {
+    if (pickedIds.length === teams.length) {
       const teamById = new Map(teams.map((t) => [t.teamId, t]))
       const ordered = pickedIds.map((id) => teamById.get(id)).filter(Boolean) as TeamInGroup[]
       result[groupName] = ordered.length === teams.length ? ordered : [...teams]

@@ -44,7 +44,7 @@ export function GroupSortableList({ groupName, teams, onReorder, disabled }: Pro
   return (
     <div className="space-y-1">
       <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-        Group {groupName}
+        Group {groupName.at(-1)}
       </h3>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={ids} strategy={verticalListSortingStrategy}>

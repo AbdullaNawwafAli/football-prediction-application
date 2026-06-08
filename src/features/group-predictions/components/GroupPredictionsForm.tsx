@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
 import { useAuthStore } from '#/stores/auth.store'
-import { Button } from '#/components/shadcn/ui/button'
 import { createGroupsQueryOptions } from '../hooks/createGroupsQueryOptions'
 import { createUserPredictionsQueryOptions } from '../hooks/createUserPredictionsQueryOptions'
 import { createLockStatusQueryOptions } from '../hooks/createLockStatusQueryOptions'
@@ -10,6 +9,11 @@ import { upsertGroupPredictions } from '../services/upsertGroupPredictions'
 import { GroupSortableList } from './GroupSortableList'
 import { LockCountdownBanner } from '#/components/LockCountdownBanner'
 import type { TeamInGroup, GroupOrder } from '../types'
+
+type Props = {
+  submitRef?: React.RefObject<(() => void) | null>
+  onMutationStateChange?: (state: { isPending: boolean; canSubmit: boolean }) => void
+}
 
 function buildInitialOrder(
   groups: GroupOrder[],
@@ -31,7 +35,7 @@ function buildInitialOrder(
   return result
 }
 
-export function GroupPredictionsForm() {
+export function GroupPredictionsForm({ submitRef, onMutationStateChange }: Props) {
   const profile = useAuthStore((s) => s.profile)
   const userId = profile!.id
 
@@ -60,6 +64,14 @@ export function GroupPredictionsForm() {
 
   const isOffline = typeof navigator !== 'undefined' && !navigator.onLine
   const canSubmit = isOpen && !isOffline && !mutation.isPending
+
+  useEffect(() => {
+    if (submitRef) submitRef.current = () => mutation.mutate()
+  })
+
+  useEffect(() => {
+    onMutationStateChange?.({ isPending: mutation.isPending, canSubmit })
+  }, [mutation.isPending, canSubmit])
 
   function handleReorder(groupName: string, newTeams: TeamInGroup[]) {
     setOrder((prev) => ({ ...prev, [groupName]: newTeams }))
@@ -93,17 +105,6 @@ export function GroupPredictionsForm() {
         ))}
       </div>
 
-      <div className="flex items-center gap-3">
-        <Button
-          onClick={() => mutation.mutate()}
-          disabled={!canSubmit}
-        >
-          {mutation.isPending ? 'Saving…' : 'Save Predictions'}
-        </Button>
-        {isOffline && (
-          <span className="text-sm text-muted-foreground">You are offline — saving is disabled.</span>
-        )}
-      </div>
     </div>
   )
 }
