@@ -17,7 +17,7 @@ function LoginPage() {
       provider: 'azure',
       options: {
         scopes: 'email profile',
-        redirectTo: `${window.location.origin}/dashboard`,
+        redirectTo: `${window.location.origin}/home`,
       },
     })
   }

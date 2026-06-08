@@ -10,7 +10,7 @@ import {
 import type { MatchWithTeams } from '#/features/match-predictions/types'
 import { useAuthStore } from '#/stores/auth.store'
 
-export const Route = createFileRoute('/dashboard')({
+export const Route = createFileRoute('/home')({
   beforeLoad: ({ context }) => {
     if (!context.session) {
       throw redirect({ to: '/' })
@@ -46,7 +46,7 @@ function DashboardPage() {
   return (
     <div className="page">
       <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">World Cup 2026</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Home</h1>
         <p className="text-sm text-muted-foreground">
           Make your predictions and climb the leaderboard.
         </p>

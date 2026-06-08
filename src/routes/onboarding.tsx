@@ -6,8 +6,6 @@ export const Route = createFileRoute('/onboarding')({
 })
 
 function OnboardingPage() {
-
-
     return (
         <div className="page">
            <OnboardingForm />

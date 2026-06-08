@@ -39,7 +39,7 @@ function RootLayout() {
             navigate({ to: '/onboarding' })
           } else {
             flushSync(() => setProfile(profile))
-            navigate({ to: '/dashboard' })
+            navigate({ to: '/home' })
           }
         }
 
