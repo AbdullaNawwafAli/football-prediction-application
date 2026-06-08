@@ -17,6 +17,8 @@ import { Route as MatchPredictionIndexRouteImport } from './routes/match-predict
 import { Route as LeaderboardIndexRouteImport } from './routes/leaderboard/index'
 import { Route as StagePredictionMyKnockoutRouteImport } from './routes/stage-prediction/my-knockout'
 import { Route as StagePredictionMyGroupRouteImport } from './routes/stage-prediction/my-group'
+import { Route as MatchPredictionTodaysMatchesRouteImport } from './routes/match-prediction/todays-matches'
+import { Route as MatchPredictionAllMatchesRouteImport } from './routes/match-prediction/all-matches'
 
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
@@ -59,11 +61,25 @@ const StagePredictionMyGroupRoute = StagePredictionMyGroupRouteImport.update({
   path: '/stage-prediction/my-group',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MatchPredictionTodaysMatchesRoute =
+  MatchPredictionTodaysMatchesRouteImport.update({
+    id: '/match-prediction/todays-matches',
+    path: '/match-prediction/todays-matches',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const MatchPredictionAllMatchesRoute =
+  MatchPredictionAllMatchesRouteImport.update({
+    id: '/match-prediction/all-matches',
+    path: '/match-prediction/all-matches',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/onboarding': typeof OnboardingRoute
+  '/match-prediction/all-matches': typeof MatchPredictionAllMatchesRoute
+  '/match-prediction/todays-matches': typeof MatchPredictionTodaysMatchesRoute
   '/stage-prediction/my-group': typeof StagePredictionMyGroupRoute
   '/stage-prediction/my-knockout': typeof StagePredictionMyKnockoutRoute
   '/leaderboard/': typeof LeaderboardIndexRoute
@@ -74,6 +90,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/onboarding': typeof OnboardingRoute
+  '/match-prediction/all-matches': typeof MatchPredictionAllMatchesRoute
+  '/match-prediction/todays-matches': typeof MatchPredictionTodaysMatchesRoute
   '/stage-prediction/my-group': typeof StagePredictionMyGroupRoute
   '/stage-prediction/my-knockout': typeof StagePredictionMyKnockoutRoute
   '/leaderboard': typeof LeaderboardIndexRoute
@@ -85,6 +103,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/onboarding': typeof OnboardingRoute
+  '/match-prediction/all-matches': typeof MatchPredictionAllMatchesRoute
+  '/match-prediction/todays-matches': typeof MatchPredictionTodaysMatchesRoute
   '/stage-prediction/my-group': typeof StagePredictionMyGroupRoute
   '/stage-prediction/my-knockout': typeof StagePredictionMyKnockoutRoute
   '/leaderboard/': typeof LeaderboardIndexRoute
@@ -97,6 +117,8 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/onboarding'
+    | '/match-prediction/all-matches'
+    | '/match-prediction/todays-matches'
     | '/stage-prediction/my-group'
     | '/stage-prediction/my-knockout'
     | '/leaderboard/'
@@ -107,6 +129,8 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/onboarding'
+    | '/match-prediction/all-matches'
+    | '/match-prediction/todays-matches'
     | '/stage-prediction/my-group'
     | '/stage-prediction/my-knockout'
     | '/leaderboard'
@@ -117,6 +141,8 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/onboarding'
+    | '/match-prediction/all-matches'
+    | '/match-prediction/todays-matches'
     | '/stage-prediction/my-group'
     | '/stage-prediction/my-knockout'
     | '/leaderboard/'
@@ -128,6 +154,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
   OnboardingRoute: typeof OnboardingRoute
+  MatchPredictionAllMatchesRoute: typeof MatchPredictionAllMatchesRoute
+  MatchPredictionTodaysMatchesRoute: typeof MatchPredictionTodaysMatchesRoute
   StagePredictionMyGroupRoute: typeof StagePredictionMyGroupRoute
   StagePredictionMyKnockoutRoute: typeof StagePredictionMyKnockoutRoute
   LeaderboardIndexRoute: typeof LeaderboardIndexRoute
@@ -193,6 +221,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StagePredictionMyGroupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/match-prediction/todays-matches': {
+      id: '/match-prediction/todays-matches'
+      path: '/match-prediction/todays-matches'
+      fullPath: '/match-prediction/todays-matches'
+      preLoaderRoute: typeof MatchPredictionTodaysMatchesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/match-prediction/all-matches': {
+      id: '/match-prediction/all-matches'
+      path: '/match-prediction/all-matches'
+      fullPath: '/match-prediction/all-matches'
+      preLoaderRoute: typeof MatchPredictionAllMatchesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -200,6 +242,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
   OnboardingRoute: OnboardingRoute,
+  MatchPredictionAllMatchesRoute: MatchPredictionAllMatchesRoute,
+  MatchPredictionTodaysMatchesRoute: MatchPredictionTodaysMatchesRoute,
   StagePredictionMyGroupRoute: StagePredictionMyGroupRoute,
   StagePredictionMyKnockoutRoute: StagePredictionMyKnockoutRoute,
   LeaderboardIndexRoute: LeaderboardIndexRoute,
