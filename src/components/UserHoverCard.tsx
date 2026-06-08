@@ -46,7 +46,7 @@ export function UserHoverCard({ entry, children }: Props) {
               <>
                 <p className="text-xs text-muted-foreground truncate">{profile.email}</p>
                 <div className="flex items-center gap-1.5 mt-1">
-                  <span className="text-xs text-muted-foreground">Supports</span>
+                  <span className="text-xs text-muted-foreground">Supporting</span>
                   {profile.favoriteTeamCrestUrl && (
                     <img
                       src={profile.favoriteTeamCrestUrl}
