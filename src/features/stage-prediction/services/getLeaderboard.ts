@@ -3,21 +3,26 @@ import type { LeaderboardEntry } from '../types/leaderboard'
 
 export async function getLeaderboardApi(): Promise<LeaderboardEntry[]> {
   const { data, error } = await supabase
-    .from('user_scores')
-    .select('feature1_points, total_points, profiles!inner(id, display_name, avatar_url)')
-    .order('total_points', { ascending: false })
+    .from('profiles')
+    .select('id, display_name, avatar_url, user_scores(feature1_points, feature2_points, total_points)')
 
   if (error) throw error
 
-  return data.map((row, index) => {
-    const profile = row.profiles
-    return {
-      rank: index + 1,
-      userId: profile.id,
-      displayName: profile.display_name,
-      avatarUrl: profile.avatar_url,
-      feature1Points: row.feature1_points,
-      totalPoints: row.total_points,
-    }
-  })
+  return (data ?? [])
+    .map((row) => {
+      const s = Array.isArray(row.user_scores)
+        ? (row.user_scores as any[])[0]
+        : (row.user_scores as any)
+      return {
+        rank: 0,
+        userId: row.id,
+        displayName: row.display_name,
+        avatarUrl: row.avatar_url ?? '',
+        feature1Points: s?.feature1_points ?? 0,
+        feature2Points: s?.feature2_points ?? 0,
+        totalPoints: s?.total_points ?? null,
+      }
+    })
+    .sort((a, b) => (b.totalPoints ?? 0) - (a.totalPoints ?? 0))
+    .map((entry, index) => ({ ...entry, rank: index + 1 }))
 }

@@ -22,7 +22,7 @@ function Feature1HomePage() {
   )
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 space-y-8">
+    <div className="w-full px-3 sm:px-4 py-6 sm:py-10 space-y-6 sm:space-y-8">
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight">
           Group & Knockout Leaderboard
@@ -32,7 +32,7 @@ function Feature1HomePage() {
         </p>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <Button asChild variant="default" size="sm">
           <Link to="/stage-prediction/my-group">Set Group Predictions</Link>
         </Button>

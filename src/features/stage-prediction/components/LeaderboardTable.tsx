@@ -66,14 +66,14 @@ export function LeaderboardTable({ entries, currentUserId, isPending }: Props) {
               <TableCell className="text-center">
                 <RankBadge rank={entry.rank} />
               </TableCell>
-              <TableCell>
+              <TableCell className="max-w-0">
                 <UserHoverCard entry={entry}>
-                  <Button variant='ghost' className="flex items-center gap-2.5  transition-opacity text-left">
-                    <Avatar size="sm">
+                  <Button variant='ghost' className="flex w-full items-center gap-2.5 transition-opacity text-left min-w-0">
+                    <Avatar size="sm" className="shrink-0">
                       <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
                       <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
-                    <span className={cn('text-sm', isCurrentUser && 'font-semibold')}>
+                    <span className={cn('text-sm truncate', isCurrentUser && 'font-semibold')}>
                       {entry.displayName}
                       {isCurrentUser && (
                         <span className="ml-1.5 text-xs text-primary font-normal">(you)</span>
