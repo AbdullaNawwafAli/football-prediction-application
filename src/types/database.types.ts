@@ -246,10 +246,8 @@ export type Database = {
           home_booking_score: number | null
           home_team_id: number | null
           id: number
-          last_match_away_id: number | null
-          last_match_away_team_id: number | null
-          last_match_home_id: number | null
-          last_match_home_team_id: number | null
+          next_match_id: number | null
+          next_match_slot: string | null
           stage: string
           status: Database["public"]["Enums"]["match_status"] | null
           utc_date: string
@@ -267,10 +265,8 @@ export type Database = {
           home_booking_score?: number | null
           home_team_id?: number | null
           id: number
-          last_match_away_id?: number | null
-          last_match_away_team_id?: number | null
-          last_match_home_id?: number | null
-          last_match_home_team_id?: number | null
+          next_match_id?: number | null
+          next_match_slot?: string | null
           stage: string
           status?: Database["public"]["Enums"]["match_status"] | null
           utc_date: string
@@ -288,10 +284,8 @@ export type Database = {
           home_booking_score?: number | null
           home_team_id?: number | null
           id?: number
-          last_match_away_id?: number | null
-          last_match_away_team_id?: number | null
-          last_match_home_id?: number | null
-          last_match_home_team_id?: number | null
+          next_match_id?: number | null
+          next_match_slot?: string | null
           stage?: string
           status?: Database["public"]["Enums"]["match_status"] | null
           utc_date?: string
@@ -313,31 +307,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "matches_last_match_away_id_fkey"
-            columns: ["last_match_away_id"]
+            foreignKeyName: "matches_next_match_id_fkey"
+            columns: ["next_match_id"]
             isOneToOne: false
             referencedRelation: "matches"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "matches_last_match_away_team_id_fkey"
-            columns: ["last_match_away_team_id"]
-            isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "matches_last_match_home_id_fkey"
-            columns: ["last_match_home_id"]
-            isOneToOne: false
-            referencedRelation: "matches"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "matches_last_match_home_team_id_fkey"
-            columns: ["last_match_home_team_id"]
-            isOneToOne: false
-            referencedRelation: "teams"
             referencedColumns: ["id"]
           },
           {
