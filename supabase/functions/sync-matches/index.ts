@@ -76,6 +76,11 @@ Deno.serve(async (_req)=>{
     "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
     "x-internal-secret": Deno.env.get("INTERNAL_SECRET")
   };
+  const f2Res = await fetch(`${baseUrl}/functions/v1/award-feature2-points`, {
+    method: "POST",
+    headers: internalHeaders
+  });
+  const f2Data = await f2Res.json();
   let recalcData = null;
   if (!activeKnockout || activeKnockout.length === 0) {
     // ── 5a. Still in group stage — recalculate standings ──────────────────────
@@ -105,7 +110,8 @@ Deno.serve(async (_req)=>{
     return new Response(JSON.stringify({
       success: true,
       matches_synced: matches.length,
-      award: awardData
+      award: awardData,
+      f2: f2Data
     }), {
       headers: {
         "Content-Type": "application/json"
