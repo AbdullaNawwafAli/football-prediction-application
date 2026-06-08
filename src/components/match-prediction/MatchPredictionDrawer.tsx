@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { Button } from '#/components/shadcn/ui/button'
@@ -34,6 +34,16 @@ export function MatchPredictionDrawer({ matchId, matches, predictions, onClose }
   const [homeScore, setHomeScore] = useState('')
   const [awayScore, setAwayScore] = useState('')
   const [saving, setSaving] = useState(false)
+
+  const homeRef = useRef<HTMLInputElement>(null)
+  const awayRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (matchId !== null) {
+      const timer = setTimeout(() => homeRef.current?.focus(), 150)
+      return () => clearTimeout(timer)
+    }
+  }, [matchId])
 
   useEffect(() => {
     if (existing) {
@@ -112,11 +122,13 @@ export function MatchPredictionDrawer({ matchId, matches, predictions, onClose }
                 <span className="text-sm font-medium">{match?.homeTeam?.tla ?? match?.homeTeam?.name ?? 'Home'}</span>
               </div>
               <Input
-                type="number"
-                min={0}
-                max={20}
+                ref={homeRef}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={homeScore}
-                onChange={(e) => setHomeScore(e.target.value)}
+                onChange={(e) => setHomeScore(e.target.value.replace(/\D/g, ''))}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); awayRef.current?.focus() } }}
                 className="w-20 text-center text-lg font-mono"
                 disabled={saving || isOffline || isFinished}
                 placeholder="0"
@@ -133,11 +145,13 @@ export function MatchPredictionDrawer({ matchId, matches, predictions, onClose }
                 <span className="text-sm font-medium">{match?.awayTeam?.tla ?? match?.awayTeam?.name ?? 'Away'}</span>
               </div>
               <Input
-                type="number"
-                min={0}
-                max={20}
+                ref={awayRef}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={awayScore}
-                onChange={(e) => setAwayScore(e.target.value)}
+                onChange={(e) => setAwayScore(e.target.value.replace(/\D/g, ''))}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSubmit() } }}
                 className="w-20 text-center text-lg font-mono"
                 disabled={saving || isOffline || isFinished}
                 placeholder="0"
