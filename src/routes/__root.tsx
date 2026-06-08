@@ -36,6 +36,12 @@ function RootLayout() {
         setSession(session)
 
         if (event === 'SIGNED_IN' && session) {
+          const currentPath = window.location.pathname
+          const profileAlreadyLoaded = useAuthStore.getState().profile !== null
+          // Skip token-refresh events fired while already in the app.
+          // A fresh OAuth redirect lands on /home with no profile loaded yet — that must be processed.
+          if (currentPath !== '/' && currentPath !== '/onboarding' && profileAlreadyLoaded) return
+
           const profile = await getProfileApi(session.user.id)
           if (!profile) {
             // No profile yet — send to onboarding

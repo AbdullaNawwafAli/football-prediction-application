@@ -9,7 +9,15 @@ export function AudioPlayer() {
     const audio = audioRef.current
     if (!audio) return
     if (isPlaying) {
-      audio.play().catch(() => {})
+      audio.play().catch(() => {
+        // Browser blocked autoplay (no user gesture on this page load, e.g. after OAuth redirect).
+        // Retry on the user's next interaction so music starts without them touching the toggle.
+        const retry = () => {
+          audio.play().catch(() => {})
+        }
+        document.addEventListener('click', retry, { once: true })
+        document.addEventListener('touchstart', retry, { once: true })
+      })
     } else {
       audio.pause()
     }
