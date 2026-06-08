@@ -46,14 +46,17 @@ export function MatchCard({ match, prediction, onSelect }: Props) {
   const matchTime = new Date(match.utcDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   const isFinished = match.status === 'FINISHED' || match.status === 'AWARDED'
   const isLive = ['IN_PLAY', 'PAUSED', 'EXTRA_TIME', 'PENALTY_SHOOTOUT'].includes(match.status)
+  const teamsUnassigned = !match.homeTeam || !match.awayTeam
 
   return (
     <button
       type="button"
       onClick={() => onSelect(match.matchId)}
+      disabled={teamsUnassigned}
       className={cn(
         'w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50 active:bg-muted',
         isFinished && 'opacity-75',
+        teamsUnassigned && 'opacity-40 cursor-not-allowed',
       )}
     >
       <div className="flex-1 min-w-0 flex items-center gap-2">
