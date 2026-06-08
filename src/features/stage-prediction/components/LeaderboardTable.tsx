@@ -17,6 +17,7 @@ type Props = {
   entries: LeaderboardEntry[]
   currentUserId: string
   isPending: boolean
+  pointsKey?: 'feature1Points' | 'feature2Points'
 }
 
 function RankBadge({ rank }: { rank: number }) {
@@ -26,7 +27,7 @@ function RankBadge({ rank }: { rank: number }) {
   return <span className="text-sm text-muted-foreground">{rank}</span>
 }
 
-export function LeaderboardTable({ entries, currentUserId, isPending }: Props) {
+export function LeaderboardTable({ entries, currentUserId, isPending, pointsKey = 'feature1Points' }: Props) {
   if (isPending) {
     return (
       <div className="space-y-2">
@@ -83,7 +84,7 @@ export function LeaderboardTable({ entries, currentUserId, isPending }: Props) {
                 </UserHoverCard>
               </TableCell>
               <TableCell className="text-right font-mono font-medium tabular-nums">
-                {entry.feature1Points}
+                {entry[pointsKey]}
               </TableCell>
             </TableRow>
           )

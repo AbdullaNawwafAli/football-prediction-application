@@ -352,6 +352,51 @@ export type Database = {
         }
         Relationships: []
       }
+      score_predictions: {
+        Row: {
+          created_at: string
+          match_id: number
+          points_awarded: number | null
+          predicted_away: number
+          predicted_home: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          match_id: number
+          points_awarded?: number | null
+          predicted_away: number
+          predicted_home: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          match_id?: number
+          points_awarded?: number | null
+          predicted_away?: number
+          predicted_home?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "score_predictions_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "score_predictions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       teams: {
         Row: {
           created_at: string | null
