@@ -1,5 +1,5 @@
 import { queryOptions } from '@tanstack/react-query'
-import { getUserScorePredictions } from '../services/getUserScorePredictions'
+import { getUserScorePredictions } from '#/services/getUserScorePredictions'
 
 export function createUserScorePredictionsQueryOptions(userId: string) {
   return queryOptions({

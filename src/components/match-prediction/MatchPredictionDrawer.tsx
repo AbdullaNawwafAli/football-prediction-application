@@ -13,8 +13,8 @@ import {
 } from '#/components/shadcn/ui/drawer'
 import { supabase } from '#/lib/supabase/supabase'
 import { useAuthStore } from '#/stores/auth.store'
-import { upsertScorePrediction } from '../services/upsertScorePrediction'
-import type { MatchWithTeams, ScorePrediction } from '../types'
+import { upsertScorePrediction } from '#/services/upsertScorePrediction'
+import type { MatchWithTeams, ScorePrediction } from '#/types/matches'
 
 type Props = {
   matchId: number | null

@@ -1,5 +1,5 @@
 import { supabase } from '#/lib/supabase/supabase'
-import type { ScorePrediction } from '../types'
+import type { ScorePrediction } from '#/types/matches'
 
 export async function getUserScorePredictions(userId: string): Promise<ScorePrediction[]> {
   const { data, error } = await supabase

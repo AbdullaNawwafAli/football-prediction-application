@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import type { MatchWithTeams, ScorePrediction } from '../types'
+import type { MatchWithTeams, ScorePrediction } from '#/types/matches'
 import { MatchCard } from './MatchCard'
 
 type Props = {

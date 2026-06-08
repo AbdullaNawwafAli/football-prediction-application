@@ -7,13 +7,11 @@ import {
   CardTitle,
 } from '#/components/shadcn/ui/card'
 import { Skeleton } from '#/components/shadcn/ui/skeleton'
-import {
-  MatchList,
-  MatchPredictionDrawer,
-  createMatchesQueryOptions,
-  createUserScorePredictionsQueryOptions,
-} from '#/features/match-predictions'
-import type { MatchWithTeams } from '#/features/match-predictions/types'
+import { MatchList } from '#/components/match-prediction/MatchList'
+import { MatchPredictionDrawer } from '#/components/match-prediction/MatchPredictionDrawer'
+import { createMatchesQueryOptions } from '#/hooks/createMatchesQueryOptions'
+import { createUserScorePredictionsQueryOptions } from '#/hooks/createUserScorePredictionsQueryOptions'
+import type { MatchWithTeams } from '#/types/matches'
 import { useAuthStore } from '#/stores/auth.store'
 
 function getUpcomingMatches(matches: MatchWithTeams[]) {

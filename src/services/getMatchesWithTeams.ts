@@ -1,5 +1,5 @@
 import { supabase } from '#/lib/supabase/supabase'
-import type { MatchWithTeams } from '../types'
+import type { MatchWithTeams } from '#/types/matches'
 
 export async function getMatchesWithTeams(): Promise<MatchWithTeams[]> {
   const { data, error } = await supabase

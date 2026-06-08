@@ -1,5 +1,5 @@
 import { cn } from '#/lib/shadcn/utils/utils'
-import type { MatchWithTeams, ScorePrediction } from '../types'
+import type { MatchWithTeams, ScorePrediction } from '#/types/matches'
 
 type Props = {
   match: MatchWithTeams

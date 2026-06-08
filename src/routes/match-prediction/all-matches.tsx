@@ -2,12 +2,10 @@ import { useState } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Header } from '#/components/Header'
-import {
-  MatchList,
-  MatchPredictionDrawer,
-  createMatchesQueryOptions,
-  createUserScorePredictionsQueryOptions,
-} from '#/features/match-predictions'
+import { MatchList } from '#/components/match-prediction/MatchList'
+import { MatchPredictionDrawer } from '#/components/match-prediction/MatchPredictionDrawer'
+import { createMatchesQueryOptions } from '#/hooks/createMatchesQueryOptions'
+import { createUserScorePredictionsQueryOptions } from '#/hooks/createUserScorePredictionsQueryOptions'
 import { useAuthStore } from '#/stores/auth.store'
 
 export const Route = createFileRoute('/match-prediction/all-matches')({
@@ -30,7 +28,6 @@ function AllMatchesPage() {
   return (
     <div className="page">
       <Header>All Matches</Header>
-
       <MatchList
         matches={matches}
         predictions={predictions}

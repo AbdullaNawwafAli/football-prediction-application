@@ -2,13 +2,11 @@ import { useState } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Header } from '#/components/Header'
-import {
-  MatchList,
-  MatchPredictionDrawer,
-  createMatchesQueryOptions,
-  createUserScorePredictionsQueryOptions,
-} from '#/features/match-predictions'
-import type { MatchWithTeams } from '#/features/match-predictions/types'
+import { MatchList } from '#/components/match-prediction/MatchList'
+import { MatchPredictionDrawer } from '#/components/match-prediction/MatchPredictionDrawer'
+import { createMatchesQueryOptions } from '#/hooks/createMatchesQueryOptions'
+import { createUserScorePredictionsQueryOptions } from '#/hooks/createUserScorePredictionsQueryOptions'
+import type { MatchWithTeams } from '#/types/matches'
 import { useAuthStore } from '#/stores/auth.store'
 
 export const Route = createFileRoute('/match-prediction/todays-matches')({
