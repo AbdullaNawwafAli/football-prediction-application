@@ -1,9 +1,10 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
+import { KnockoutPredictionsForm } from '#/features/knockout-predictions'
 
 export const Route = createFileRoute('/stage-prediction/my-knockout')({
-  component: RouteComponent,
+  beforeLoad: ({ context }) => {
+    if (!context.session) throw redirect({ to: '/' })
+    if (!context.profile) throw redirect({ to: '/onboarding' })
+  },
+  component: KnockoutPredictionsForm,
 })
-
-function RouteComponent() {
-  return <div>Hello "/stage-prediction/stage-prediction"!</div>
-}

@@ -8,7 +8,7 @@ import { createLockStatusQueryOptions } from '../hooks/createLockStatusQueryOpti
 import { createFirstGroupMatchQueryOptions } from '../hooks/createFirstGroupMatchQueryOptions'
 import { upsertGroupPredictions } from '../services/upsertGroupPredictions'
 import { GroupSortableList } from './GroupSortableList'
-import { LockCountdownBanner } from './LockCountdownBanner'
+import { LockCountdownBanner } from '#/components/LockCountdownBanner'
 import type { TeamInGroup, GroupOrder } from '../types'
 
 function buildInitialOrder(
