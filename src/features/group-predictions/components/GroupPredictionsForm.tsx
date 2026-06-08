@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { useAuthStore } from '#/stores/auth.store'
 import { createGroupsQueryOptions } from '../hooks/createGroupsQueryOptions'
 import { createUserPredictionsQueryOptions } from '../hooks/createUserPredictionsQueryOptions'
@@ -60,6 +61,8 @@ export function GroupPredictionsForm({ submitRef, onMutationStateChange }: Props
       }
       return upsertGroupPredictions(userId, predictions)
     },
+    onSuccess: () => toast.success('Predictions saved.'),
+    onError: () => toast.error('Failed to save predictions. Please try again.'),
   })
 
   const isOffline = typeof navigator !== 'undefined' && !navigator.onLine
@@ -80,18 +83,6 @@ export function GroupPredictionsForm({ submitRef, onMutationStateChange }: Props
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 space-y-8">
       <LockCountdownBanner isOpen={isOpen} firstMatchTime={firstMatchTime} />
-
-      {mutation.isSuccess && (
-        <div className="rounded-md border border-green-300/50 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-700/50 dark:bg-green-950/20 dark:text-green-400">
-          Predictions saved.
-        </div>
-      )}
-
-      {mutation.isError && (
-        <div className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          Failed to save predictions. Please try again.
-        </div>
-      )}
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {groups.map(({ groupName }) => (
