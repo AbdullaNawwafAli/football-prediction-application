@@ -23,12 +23,11 @@ function MatchPredictionPage() {
   return (
     <div className="page">
       <Header>Matches</Header>
-
-      <div className="flex gap-3">
-        <Button asChild>
+      <div className="flex flex-wrap gap-2">
+        <Button asChild size="sm">
           <Link to="/match-prediction/todays-matches">Today's Matches</Link>
         </Button>
-        <Button asChild variant="outline">
+        <Button asChild variant="outline" size="sm">
           <Link to="/match-prediction/all-matches">All Matches</Link>
         </Button>
       </div>
