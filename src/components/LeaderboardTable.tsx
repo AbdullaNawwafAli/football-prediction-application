@@ -26,11 +26,23 @@ type Props = {
 
 function RankBadge({ rank }: { rank: number }) {
   if (rank === 1)
-    return <span className="text-base font-bold text-yellow-500">1</span>
+    return (
+      <span className="inline-flex size-6 items-center justify-center rounded-full bg-yellow-500/10 text-xs font-bold text-yellow-500">
+        1
+      </span>
+    )
   if (rank === 2)
-    return <span className="text-base font-bold text-slate-400">2</span>
+    return (
+      <span className="inline-flex size-6 items-center justify-center rounded-full bg-slate-400/10 text-xs font-bold text-slate-400">
+        2
+      </span>
+    )
   if (rank === 3)
-    return <span className="text-base font-bold text-amber-600">3</span>
+    return (
+      <span className="inline-flex size-6 items-center justify-center rounded-full bg-amber-600/10 text-xs font-bold text-amber-600">
+        3
+      </span>
+    )
   return <span className="text-sm text-muted-foreground">{rank}</span>
 }
 
@@ -56,15 +68,15 @@ export function LeaderboardTable({
       <TableHeader>
         <TableRow>
           <TableHead className="w-12 text-center">#</TableHead>
-          <TableHead>Player</TableHead>
+          <TableHead className="w-full">Player</TableHead>
           {mode === 'all' ? (
             <>
-              <TableHead className="text-center">Stage</TableHead>
-              <TableHead className="text-center">Matches</TableHead>
-              <TableHead className="text-center">Overall</TableHead>
+              <TableHead className="w-32 text-center">Stage</TableHead>
+              <TableHead className="w-32 text-center">Matches</TableHead>
+              <TableHead className="w-32 text-center">Overall</TableHead>
             </>
           ) : (
-            <TableHead className="text-center">
+            <TableHead className="text-right whitespace-nowrap pr-4">
               {mode === 'feature1' ? 'Stage Pts' : 'Match Pts'}
             </TableHead>
           )}
@@ -83,7 +95,7 @@ export function LeaderboardTable({
           return (
             <TableRow
               key={entry.userId}
-              className={cn(isCurrentUser && 'bg-primary/5 font-medium')}
+              className={cn(isCurrentUser && 'bg-muted/40')}
             >
               <TableCell className="text-center">
                 <RankBadge rank={entry.rank} />
@@ -103,7 +115,7 @@ export function LeaderboardTable({
                       <span className={cn('text-sm truncate', isCurrentUser && 'font-semibold')}>
                         {entry.displayName}
                         {isCurrentUser && (
-                          <span className="ml-1.5 text-xs text-primary font-normal">(you)</span>
+                          <span className="ml-1.5 text-xs text-muted-foreground font-normal">(you)</span>
                         )}
                       </span>
                     </button>
@@ -116,7 +128,7 @@ export function LeaderboardTable({
                       <span className={cn('text-sm truncate', isCurrentUser && 'font-semibold')}>
                         {entry.displayName}
                         {isCurrentUser && (
-                          <span className="ml-1.5 text-xs text-primary font-normal">(you)</span>
+                          <span className="ml-1.5 text-xs text-muted-foreground font-normal">(you)</span>
                         )}
                       </span>
                     </span>
