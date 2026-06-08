@@ -1,3 +1,4 @@
+export { MatchCard } from './components/MatchCard'
 export { MatchList } from './components/MatchList'
 export { MatchPredictionDrawer } from './components/MatchPredictionDrawer'
 export { createMatchesQueryOptions } from './hooks/createMatchesQueryOptions'
