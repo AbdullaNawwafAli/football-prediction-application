@@ -10,14 +10,10 @@ import {
 import { useAuthStore } from '#/stores/auth.store'
 
 export const Route = createFileRoute('/home')({
-  beforeLoad: ({ context }) => {
-    if (!context.session) {
-      throw redirect({ to: '/' })
-    }
-
-    if (!context.profile) {
-      throw redirect({ to: '/onboarding' })
-    }
+  beforeLoad: () => {
+    const { session, profile } = useAuthStore.getState()
+    if (!session) throw redirect({ to: '/' })
+    if (!profile) throw redirect({ to: '/onboarding' })
   },
   component: DashboardPage,
 })

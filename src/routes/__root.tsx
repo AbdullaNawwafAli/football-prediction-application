@@ -35,7 +35,7 @@ function RootLayout() {
       async (event, session) => {
         setSession(session)
 
-        if (event === 'SIGNED_IN' && session) {
+        if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
           const currentPath = window.location.pathname
           const profileAlreadyLoaded = useAuthStore.getState().profile !== null
           // Skip token-refresh events fired while already in the app.
