@@ -9,6 +9,7 @@ import type { RouterContext } from '#/router'
 import { Toaster } from '#/components/shadcn/ui/sonner'
 import getProfileApi from '#/services/getProfile'
 import BottomNav from '#/components/BottomNav'
+import { AudioPlayer } from '#/components/AudioPlayer'
 
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -61,6 +62,7 @@ function RootLayout() {
       </main>
       {showNav && <BottomNav />}
       <Toaster />
+      <AudioPlayer />
       {/* {
         import.meta.env.DEV ? (
           <>

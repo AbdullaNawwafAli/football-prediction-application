@@ -11,6 +11,8 @@ import {
 } from '#/components/shadcn/ui/dropdown-menu'
 import { supabase } from '#/lib/supabase/supabase'
 import { useAuthStore } from '#/stores/auth.store'
+import { useAudioStore } from '#/stores/audio.store'
+import { Volume2, VolumeX } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 type HeaderProps = {
@@ -19,6 +21,7 @@ type HeaderProps = {
 
 export function Header({ children }: HeaderProps) {
   const profile = useAuthStore((s) => s.profile)
+  const { isPlaying, toggle } = useAudioStore()
 
   const initials =
     profile?.display_name
@@ -50,7 +53,15 @@ export function Header({ children }: HeaderProps) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <span className="font-semibold text-base">{children}</span>
+      <span className="font-semibold text-base flex-1">{children}</span>
+      <button
+        type="button"
+        onClick={toggle}
+        className="size-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+        aria-label={isPlaying ? 'Mute music' : 'Play music'}
+      >
+        {isPlaying ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
+      </button>
     </header>
   )
 }
