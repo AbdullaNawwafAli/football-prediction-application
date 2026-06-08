@@ -1,4 +1,4 @@
-import { Outlet, createRootRouteWithContext, useNavigate } from '@tanstack/react-router'
+import { Outlet, createRootRouteWithContext, useNavigate, useRouterState } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useEffect } from 'react'
@@ -8,6 +8,7 @@ import { useAuthStore } from '#/stores/auth.store'
 import type { RouterContext } from '#/router'
 import { Toaster } from '#/components/shadcn/ui/sonner'
 import getProfileApi from '#/services/getProfile'
+import BottomNav from '#/components/BottomNav'
 
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -17,6 +18,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 function RootLayout() {
   const { setSession, setProfile } = useAuthStore()
   const navigate = useNavigate()
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const showNav = pathname !== '/' && pathname !== '/onboarding'
 
   useEffect(() => {
     // Get the initial session on page load
@@ -51,15 +54,23 @@ function RootLayout() {
   }, [])
 
   return (
-    <div className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)] min-h-dvh">
-      <Outlet />
+    <div className="font-sans h-[100dvh] w-full selection:bg-[rgba(79,184,178,0.24)] flex flex-col ">
+
+      <main className="flex-1 min-h-0 overflow-y-auto w-full">
+        <Outlet />
+      </main>
+      {showNav && <BottomNav />}
       <Toaster />
-      {import.meta.env.DEV ? (
-        <>
-          <TanStackRouterDevtools position="bottom-right" />
-          <ReactQueryDevtools buttonPosition="bottom-left" />
-        </>
-      ) : null}
+      {/* {
+        import.meta.env.DEV ? (
+          <>
+            <TanStackRouterDevtools position="bottom-right" />
+            <ReactQueryDevtools buttonPosition="bottom-left" />
+          </>
+        ) : null
+      } */}
     </div>
+
+
   )
 }

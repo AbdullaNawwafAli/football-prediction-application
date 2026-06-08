@@ -136,7 +136,7 @@
 html,
 body,
 #app {
-  min-height: 100%;
+  height: 100%;
 }
 
 body {
@@ -150,11 +150,13 @@ body {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     background-color: var(--background);
     color: var(--foreground);
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
