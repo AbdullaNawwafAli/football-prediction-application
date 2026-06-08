@@ -38,14 +38,14 @@ function Feature1HomePage() {
           size="sm"
           onClick={() => setSelectedUser({ userId: currentUserId, displayName: profile?.display_name ?? '' })}
         >
-          Set Group Predictions
+          My Group
         </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => setKnockoutOpen(true)}
         >
-          Set Knockout Predictions
+          My Knockout
         </Button>
       </div>
 
