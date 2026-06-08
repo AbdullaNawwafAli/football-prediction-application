@@ -66,16 +66,17 @@ Deno.serve(async (_req)=>{
       r.points
     ]));
   // ── 3. Evaluate each prediction ───────────────────────────────────────────────
+  // A prediction is only scored once the match is FINISHED and has a decided winner.
+  // Draws (winner_id = null) leave predictions as incorrect until extra time / pens
+  // resolve the match and the API sets a winner.
   const FINISHED = new Set([
     "FINISHED",
     "AWARDED"
   ]);
   const updatedPredictions = [];
-  // user_id → total knockout points
   const userKnockoutPoints = new Map();
   for (const pred of predictions){
     const match = pred.matches;
-    // only evaluate finished matches with a decided winner
     const isFinished = FINISHED.has(match?.status ?? "");
     const hasWinner = match?.winner_id !== null && match?.winner_id !== undefined;
     const is_correct = isFinished && hasWinner && match.winner_id === pred.predicted_winner_id;
@@ -103,7 +104,7 @@ Deno.serve(async (_req)=>{
       status: 500
     });
   }
-  // ── 5. Write knockout_points only — feature1_points auto-updates ──────────────
+  // ── 5. Write knockout_points — feature1_points auto-updates via generated col ──
   const userScoreRows = Array.from(userKnockoutPoints.entries()).map(([user_id, knockout_points])=>({
       user_id,
       knockout_points,

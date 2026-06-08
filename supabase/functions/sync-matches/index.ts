@@ -50,7 +50,10 @@ Deno.serve(async (_req)=>{
       winner_id
     };
   });
-  // ── 3. Upsert matches (overwrite everything) ─────────────────────────────────
+  // ── 3. Upsert matches ────────────────────────────────────────────────────────
+  // NOTE: next_match_id and next_match_slot are NOT sourced from the API —
+  // they are set once manually when the bracket is seeded and must not be
+  // overwritten here. Upsert only touches the columns listed above.
   const { error: matchesError } = await supabase.from("matches").upsert(matches, {
     onConflict: "id"
   });
@@ -74,7 +77,6 @@ Deno.serve(async (_req)=>{
     "x-internal-secret": Deno.env.get("INTERNAL_SECRET")
   };
   let recalcData = null;
-  let bracketData = null;
   if (!activeKnockout || activeKnockout.length === 0) {
     // ── 5a. Still in group stage — recalculate standings ──────────────────────
     const recalcRes = await fetch(`${baseUrl}/functions/v1/recalculate-standings`, {
@@ -93,22 +95,16 @@ Deno.serve(async (_req)=>{
     });
   } else {
     // ── 5b. Knockout stage active ─────────────────────────────────────────────
-    const [bracketRes, awardRes] = await Promise.all([
-      fetch(`${baseUrl}/functions/v1/link-bracket-provenance`, {
-        method: "POST",
-        headers: internalHeaders
-      }),
-      fetch(`${baseUrl}/functions/v1/award-knockout-points`, {
-        method: "POST",
-        headers: internalHeaders
-      })
-    ]);
-    bracketData = await bracketRes.json();
+    // link-bracket-provenance is no longer needed: next_match_id on each match
+    // makes the bracket graph explicit and is maintained separately.
+    const awardRes = await fetch(`${baseUrl}/functions/v1/award-knockout-points`, {
+      method: "POST",
+      headers: internalHeaders
+    });
     const awardData = await awardRes.json();
     return new Response(JSON.stringify({
       success: true,
       matches_synced: matches.length,
-      bracket: bracketData,
       award: awardData
     }), {
       headers: {
