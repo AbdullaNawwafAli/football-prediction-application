@@ -42,7 +42,7 @@ export function UserScoreCard({ displayName, score }: Props) {
         <div className="grid grid-cols-3 divide-x divide-border">
           <Stat label="Bracket" value={score.feature1Points} />
           <Stat label="Match" value={score.feature2Points} />
-          <Stat label="Total" value={score.totalPoints} />
+          <Stat label="Overall" value={score.totalPoints} />
         </div>
       </CardContent>
     </Card>

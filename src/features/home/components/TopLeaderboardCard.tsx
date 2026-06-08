@@ -98,7 +98,7 @@ export function TopLeaderboardCard() {
   const categories = [
     { title: 'Bracket', players: toPlayers(entries, 'feature1Points') },
     { title: 'Match', players: toPlayers(entries, 'feature2Points') },
-    { title: 'Total', players: toPlayers(entries, 'totalPoints') },
+    { title: 'Overall', players: toPlayers(entries, 'totalPoints') },
   ]
 
   return (

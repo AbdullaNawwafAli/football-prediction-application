@@ -61,7 +61,7 @@ export function LeaderboardTable({
             <>
               <TableHead className="text-center">Stage</TableHead>
               <TableHead className="text-center">Matches</TableHead>
-              <TableHead className="text-center">Total</TableHead>
+              <TableHead className="text-center">Overall</TableHead>
             </>
           ) : (
             <TableHead className="text-center">
