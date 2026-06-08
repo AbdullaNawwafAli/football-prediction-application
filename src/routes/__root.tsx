@@ -70,7 +70,7 @@ function RootLayout() {
         <Outlet />
       </main>
       {showNav && <BottomNav />}
-      <Toaster />
+      <Toaster position="top-center" />
       <AudioPlayer />
       {/* {
         import.meta.env.DEV ? (
