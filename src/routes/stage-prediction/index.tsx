@@ -1,9 +1,9 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
-import { LeaderboardTable } from '#/features/stage-prediction'
-import { useAuthStore } from '#/stores/auth.store'
 import { Button } from '#/components/shadcn/ui/button'
-import createLeaderboardQueryOptions from '#/features/stage-prediction/hooks/createLeaderboardQueryOptions'
+import { LeaderboardTable } from '#/components/LeaderboardTable'
+import createLeaderboardQueryOptions from '#/hooks/createLeaderboardQueryOptions'
+import { useAuthStore } from '#/stores/auth.store'
 
 export const Route = createFileRoute('/stage-prediction/')({
   beforeLoad: ({ context }) => {
@@ -46,6 +46,7 @@ function Feature1HomePage() {
           entries={entries}
           currentUserId={currentUserId}
           isPending={isPending}
+          mode="feature1"
         />
       </div>
     </div>

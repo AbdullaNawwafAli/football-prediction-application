@@ -1,5 +1,5 @@
 import { queryOptions } from '@tanstack/react-query'
-import { getUserProfileApi } from '../services/getUserProfile'
+import { getUserProfileApi } from '#/services/getUserProfile'
 
 export default function createUserProfileQueryOptions(userId: string) {
   return queryOptions({

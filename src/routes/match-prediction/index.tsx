@@ -1,8 +1,8 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { Button } from '#/components/shadcn/ui/button'
-import { LeaderboardTable } from '#/features/stage-prediction'
-import createLeaderboardQueryOptions from '#/features/stage-prediction/hooks/createLeaderboardQueryOptions'
+import { LeaderboardTable } from '#/components/LeaderboardTable'
+import createLeaderboardQueryOptions from '#/hooks/createLeaderboardQueryOptions'
 import { useAuthStore } from '#/stores/auth.store'
 
 export const Route = createFileRoute('/match-prediction/')({
@@ -42,7 +42,7 @@ function MatchPredictionPage() {
           entries={entries}
           currentUserId={currentUserId}
           isPending={isPending}
-          pointsKey="feature2Points"
+          mode="feature2"
         />
       </div>
     </div>

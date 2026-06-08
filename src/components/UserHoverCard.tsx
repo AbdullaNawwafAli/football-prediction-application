@@ -3,8 +3,8 @@ import { useQuery } from '@tanstack/react-query'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '#/components/shadcn/ui/hover-card'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/shadcn/ui/avatar'
 import { Skeleton } from '#/components/shadcn/ui/skeleton'
-import type { LeaderboardEntry } from '../types/leaderboard'
-import createUserProfileQueryOptions from '../hooks/createUserProfileQueryOptions'
+import type { LeaderboardEntry } from '#/types/leaderboard'
+import createUserProfileQueryOptions from '#/hooks/createUserProfileQueryOptions'
 
 type Props = {
   entry: LeaderboardEntry
@@ -29,7 +29,7 @@ export function UserHoverCard({ entry, children }: Props) {
   return (
     <HoverCard open={open} onOpenChange={setOpen}>
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
-      <HoverCardContent className="w-72" side="right" align="start">
+      <HoverCardContent className="w-72" side="bottom" align="start">
         <div className="flex gap-3">
           <Avatar size="lg" className="size-14 shrink-0">
             <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />

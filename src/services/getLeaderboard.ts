@@ -1,5 +1,5 @@
 import { supabase } from '#/lib/supabase/supabase'
-import type { LeaderboardEntry } from '../types/leaderboard'
+import type { LeaderboardEntry } from '#/types/leaderboard'
 
 export async function getLeaderboardApi(): Promise<LeaderboardEntry[]> {
   const { data, error } = await supabase
