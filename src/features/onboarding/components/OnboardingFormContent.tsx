@@ -3,6 +3,7 @@ import { Spinner } from '#/components/shadcn/ui/spinner'
 import type { ComboboxOption } from '#/components/tanstack-form/components/FormCombobox'
 import { useAppForm } from '#/components/tanstack-form/hooks/hooks'
 import { useAuthStore } from '#/stores/auth.store'
+import { useAudioStore } from '#/stores/audio.store'
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { flushSync } from 'react-dom'
@@ -16,6 +17,7 @@ import { Button } from '#/components/shadcn/ui/button'
 
 function OnboardingFormContent() {
   const { user, setProfile } = useAuthStore()
+  const setPlaying = useAudioStore((s) => s.setPlaying)
   const navigate = useNavigate()
 
   const { mutateAsync, isPending } = useMutation<
@@ -26,6 +28,7 @@ function OnboardingFormContent() {
     mutationFn: createProfileApi,
     onSuccess: (profile) => {
       flushSync(() => setProfile(profile))
+      setPlaying(true)
       form.setFieldValue('profile_picture', undefined)
       navigate({ to: '/dashboard', replace: true })
     },

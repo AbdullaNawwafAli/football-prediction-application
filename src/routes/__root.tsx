@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { flushSync } from 'react-dom'
 import { supabase } from '#/lib/supabase/supabase'
 import { useAuthStore } from '#/stores/auth.store'
+import { useAudioStore } from '#/stores/audio.store'
 import type { RouterContext } from '#/router'
 import { Toaster } from '#/components/shadcn/ui/sonner'
 import getProfileApi from '#/services/getProfile'
@@ -18,6 +19,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function RootLayout() {
   const { setSession, setProfile } = useAuthStore()
+  const setPlaying = useAudioStore((s) => s.setPlaying)
   const navigate = useNavigate()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const showNav = pathname !== '/' && pathname !== '/onboarding'
@@ -40,6 +42,7 @@ function RootLayout() {
             navigate({ to: '/onboarding' })
           } else {
             flushSync(() => setProfile(profile))
+            setPlaying(true)
             navigate({ to: '/home' })
           }
         }
