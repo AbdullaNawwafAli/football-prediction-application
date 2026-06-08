@@ -17,12 +17,17 @@ function LeaderboardPage() {
   const profile = useAuthStore((s) => s.profile)
   const currentUserId = profile?.id ?? ''
 
-  const { data: entries, isPending } = useSuspenseQuery(createLeaderboardQueryOptions())
+  const { data: entries, isPending } = useSuspenseQuery(
+    createLeaderboardQueryOptions(),
+  )
 
   return (
     <div className="page">
       <Header>Leaderboard</Header>
-
+      <div className="flex flex-wrap gap-2 py-1">
+        This table will reflect how much points earned through out the
+        application
+      </div>
       <div className="rounded-lg border bg-card overflow-hidden">
         <LeaderboardTable
           entries={entries}
