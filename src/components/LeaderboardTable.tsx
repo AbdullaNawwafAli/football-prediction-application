@@ -85,22 +85,35 @@ export function LeaderboardTable({
               : (entry.totalPoints ?? 0)
 
         const inner = (
-          <div className="flex items-center gap-3 px-4 py-3 w-full text-left">
-            <RankBadge rank={entry.rank} />
-            <Avatar size="default" className="shrink-0">
-              <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
-              <AvatarFallback>{initials}</AvatarFallback>
-            </Avatar>
-            <UserHoverCard entry={entry}>
-              <div className="flex-1 min-w-0">
-                <p className={cn('text-sm truncate', isCurrentUser && 'font-semibold')}>
-                  {entry.displayName}
-                  {isCurrentUser && (
-                    <span className="ml-1.5 text-xs text-muted-foreground font-normal">(you)</span>
-                  )}
-                </p>
+          <div className="px-4 py-3 w-full text-left">
+            {/* Inline row: rank · avatar · name · score */}
+            <div className="flex items-center gap-3">
+              <RankBadge rank={entry.rank} />
+              <Avatar size="sm" className="shrink-0">
+                <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
+                <AvatarFallback>{initials}</AvatarFallback>
+              </Avatar>
+              <UserHoverCard entry={entry}>
+                <div className="flex-1 min-w-0">
+                  <p className={cn('text-sm truncate', isCurrentUser && 'font-semibold')}>
+                    {entry.displayName}
+                    {isCurrentUser && (
+                      <span className="ml-1.5 text-xs text-muted-foreground font-normal">(you)</span>
+                    )}
+                  </p>
+                </div>
+              </UserHoverCard>
+              <span className="font-mono font-semibold text-sm tabular-nums shrink-0">
+                {primaryScore} pts
+              </span>
+            </div>
+            {/* Chips row: invisible spacers (rank + avatar) align chips with name */}
+            <div className="flex items-start gap-3 mt-1.5">
+              <div className="size-6 shrink-0" />
+              <div className="size-6 shrink-0" />
+              <div className="flex flex-wrap gap-1.5 min-w-0">
                 {mode === 'feature1' && (
-                  <div className="flex gap-1.5 mt-1.5">
+                  <>
                     <div className="flex flex-col items-center gap-0.5 px-2 py-1 rounded bg-muted/60">
                       <span className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground leading-none">Group</span>
                       <span className="text-xs font-bold tabular-nums leading-none">{entry.matchday1 + entry.matchday2 + entry.matchday3}</span>
@@ -109,20 +122,16 @@ export function LeaderboardTable({
                       <span className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground leading-none">Knockout</span>
                       <span className="text-xs font-bold tabular-nums leading-none">{entry.last32 + entry.last16 + entry.qf + entry.sf + entry.final + entry.third}</span>
                     </div>
-                  </div>
+                  </>
                 )}
-                {mode === 'feature2' && (
-                  <div className="flex flex-wrap gap-1.5 mt-1.5">
-                    {stageColumns.map((col) => (
-                      <div key={col.key} className="flex flex-col items-center gap-0.5 min-w-7 px-1.5 py-1 rounded bg-muted/60">
-                        <span className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground leading-none">{col.label}</span>
-                        <span className="text-xs font-bold tabular-nums leading-none">{col.value(entry)}</span>
-                      </div>
-                    ))}
+                {mode === 'feature2' && stageColumns.map((col) => (
+                  <div key={col.key} className="flex flex-col items-center gap-0.5 min-w-7 px-1.5 py-1 rounded bg-muted/60">
+                    <span className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground leading-none">{col.label}</span>
+                    <span className="text-xs font-bold tabular-nums leading-none">{col.value(entry)}</span>
                   </div>
-                )}
+                ))}
                 {mode === 'all' && (
-                  <div className="flex gap-1.5 mt-1.5">
+                  <>
                     <div className="flex flex-col items-center gap-0.5 px-2 py-1 rounded bg-muted/60">
                       <span className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground leading-none">Bracket</span>
                       <span className="text-xs font-bold tabular-nums leading-none">{entry.feature1Points}</span>
@@ -131,13 +140,10 @@ export function LeaderboardTable({
                       <span className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground leading-none">Match</span>
                       <span className="text-xs font-bold tabular-nums leading-none">{entry.feature2Points}</span>
                     </div>
-                  </div>
+                  </>
                 )}
               </div>
-            </UserHoverCard>
-            <span className="font-mono font-semibold text-sm tabular-nums shrink-0">
-              {primaryScore} pts
-            </span>
+            </div>
           </div>
         )
 
