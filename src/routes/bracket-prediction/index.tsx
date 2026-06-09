@@ -47,7 +47,7 @@ function Feature1HomePage() {
           variant="outline"
           size="sm"
           onClick={() => setOwnKnockoutOpen(true)}
-          disabled={!knockoutTeamsAssigned}
+
         >
           My Knockout <ArrowRight className="size-3.5" />
         </Button>

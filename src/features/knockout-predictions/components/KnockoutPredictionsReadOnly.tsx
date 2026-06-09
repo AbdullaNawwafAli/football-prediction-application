@@ -6,12 +6,10 @@ import { KnockoutBracket } from './KnockoutBracket'
 import { KNOCKOUT_STAGES } from '../types'
 import type { KnockoutMatchData } from '../types'
 
-type Props = {
-  userId: string
-}
+type FeederMap = Map<number, { home: number | null; away: number | null }>
 
-function buildFeederMap(matches: KnockoutMatchData[]) {
-  const map = new Map<number, { home: number | null; away: number | null }>()
+function buildFeederMap(matches: KnockoutMatchData[]): FeederMap {
+  const map: FeederMap = new Map()
   for (const m of matches) {
     if (m.nextMatchId == null) continue
     const entry = map.get(m.nextMatchId) ?? { home: null, away: null }
@@ -22,13 +20,31 @@ function buildFeederMap(matches: KnockoutMatchData[]) {
   return map
 }
 
+function buildLoserFeederMap(matches: KnockoutMatchData[]): FeederMap {
+  const map: FeederMap = new Map()
+  for (const m of matches) {
+    if (m.nextMatchLoserId == null) continue
+    const entry = map.get(m.nextMatchLoserId) ?? { home: null, away: null }
+    if (m.nextMatchLoserSlot === 'home') entry.home = m.matchId
+    else if (m.nextMatchLoserSlot === 'away') entry.away = m.matchId
+    map.set(m.nextMatchLoserId, entry)
+  }
+  return map
+}
+
+type Props = {
+  userId: string
+}
+
 export function KnockoutPredictionsReadOnly({ userId }: Props) {
   const { data: matchesResult } = useSuspenseQuery(createKnockoutMatchesQueryOptions())
   const { data: savedData } = useSuspenseQuery(createUserKnockoutPredictionsQueryOptions(userId, 5 * 60 * 1000))
   const { data: isOpen } = useSuspenseQuery(createKnockoutLockStatusQueryOptions())
 
   const { matches, teamById } = matchesResult
+  const matchById = new Map(matches.map((m) => [m.matchId, m]))
   const feederMap = buildFeederMap(matches)
+  const loserFeederMap = buildLoserFeederMap(matches)
 
   if (Object.keys(savedData.picks).length === 0) {
     return (
@@ -52,6 +68,8 @@ export function KnockoutPredictionsReadOnly({ userId }: Props) {
         matchesByStage={matchesByStage}
         teamById={teamById}
         feederMap={feederMap}
+        loserFeederMap={loserFeederMap}
+        matchById={matchById}
         picks={savedData.picks}
         onPick={() => {}}
         disabled={true}

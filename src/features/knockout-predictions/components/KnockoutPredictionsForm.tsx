@@ -10,8 +10,10 @@ import { KnockoutBracket } from './KnockoutBracket'
 import type { KnockoutMatchData, KnockoutPicksMap } from '../types'
 import { KNOCKOUT_STAGES } from '../types'
 
-function buildFeederMap(matches: KnockoutMatchData[]) {
-  const map = new Map<number, { home: number | null; away: number | null }>()
+type FeederMap = Map<number, { home: number | null; away: number | null }>
+
+function buildFeederMap(matches: KnockoutMatchData[]): FeederMap {
+  const map: FeederMap = new Map()
   for (const m of matches) {
     if (m.nextMatchId == null) continue
     const entry = map.get(m.nextMatchId) ?? { home: null, away: null }
@@ -22,10 +24,25 @@ function buildFeederMap(matches: KnockoutMatchData[]) {
   return map
 }
 
+function buildLoserFeederMap(matches: KnockoutMatchData[]): FeederMap {
+  const map: FeederMap = new Map()
+  for (const m of matches) {
+    if (m.nextMatchLoserId == null) continue
+    const entry = map.get(m.nextMatchLoserId) ?? { home: null, away: null }
+    if (m.nextMatchLoserSlot === 'home') entry.home = m.matchId
+    else if (m.nextMatchLoserSlot === 'away') entry.away = m.matchId
+    map.set(m.nextMatchLoserId, entry)
+  }
+  return map
+}
+
 function getDownstreamMatchIds(matchId: number, matchById: Map<number, KnockoutMatchData>): number[] {
   const match = matchById.get(matchId)
-  if (!match?.nextMatchId) return []
-  return [match.nextMatchId, ...getDownstreamMatchIds(match.nextMatchId, matchById)]
+  if (!match) return []
+  const result: number[] = []
+  if (match.nextMatchId) result.push(match.nextMatchId, ...getDownstreamMatchIds(match.nextMatchId, matchById))
+  if (match.nextMatchLoserId) result.push(match.nextMatchLoserId, ...getDownstreamMatchIds(match.nextMatchLoserId, matchById))
+  return result
 }
 
 type Props = {
@@ -46,6 +63,7 @@ export function KnockoutPredictionsForm({ submitRef, onMutationStateChange }: Pr
 
   const matchById = new Map(matches.map((m) => [m.matchId, m]))
   const feederMap = buildFeederMap(matches)
+  const loserFeederMap = buildLoserFeederMap(matches)
 
   const matchesByStage = new Map<string, KnockoutMatchData[]>()
   for (const stage of KNOCKOUT_STAGES) {
@@ -95,6 +113,8 @@ export function KnockoutPredictionsForm({ submitRef, onMutationStateChange }: Pr
         matchesByStage={matchesByStage}
         teamById={teamById}
         feederMap={feederMap}
+        loserFeederMap={loserFeederMap}
+        matchById={matchById}
         picks={picks}
         onPick={handlePick}
         disabled={!isOpen}

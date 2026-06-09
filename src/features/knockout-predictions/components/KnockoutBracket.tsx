@@ -10,50 +10,102 @@ const BRACKET_HEIGHT = 1152
 const MIN_COL_W = 120
 const CONN_W = 24
 
+type FeederMap = Map<number, { home: number | null; away: number | null }>
+
 type Props = {
   matchesByStage: Map<string, KnockoutMatchData[]>
   teamById: Map<number, KnockoutTeam>
-  feederMap: Map<number, { home: number | null; away: number | null }>
+  feederMap: FeederMap
+  loserFeederMap: FeederMap
+  matchById: Map<number, KnockoutMatchData>
   picks: KnockoutPicksMap
   onPick: (matchId: number, teamId: number) => void
   disabled: boolean
   correctness?: KnockoutCorrectnessMap
 }
 
+type ColumnProps = Omit<Props, 'matchesByStage'> & {
+  matches: KnockoutMatchData[]
+  extraMatches?: KnockoutMatchData[]
+  extraLabel?: string
+}
+
 function MatchColumn({
   matches,
+  extraMatches,
+  extraLabel,
   teamById,
   feederMap,
+  loserFeederMap,
+  matchById,
   picks,
   onPick,
   disabled,
   correctness,
-}: Omit<Props, 'matchesByStage'> & { matches: KnockoutMatchData[] }) {
+}: ColumnProps) {
   return (
-    <div className="flex flex-col justify-around flex-1 min-w-0" style={{ height: BRACKET_HEIGHT }}>
-      {matches.map((match) => {
-        const { homeTeam, awayTeam } = resolveTeams(match, feederMap, teamById, picks)
-        return (
-          <BracketMatchCard
-            key={match.matchId}
-            matchId={match.matchId}
-            homeTeam={homeTeam}
-            awayTeam={awayTeam}
-            pickedTeamId={picks[match.matchId]}
-            onPick={onPick}
-            disabled={disabled}
-            isCorrect={correctness?.[match.matchId]}
-          />
-        )
-      })}
+    <div className="flex flex-col flex-1 min-w-0" style={{ height: BRACKET_HEIGHT }}>
+      <div className="flex flex-col justify-around flex-1">
+        {matches.map((match) => {
+          const { homeTeam, awayTeam } = resolveTeams(match, feederMap, loserFeederMap, teamById, picks, matchById)
+          return (
+            <BracketMatchCard
+              key={match.matchId}
+              matchId={match.matchId}
+              homeTeam={homeTeam}
+              awayTeam={awayTeam}
+              pickedTeamId={picks[match.matchId]}
+              onPick={onPick}
+              disabled={disabled}
+              isCorrect={correctness?.[match.matchId]}
+            />
+          )
+        })}
+      </div>
+
+      {extraMatches && extraMatches.length > 0 && (
+        <div className="flex flex-col gap-2 pb-4">
+          {extraLabel && (
+            <span className="text-center text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {extraLabel}
+            </span>
+          )}
+          {extraMatches.map((match) => {
+            const { homeTeam, awayTeam } = resolveTeams(match, feederMap, loserFeederMap, teamById, picks, matchById)
+            return (
+              <BracketMatchCard
+                key={match.matchId}
+                matchId={match.matchId}
+                homeTeam={homeTeam}
+                awayTeam={awayTeam}
+                pickedTeamId={picks[match.matchId]}
+                onPick={onPick}
+                disabled={disabled}
+                isCorrect={correctness?.[match.matchId]}
+              />
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
 
-export function KnockoutBracket({ matchesByStage, teamById, feederMap, picks, onPick, disabled, correctness }: Props) {
-  const stages = KNOCKOUT_STAGES.filter((s) => matchesByStage.has(s))
+export function KnockoutBracket({
+  matchesByStage,
+  teamById,
+  feederMap,
+  loserFeederMap,
+  matchById,
+  picks,
+  onPick,
+  disabled,
+  correctness,
+}: Props) {
+  // All stages in order, used for mobile stepper
+  const allStages = KNOCKOUT_STAGES.filter((s) => matchesByStage.has(s))
 
-  if (stages.length === 0) {
+  if (allStages.length === 0) {
     return (
       <div className="flex items-center justify-center rounded-lg border bg-card py-16 text-sm text-muted-foreground">
         Knockout matches are not available yet.
@@ -61,17 +113,23 @@ export function KnockoutBracket({ matchesByStage, teamById, feederMap, picks, on
     )
   }
 
-  const minTotalW = stages.length * MIN_COL_W + (stages.length - 1) * CONN_W
+  // Desktop: THIRD_PLACE is rendered inside the FINAL column, not as its own column
+  const desktopStages = allStages.filter((s) => s !== 'THIRD_PLACE')
+  const thirdPlaceMatches = matchesByStage.get('THIRD_PLACE') ?? []
+
+  const minTotalW = desktopStages.length * MIN_COL_W + (desktopStages.length - 1) * CONN_W
 
   return (
     <>
       {/* ── Mobile: stage-by-stage stepper ── */}
       <div className="sm:hidden">
         <MobileBracketStepper
-          stages={stages}
+          stages={allStages}
           matchesByStage={matchesByStage}
           teamById={teamById}
           feederMap={feederMap}
+          loserFeederMap={loserFeederMap}
+          matchById={matchById}
           picks={picks}
           onPick={onPick}
           disabled={disabled}
@@ -83,7 +141,7 @@ export function KnockoutBracket({ matchesByStage, teamById, feederMap, picks, on
       <div className="hidden sm:block overflow-x-auto no-scrollbar rounded-lg border bg-card p-4">
         <div className="w-full" style={{ minWidth: minTotalW }}>
           <div className="flex mb-3">
-            {stages.map((stage, i) => (
+            {desktopStages.map((stage, i) => (
               <Fragment key={stage}>
                 {i > 0 && <div className="shrink-0" style={{ width: CONN_W }} />}
                 <div className="flex-1 text-center">
@@ -96,18 +154,22 @@ export function KnockoutBracket({ matchesByStage, teamById, feederMap, picks, on
           </div>
 
           <div className="flex items-stretch">
-            {stages.map((stage, i) => (
+            {desktopStages.map((stage, i) => (
               <Fragment key={stage}>
                 {i > 0 && (
                   <BracketConnector
-                    fromCount={matchesByStage.get(stages[i - 1])!.length}
+                    fromCount={matchesByStage.get(desktopStages[i - 1])!.length}
                     toCount={matchesByStage.get(stage)!.length}
                   />
                 )}
                 <MatchColumn
                   matches={matchesByStage.get(stage)!}
+                  extraMatches={stage === 'FINAL' ? thirdPlaceMatches : undefined}
+                  extraLabel={stage === 'FINAL' && thirdPlaceMatches.length > 0 ? STAGE_LABELS['THIRD_PLACE'] : undefined}
                   teamById={teamById}
                   feederMap={feederMap}
+                  loserFeederMap={loserFeederMap}
+                  matchById={matchById}
                   picks={picks}
                   onPick={onPick}
                   disabled={disabled}

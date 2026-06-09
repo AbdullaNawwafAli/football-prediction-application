@@ -10,7 +10,7 @@ export type KnockoutMatchesResult = {
 export async function getKnockoutMatches(): Promise<KnockoutMatchesResult> {
   const { data: rows, error } = await supabase
     .from('matches')
-    .select('id, stage, home_team_id, away_team_id, next_match_id, next_match_slot')
+    .select('id, stage, home_team_id, away_team_id, next_match_id, next_match_slot, next_match_loser_id, next_match_loser_slot')
     .in('stage', KNOCKOUT_STAGES as unknown as string[])
     .order('utc_date', { ascending: true })
 
@@ -23,6 +23,8 @@ export async function getKnockoutMatches(): Promise<KnockoutMatchesResult> {
     dbAwayTeamId: r.away_team_id,
     nextMatchId: r.next_match_id,
     nextMatchSlot: r.next_match_slot,
+    nextMatchLoserId: r.next_match_loser_id,
+    nextMatchLoserSlot: r.next_match_loser_slot,
   }))
 
   const teamIds = new Set<number>()

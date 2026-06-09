@@ -13,11 +13,15 @@ import { STAGE_LABELS } from '../types'
 import { resolveTeams } from '../utils/resolveTeams'
 import { MobileMatchCard } from './MobileMatchCard'
 
+type FeederMap = Map<number, { home: number | null; away: number | null }>
+
 type Props = {
   stages: string[]
   matchesByStage: Map<string, KnockoutMatchData[]>
   teamById: Map<number, KnockoutTeam>
-  feederMap: Map<number, { home: number | null; away: number | null }>
+  feederMap: FeederMap
+  loserFeederMap: FeederMap
+  matchById: Map<number, KnockoutMatchData>
   picks: KnockoutPicksMap
   onPick: (matchId: number, teamId: number) => void
   disabled: boolean
@@ -29,6 +33,8 @@ export function MobileBracketStepper({
   matchesByStage,
   teamById,
   feederMap,
+  loserFeederMap,
+  matchById,
   picks,
   onPick,
   disabled,
@@ -46,7 +52,7 @@ export function MobileBracketStepper({
   const currentMatches = matchesByStage.get(currentStage) ?? []
 
   const pickableMatches = currentMatches.filter((m) => {
-    const { homeTeam, awayTeam } = resolveTeams(m, feederMap, teamById, picks)
+    const { homeTeam, awayTeam } = resolveTeams(m, feederMap, loserFeederMap, teamById, picks, matchById)
     return homeTeam !== null && awayTeam !== null
   })
 
@@ -130,7 +136,7 @@ export function MobileBracketStepper({
               <CarouselItem key={stage}>
                 <div className="max-h-[60vh] overflow-y-auto no-scrollbar space-y-3 pt-2">
                   {stageMatches.map((match) => {
-                    const { homeTeam, awayTeam } = resolveTeams(match, feederMap, teamById, picks)
+                    const { homeTeam, awayTeam } = resolveTeams(match, feederMap, loserFeederMap, teamById, picks, matchById)
                     return (
                       <MobileMatchCard
                         key={match.matchId}
