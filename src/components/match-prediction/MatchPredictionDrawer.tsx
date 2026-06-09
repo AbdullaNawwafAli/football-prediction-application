@@ -92,7 +92,7 @@ export function MatchPredictionDrawer({ matchId, matches, predictions, onClose }
 
   return (
     <Drawer open={matchId !== null} onOpenChange={(open) => { if (!open) onClose() }}>
-      <DrawerContent>
+      <DrawerContent aria-describedby={undefined}>
         <DrawerHeader className="text-center">
           <DrawerTitle>
             {match ? `${match.homeTeam?.tla ?? match.homeTeam?.name ?? 'TBD'} vs ${match.awayTeam?.tla ?? match.awayTeam?.name ?? 'TBD'}` : 'Match Prediction'}

@@ -39,6 +39,7 @@ export function HelpSheet({ open, onOpenChange }: Props) {
         side="right"
         showCloseButton={false}
         className="!bg-background w-full! max-w-full! overflow-y-auto p-0 flex flex-col"
+        aria-describedby={undefined}
       >
         <SheetTitle className="sr-only">How It Works</SheetTitle>
         <div className="flex items-center gap-2 px-3 py-4 border-b shrink-0">

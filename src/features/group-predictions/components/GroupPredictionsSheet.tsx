@@ -47,6 +47,7 @@ export function GroupPredictionsSheet({ userId, displayName, open, onOpenChange 
         side="right"
         showCloseButton={false}
         className="!w-full !max-w-full p-0 flex flex-col gap-0"
+        aria-describedby={undefined}
       >
         <SheetTitle className="sr-only">Group Predictions</SheetTitle>
 

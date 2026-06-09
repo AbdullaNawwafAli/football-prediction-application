@@ -42,6 +42,7 @@ export function KnockoutPredictionsSheet({ userId, displayName, open, onOpenChan
         side="right"
         showCloseButton={false}
         className="!w-full !max-w-full p-0 flex flex-col gap-0"
+        aria-describedby={undefined}
       >
         <SheetTitle className="sr-only">Knockout Predictions</SheetTitle>
 
