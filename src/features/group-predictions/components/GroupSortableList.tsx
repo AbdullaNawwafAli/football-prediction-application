@@ -22,9 +22,10 @@ interface Props {
   teams: TeamInGroup[]
   onReorder: (groupName: string, newTeams: TeamInGroup[]) => void
   disabled?: boolean
+  showCorrectness?: boolean
 }
 
-export function GroupSortableList({ groupName, teams, onReorder, disabled }: Props) {
+export function GroupSortableList({ groupName, teams, onReorder, disabled, showCorrectness }: Props) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
@@ -56,6 +57,7 @@ export function GroupSortableList({ groupName, teams, onReorder, disabled }: Pro
                 position={index + 1}
                 team={team}
                 disabled={disabled}
+                showCorrectness={showCorrectness}
               />
             ))}
           </div>

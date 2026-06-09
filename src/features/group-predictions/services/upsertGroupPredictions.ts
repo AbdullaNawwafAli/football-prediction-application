@@ -1,9 +1,8 @@
 import { supabase } from '#/lib/supabase/supabase'
-import type { GroupPredictionsMap } from '../types'
 
 export async function upsertGroupPredictions(
   userId: string,
-  predictions: GroupPredictionsMap,
+  predictions: Record<string, number[]>,
 ): Promise<void> {
   for (const [groupName, teamIds] of Object.entries(predictions)) {
     const { data: predRow, error: predError } = await supabase

@@ -1,6 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical } from 'lucide-react'
+import { GripVertical, Check, X } from 'lucide-react'
 import { cn } from '#/lib/shadcn/utils/utils'
 import type { TeamInGroup } from '../types'
 
@@ -9,9 +9,10 @@ interface Props {
   position: number
   team: TeamInGroup
   disabled?: boolean
+  showCorrectness?: boolean
 }
 
-export function SortableTeamItem({ id, position, team, disabled }: Props) {
+export function SortableTeamItem({ id, position, team, disabled, showCorrectness }: Props) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
     disabled,
@@ -44,13 +45,19 @@ export function SortableTeamItem({ id, position, team, disabled }: Props) {
 
       <span className="flex-1 font-medium">{team.tla ?? team.name}</span>
 
-      {!disabled && (
+      {showCorrectness && team.isCorrect !== undefined ? (
+        team.isCorrect ? (
+          <Check className="h-4 w-4 text-green-500 shrink-0" />
+        ) : (
+          <X className="h-4 w-4 text-red-500 shrink-0" />
+        )
+      ) : !disabled ? (
         <GripVertical
           className="h-4 w-4 touch-none text-muted-foreground"
           {...attributes}
           {...listeners}
         />
-      )}
+      ) : null}
     </div>
   )
 }

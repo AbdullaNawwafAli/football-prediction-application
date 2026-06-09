@@ -15,7 +15,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '#/components/shadcn/ui/carousel'
-import type { TeamInGroup, GroupOrder } from '../types'
+import type { TeamInGroup, GroupOrder, GroupPredictionsMap } from '../types'
 
 type Props = {
   submitRef?: React.RefObject<(() => void) | null>
@@ -24,15 +24,20 @@ type Props = {
 
 function buildInitialOrder(
   groups: GroupOrder[],
-  predictionsMap: Record<string, number[]>,
+  predictionsMap: GroupPredictionsMap,
 ): Record<string, TeamInGroup[]> {
   const result: Record<string, TeamInGroup[]> = {}
 
   for (const { groupName, teams } of groups) {
-    const pickedIds = predictionsMap[groupName]
-    if (pickedIds && pickedIds.length === teams.length) {
+    const picks = predictionsMap[groupName]
+    if (picks && picks.length === teams.length) {
       const teamById = new Map(teams.map((t) => [t.teamId, t]))
-      const ordered = pickedIds.map((id) => teamById.get(id)).filter(Boolean) as TeamInGroup[]
+      const ordered = picks
+        .map((p) => {
+          const team = teamById.get(p.teamId)
+          return team ? { ...team, isCorrect: p.isCorrect } : undefined
+        })
+        .filter(Boolean) as TeamInGroup[]
       result[groupName] = ordered.length === teams.length ? ordered : [...teams]
     } else {
       result[groupName] = [...teams]
@@ -103,6 +108,7 @@ export function GroupPredictionsForm({ submitRef, onMutationStateChange }: Props
                     teams={order[groupName] ?? []}
                     onReorder={handleReorder}
                     disabled={!isOpen}
+                    showCorrectness={!isOpen}
                   />
                 </Card>
               </CarouselItem>
@@ -122,6 +128,7 @@ export function GroupPredictionsForm({ submitRef, onMutationStateChange }: Props
             teams={order[groupName] ?? []}
             onReorder={handleReorder}
             disabled={!isOpen}
+            showCorrectness={!isOpen}
           />
         ))}
       </div>

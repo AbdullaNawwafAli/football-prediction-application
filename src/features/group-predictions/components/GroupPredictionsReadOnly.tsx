@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createGroupsQueryOptions } from '../hooks/createGroupsQueryOptions'
 import { createUserPredictionsQueryOptions } from '../hooks/createUserPredictionsQueryOptions'
+import { createLockStatusQueryOptions } from '../hooks/createLockStatusQueryOptions'
 import { GroupSortableList } from './GroupSortableList'
 import { Card } from '#/components/shadcn/ui/card'
 import {
@@ -10,7 +11,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '#/components/shadcn/ui/carousel'
-import type { TeamInGroup, GroupOrder } from '../types'
+import type { TeamInGroup, GroupOrder, GroupPredictionsMap } from '../types'
 
 type Props = {
   userId: string
@@ -18,14 +19,19 @@ type Props = {
 
 function buildOrderedTeams(
   groups: GroupOrder[],
-  predictionsMap: Record<string, number[]>,
+  predictionsMap: GroupPredictionsMap,
 ): Record<string, TeamInGroup[]> {
   const result: Record<string, TeamInGroup[]> = {}
   for (const { groupName, teams } of groups) {
-    const pickedIds = predictionsMap[groupName]
-    if (pickedIds.length === teams.length) {
+    const picks = predictionsMap[groupName]
+    if (picks && picks.length === teams.length) {
       const teamById = new Map(teams.map((t) => [t.teamId, t]))
-      const ordered = pickedIds.map((id) => teamById.get(id)).filter(Boolean) as TeamInGroup[]
+      const ordered = picks
+        .map((p) => {
+          const team = teamById.get(p.teamId)
+          return team ? { ...team, isCorrect: p.isCorrect } : undefined
+        })
+        .filter(Boolean) as TeamInGroup[]
       result[groupName] = ordered.length === teams.length ? ordered : [...teams]
     } else {
       result[groupName] = [...teams]
@@ -37,8 +43,10 @@ function buildOrderedTeams(
 export function GroupPredictionsReadOnly({ userId }: Props) {
   const { data: groups } = useSuspenseQuery(createGroupsQueryOptions())
   const { data: predictionsMap } = useSuspenseQuery(createUserPredictionsQueryOptions(userId, 5 * 60 * 1000))
+  const { data: isOpen } = useSuspenseQuery(createLockStatusQueryOptions())
 
   const orderedTeams = buildOrderedTeams(groups, predictionsMap)
+  const showCorrectness = !isOpen
 
   return (
     <div className="h-full flex flex-col px-4 py-6">
@@ -54,6 +62,7 @@ export function GroupPredictionsReadOnly({ userId }: Props) {
                     teams={orderedTeams[groupName] ?? []}
                     onReorder={() => {}}
                     disabled={true}
+                    showCorrectness={showCorrectness}
                   />
                 </Card>
               </CarouselItem>
@@ -73,6 +82,7 @@ export function GroupPredictionsReadOnly({ userId }: Props) {
             teams={orderedTeams[groupName] ?? []}
             onReorder={() => {}}
             disabled={true}
+            showCorrectness={showCorrectness}
           />
         ))}
       </div>

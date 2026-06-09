@@ -8,6 +8,8 @@ export async function getLeaderboardApi(): Promise<LeaderboardEntry[]> {
 
   if (error) throw error
 
+  console.log(data)
+
   return (data ?? [])
     .map((row) => {
       const s = Array.isArray(row.user_scores)

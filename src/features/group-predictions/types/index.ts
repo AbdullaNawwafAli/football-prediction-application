@@ -3,6 +3,7 @@ export type TeamInGroup = {
   name: string
   tla: string | null
   crestUrl: string | null
+  isCorrect?: boolean
 }
 
 export type GroupOrder = {
@@ -10,4 +11,9 @@ export type GroupOrder = {
   teams: TeamInGroup[]
 }
 
-export type GroupPredictionsMap = Record<string, number[]>
+export type GroupPick = {
+  teamId: number
+  isCorrect: boolean
+}
+
+export type GroupPredictionsMap = Record<string, GroupPick[]>
