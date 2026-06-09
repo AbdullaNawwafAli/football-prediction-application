@@ -10,7 +10,7 @@ import { createUserScorePredictionsQueryOptions } from '#/hooks/createUserScoreP
 import type { MatchWithTeams } from '#/types/matches'
 import { useAuthStore } from '#/stores/auth.store'
 
-export const Route = createFileRoute('/match-prediction/todays-matches')({
+export const Route = createFileRoute('/match-prediction/upcoming-matches')({
   beforeLoad: ({ context }) => {
     if (!context.session) throw redirect({ to: '/' })
     if (!context.profile) throw redirect({ to: '/onboarding' })
