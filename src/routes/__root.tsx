@@ -11,10 +11,11 @@ import { Toaster } from '#/components/shadcn/ui/sonner'
 import getProfileApi from '#/services/getProfile'
 import BottomNav from '#/components/BottomNav'
 import { AudioPlayer } from '#/components/AudioPlayer'
-
+import NotFound from '#/components/NotFound'
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootLayout,
+  notFoundComponent: NotFound,
 })
 
 function RootLayout() {
@@ -54,6 +55,7 @@ function RootLayout() {
         }
 
         if (event === 'SIGNED_OUT') {
+          setPlaying(false)
           setProfile(null)
           navigate({ to: '/' })
         }
