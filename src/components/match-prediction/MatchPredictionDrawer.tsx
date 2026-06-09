@@ -13,7 +13,6 @@ import {
 } from '#/components/shadcn/ui/drawer'
 import { useAuthStore } from '#/stores/auth.store'
 import { upsertScorePrediction } from '#/services/upsertScorePrediction'
-import { createMatchOpenQueryOptions } from '#/hooks/createMatchOpenQueryOptions'
 import type { MatchWithTeams, ScorePrediction } from '#/types/matches'
 
 type Props = {
@@ -72,13 +71,6 @@ export function MatchPredictionDrawer({ matchId, matches, predictions, onClose }
 
     setSaving(true)
     try {
-      const isOpen = await queryClient.fetchQuery(createMatchOpenQueryOptions(match.matchId))
-      if (!isOpen) {
-        toast.error('This match is no longer open for predictions.')
-        onClose()
-        return
-      }
-
       await upsertScorePrediction(profile.id, match.matchId, home, away)
       await queryClient.invalidateQueries({ queryKey: ['score-predictions', profile.id] })
       toast.success('Prediction saved!')
