@@ -5,6 +5,7 @@ import { LeaderboardTable } from '#/components/LeaderboardTable'
 import createLeaderboardQueryOptions from '#/hooks/createLeaderboardQueryOptions'
 import { useAuthStore } from '#/stores/auth.store'
 import { Button } from '#/components/shadcn/ui/button'
+import { supabase } from '#/lib/supabase/supabase'
 
 export const Route = createFileRoute('/leaderboard/')({
   beforeLoad: ({ context }) => {
@@ -27,7 +28,12 @@ function LeaderboardPage() {
       <Header>Leaderboard</Header>
       <div className="flex flex-wrap gap-2">
         <Button asChild size="sm">
-          <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => { void supabase.from('profiles').update({ rick_rolled: true }).eq('id', currentUserId) }}
+          >
             Get More Points
           </a>
         </Button>

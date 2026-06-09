@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   Avatar,
@@ -113,6 +114,36 @@ function CategoryColumn({
   )
 }
 
+type Category = {
+  title: string
+  players: Player[]
+  userRank: number | null | undefined
+}
+
+function MobileCategoryTabs({ categories }: { categories: Category[] }) {
+  const [activeTab, setActiveTab] = useState(categories[0]?.title ?? '')
+  return (
+    <div className="sm:hidden px-3 pb-2">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="w-full">
+          {categories.map((cat) => (
+            <TabsTrigger key={cat.title} value={cat.title} className="flex-1">
+              {cat.title}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {categories.map((cat) => (
+          <TabsContent key={cat.title} value={cat.title}>
+            {activeTab === cat.title && (
+              <CategoryColumn title={cat.title} players={cat.players} userRank={cat.userRank} />
+            )}
+          </TabsContent>
+        ))}
+      </Tabs>
+    </div>
+  )
+}
+
 export function TopLeaderboardCard() {
   const { data: entries, isPending } = useQuery(createLeaderboardQueryOptions())
   const currentUserId = useAuthStore((s) => s.profile?.id)
@@ -149,22 +180,7 @@ export function TopLeaderboardCard() {
       </CardHeader>
       <CardContent className="flex flex-col p-0">
         {/* Mobile: tab per category */}
-        <div className="sm:hidden px-3 pb-2">
-          <Tabs defaultValue="Bracket">
-            <TabsList className="w-full">
-              {categories.map((cat) => (
-                <TabsTrigger key={cat.title} value={cat.title} className="flex-1">
-                  {cat.title}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            {categories.map((cat) => (
-              <TabsContent key={cat.title} value={cat.title}>
-                <CategoryColumn title={cat.title} players={cat.players} userRank={cat.userRank} />
-              </TabsContent>
-            ))}
-          </Tabs>
-        </div>
+        <MobileCategoryTabs categories={categories} />
         {/* Desktop: all three side by side */}
         <div className="hidden sm:grid grid-cols-3 divide-x divide-border h-full">
           {categories.map((cat) => (
