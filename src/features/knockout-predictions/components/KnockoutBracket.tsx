@@ -76,7 +76,7 @@ export function KnockoutBracket({ matchesByStage, teamById, feederMap, picks, on
       </div>
 
       {/* ── Desktop: full bracket ── */}
-      <div className="hidden sm:block overflow-x-auto rounded-lg border bg-card p-4">
+      <div className="hidden sm:block overflow-x-auto no-scrollbar rounded-lg border bg-card p-4">
         <div className="w-full" style={{ minWidth: minTotalW }}>
           <div className="flex mb-3">
             {stages.map((stage, i) => (

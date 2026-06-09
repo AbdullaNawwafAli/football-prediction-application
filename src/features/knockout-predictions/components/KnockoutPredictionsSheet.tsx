@@ -1,5 +1,6 @@
 import { Suspense, useRef, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
+import { KnockoutLockStatusBadge } from './KnockoutLockStatusBadge'
 import { Skeleton } from '#/components/shadcn/ui/skeleton'
 import { Button } from '#/components/shadcn/ui/button'
 import {
@@ -54,12 +55,15 @@ export function KnockoutPredictionsSheet({ userId, displayName, open, onOpenChan
           >
             <ArrowRight className="size-4" />
           </button>
-          <span className="font-semibold text-base">
+          <span className="font-semibold text-base flex-1">
             {isOwnProfile ? 'Knockout Predictions' : `${displayName}'s Predictions`}
           </span>
+          <Suspense fallback={null}>
+            <KnockoutLockStatusBadge />
+          </Suspense>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col">
           <Suspense fallback={<LoadingSkeleton />}>
             {isOwnProfile ? (
               <KnockoutPredictionsForm

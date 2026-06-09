@@ -30,7 +30,7 @@ function TeamRow({
       disabled={disabled || isTbd}
       className={cn(
         'flex items-center gap-2 w-full px-2.5 py-2 text-left transition-colors',
-        picked ? 'bg-primary/15 text-primary' : 'hover:bg-muted/50',
+        picked ? 'bg-muted' : 'hover:bg-muted/50',
         (disabled || isTbd) && 'cursor-default',
       )}
     >

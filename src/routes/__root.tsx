@@ -68,7 +68,7 @@ function RootLayout() {
   return (
     <div className="font-sans h-[100dvh] w-full selection:bg-[rgba(79,184,178,0.24)] flex flex-col ">
 
-      <main className="flex-1 min-h-0 overflow-y-auto w-full">
+      <main className="flex-1 min-h-0 overflow-y-auto no-scrollbar w-full">
         <Outlet />
       </main>
       {showNav && <BottomNav />}

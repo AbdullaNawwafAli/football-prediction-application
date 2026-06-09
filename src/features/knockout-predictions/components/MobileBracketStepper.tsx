@@ -1,6 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '#/components/shadcn/ui/button'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from '#/components/shadcn/ui/carousel'
+import type { CarouselApi } from '#/components/shadcn/ui/carousel'
 import { cn } from '#/lib/shadcn/utils/utils'
 import type { KnockoutMatchData, KnockoutTeam, KnockoutPicksMap } from '../types'
 import { STAGE_LABELS } from '../types'
@@ -26,103 +32,121 @@ export function MobileBracketStepper({
   onPick,
   disabled,
 }: Props) {
+  const [api, setApi] = useState<CarouselApi>()
   const [stageIndex, setStageIndex] = useState(0)
+
+  useEffect(() => {
+    if (!api) return
+    api.on('select', () => setStageIndex(api.selectedScrollSnap()))
+  }, [api])
 
   const currentStage = stages[stageIndex]
   const currentMatches = matchesByStage.get(currentStage) ?? []
 
-  // A match is "pickable" when both teams are known (not TBD)
   const pickableMatches = currentMatches.filter((m) => {
     const { homeTeam, awayTeam } = resolveTeams(m, feederMap, teamById, picks)
     return homeTeam !== null && awayTeam !== null
   })
 
-  const pickedCount = pickableMatches.filter((m) => picks[m.matchId] !== undefined).length
+  const pickedCount = pickableMatches.filter((m) => m.matchId in picks).length
   const allPicked = pickedCount === pickableMatches.length && pickableMatches.length > 0
   const remaining = pickableMatches.length - pickedCount
 
-  const canGoNext = allPicked && stageIndex < stages.length - 1
   const canGoPrev = stageIndex > 0
+  const canGoNext = allPicked && stageIndex < stages.length - 1
 
   return (
     <div className="space-y-4">
-      {/* Stage header + navigation */}
-      <div className="flex items-center justify-between gap-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setStageIndex((i) => i - 1)}
-          disabled={!canGoPrev}
-          className="gap-1"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Back
-        </Button>
+      {/* Sticky nav + progress dots */}
+      <div className="space-y-4">
+        {/* Stage header — centred label with absolutely-positioned buttons */}
+        <div className="relative flex items-center justify-center py-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => api?.scrollPrev()}
+            disabled={!canGoPrev}
+            className="absolute left-0 gap-1"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Back
+          </Button>
 
-        <div className="text-center">
-          <p className="text-sm font-semibold">{STAGE_LABELS[currentStage] ?? currentStage}</p>
-          <p className="text-xs text-muted-foreground">
-            {stageIndex + 1} of {stages.length}
-          </p>
+          <div className="text-center px-20">
+            <p className="text-sm font-semibold">{STAGE_LABELS[currentStage] ?? currentStage}</p>
+            <p className="text-xs text-muted-foreground">
+              {stageIndex + 1} of {stages.length}
+            </p>
+          </div>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => api?.scrollNext()}
+            disabled={!canGoNext}
+            className="absolute right-0 gap-1"
+          >
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setStageIndex((i) => i + 1)}
-          disabled={!canGoNext}
-          className="gap-1"
-        >
-          Next
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+        {/* Progress dots */}
+        <div className="flex justify-center gap-1.5">
+          {stages.map((s, i) => {
+            const stageMatches = matchesByStage.get(s) ?? []
+            const stagePicked = stageMatches.filter((m) => m.matchId in picks).length
+            const stageComplete = stagePicked === stageMatches.length && stageMatches.length > 0
+            return (
+              <button
+                key={s}
+                type="button"
+                onClick={() => {
+                  if (i <= stageIndex || allPicked) api?.scrollTo(i)
+                }}
+                className={cn(
+                  'h-2 rounded-full transition-all',
+                  i === stageIndex
+                    ? 'w-5 bg-primary'
+                    : stageComplete
+                      ? 'w-2 bg-primary/50'
+                      : 'w-2 bg-muted',
+                )}
+                aria-label={STAGE_LABELS[s] ?? s}
+              />
+            )
+          })}
+        </div>
       </div>
 
-      {/* Progress dots */}
-      <div className="flex justify-center gap-1.5">
-        {stages.map((s, i) => {
-          const stageMatches = matchesByStage.get(s) ?? []
-          const stagePicked = stageMatches.filter((m) => picks[m.matchId] !== undefined).length
-          const stageComplete = stagePicked === stageMatches.length && stageMatches.length > 0
-          return (
-            <button
-              key={s}
-              type="button"
-              onClick={() => {
-                // Allow navigating back freely; forward only if current stage is complete
-                if (i <= stageIndex || allPicked) setStageIndex(i)
-              }}
-              className={cn(
-                'h-2 rounded-full transition-all',
-                i === stageIndex
-                  ? 'w-5 bg-primary'
-                  : stageComplete
-                    ? 'w-2 bg-primary/50'
-                    : 'w-2 bg-muted',
-              )}
-              aria-label={STAGE_LABELS[s] ?? s}
-            />
-          )
-        })}
-      </div>
-
-      {/* Match cards */}
-      <div className="space-y-3">
-        {currentMatches.map((match) => {
-          const { homeTeam, awayTeam } = resolveTeams(match, feederMap, teamById, picks)
-          return (
-            <MobileMatchCard
-              key={match.matchId}
-              matchId={match.matchId}
-              homeTeam={homeTeam}
-              awayTeam={awayTeam}
-              pickedTeamId={picks[match.matchId]}
-              onPick={onPick}
-              disabled={disabled}
-            />
-          )
-        })}
-      </div>
+      {/* Carousel */}
+      <Carousel setApi={setApi}>
+        <CarouselContent>
+          {stages.map((stage) => {
+            const stageMatches = matchesByStage.get(stage) ?? []
+            return (
+              <CarouselItem key={stage}>
+                <div className="max-h-[60vh] overflow-y-auto no-scrollbar space-y-3 pt-2">
+                  {stageMatches.map((match) => {
+                    const { homeTeam, awayTeam } = resolveTeams(match, feederMap, teamById, picks)
+                    return (
+                      <MobileMatchCard
+                        key={match.matchId}
+                        matchId={match.matchId}
+                        homeTeam={homeTeam}
+                        awayTeam={awayTeam}
+                        pickedTeamId={picks[match.matchId]}
+                        onPick={onPick}
+                        disabled={disabled}
+                      />
+                    )
+                  })}
+                </div>
+              </CarouselItem>
+            )
+          })}
+        </CarouselContent>
+      </Carousel>
 
       {/* Status */}
       {pickableMatches.length > 0 && !disabled && (

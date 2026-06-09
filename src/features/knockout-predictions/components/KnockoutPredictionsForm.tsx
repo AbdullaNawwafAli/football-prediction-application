@@ -2,11 +2,9 @@ import { useEffect, useState } from 'react'
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useAuthStore } from '#/stores/auth.store'
-import { LockCountdownBanner } from '#/components/LockCountdownBanner'
 import { createKnockoutMatchesQueryOptions } from '../hooks/createKnockoutMatchesQueryOptions'
 import { createUserKnockoutPredictionsQueryOptions } from '../hooks/createUserKnockoutPredictionsQueryOptions'
 import { createKnockoutLockStatusQueryOptions } from '../hooks/createKnockoutLockStatusQueryOptions'
-import { createFirstKnockoutMatchQueryOptions } from '../hooks/createFirstKnockoutMatchQueryOptions'
 import { upsertKnockoutPredictions } from '../services/upsertKnockoutPredictions'
 import { KnockoutBracket } from './KnockoutBracket'
 import type { KnockoutMatchData, KnockoutPicksMap } from '../types'
@@ -42,7 +40,6 @@ export function KnockoutPredictionsForm({ submitRef, onMutationStateChange }: Pr
   const { data: matchesResult } = useSuspenseQuery(createKnockoutMatchesQueryOptions())
   const { data: savedPicks } = useSuspenseQuery(createUserKnockoutPredictionsQueryOptions(userId))
   const { data: isOpen } = useSuspenseQuery(createKnockoutLockStatusQueryOptions())
-  const { data: firstMatchTime } = useSuspenseQuery(createFirstKnockoutMatchQueryOptions())
 
   const { matches, teamById } = matchesResult
 
@@ -89,9 +86,7 @@ export function KnockoutPredictionsForm({ submitRef, onMutationStateChange }: Pr
   }, [mutation.isPending, canSubmit])
 
   return (
-    <div className="px-3 sm:px-4 py-6 sm:py-10 space-y-6">
-      <LockCountdownBanner isOpen={isOpen} firstMatchTime={firstMatchTime} />
-
+    <div className="px-3 sm:px-4 py-6 sm:py-10">
       <KnockoutBracket
         matchesByStage={matchesByStage}
         teamById={teamById}

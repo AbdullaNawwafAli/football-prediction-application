@@ -167,3 +167,10 @@ body {
     @apply w-full px-3 sm:px-4 py-3 space-y-6;
   }
 }
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

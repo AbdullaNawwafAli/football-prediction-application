@@ -30,7 +30,7 @@ function TeamRow({
       disabled={disabled || isTbd}
       className={cn(
         'flex items-center gap-3 w-full px-4 py-3 text-left transition-colors',
-        picked ? 'bg-primary/15 text-primary' : 'hover:bg-muted/50',
+        picked ? 'bg-muted' : 'hover:bg-muted/50',
         (disabled || isTbd) && 'cursor-default',
       )}
     >
@@ -54,7 +54,7 @@ function TeamRow({
             {team.name}
           </span>
           {picked && (
-            <span className="text-xs font-medium text-primary">✓ Winner</span>
+            <span className="text-xs font-medium text-muted-foreground">✓ Winner</span>
           )}
         </>
       )}

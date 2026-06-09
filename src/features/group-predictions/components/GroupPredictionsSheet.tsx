@@ -68,7 +68,7 @@ export function GroupPredictionsSheet({ userId, displayName, open, onOpenChange 
           </Suspense>
         </div>
 
-        <div className="flex-1 overflow-y-auto flex flex-col">
+        <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col">
           <Suspense fallback={<LoadingSkeleton />}>
             {isOwnProfile ? (
               <GroupPredictionsForm
