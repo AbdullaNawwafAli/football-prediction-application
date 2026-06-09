@@ -86,10 +86,10 @@ export function LeaderboardTable({
 
         const inner = (
           <div className="px-4 py-3 w-full text-left">
-            {/* Inline row: rank · avatar · name · score */}
+            {/* Inline row: rank · avatar · name */}
             <div className="flex items-center gap-3">
               <RankBadge rank={entry.rank} />
-              <Avatar size="sm" className="shrink-0">
+              <Avatar size="lg" className="shrink-0">
                 <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
@@ -103,14 +103,11 @@ export function LeaderboardTable({
                   </p>
                 </div>
               </UserHoverCard>
-              <span className="font-mono font-semibold text-sm tabular-nums shrink-0">
-                {primaryScore} pts
-              </span>
             </div>
             {/* Chips row: invisible spacers (rank + avatar) align chips with name */}
             <div className="flex items-start gap-3 mt-1.5">
               <div className="size-6 shrink-0" />
-              <div className="size-6 shrink-0" />
+              <div className="size-10 shrink-0" />
               <div className="flex flex-wrap gap-1.5 min-w-0">
                 {mode === 'feature1' && (
                   <>
@@ -144,6 +141,9 @@ export function LeaderboardTable({
                 )}
               </div>
             </div>
+            <p className="text-center font-mono font-semibold text-sm mt-2">
+              {primaryScore} pts
+            </p>
           </div>
         )
 
