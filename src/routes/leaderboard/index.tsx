@@ -4,6 +4,7 @@ import { Header } from '#/components/Header'
 import { LeaderboardTable } from '#/components/LeaderboardTable'
 import createLeaderboardQueryOptions from '#/hooks/createLeaderboardQueryOptions'
 import { useAuthStore } from '#/stores/auth.store'
+import { Button } from '#/components/shadcn/ui/button'
 
 export const Route = createFileRoute('/leaderboard/')({
   beforeLoad: ({ context }) => {
@@ -24,9 +25,15 @@ function LeaderboardPage() {
   return (
     <div className="page">
       <Header>Leaderboard</Header>
-      <div className="flex flex-wrap gap-2 py-1">
-        This table will reflect how much points earned through out the
-        application
+      <div className="flex flex-wrap gap-2">
+        <Button asChild size="sm">
+          <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer">
+            Get More Points
+          </a>
+        </Button>
+        <Button variant="outline" size="sm" disabled>
+          Actually Get More Points
+        </Button>
       </div>
       <div className="rounded-lg border bg-card overflow-hidden">
         <LeaderboardTable
