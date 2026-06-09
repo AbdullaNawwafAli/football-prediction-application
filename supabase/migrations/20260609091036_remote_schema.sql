@@ -4,6 +4,9 @@ drop policy "Users can select own group predictions" on "public"."group_stage_pr
 
 alter table "public"."matches" add column "matchday" integer;
 
+-- Drop total_points first since it depends on feature2_points
+alter table "public"."user_scores" drop column "total_points";
+
 alter table "public"."user_scores" drop column "feature2_points";
 
 alter table "public"."user_scores" add column "final" integer not null default 0;
@@ -24,35 +27,33 @@ alter table "public"."user_scores" add column "sf" integer not null default 0;
 
 alter table "public"."user_scores" add column "third" integer not null default 0;
 
-alter table "public"."user_scores" add column "feature2_points" integer generated always as (((((((((matchday1 + matchday2) + matchday3) + last_32) + last_16) + qf) + sf) + final) + third)) stored;
+alter table "public"."user_scores" add column "feature2_points" integer generated always as (
+  matchday1 + matchday2 + matchday3 + last_32 + last_16 + qf + sf + final + third
+) stored;
 
-alter table "public"."user_scores" alter column "total_points" set default ((((((((((group_stage_points + knockout_points) + matchday1) + matchday2) + matchday3) + last_32) + last_16) + qf) + sf) + final) + third);
+-- Recreate total_points as a generated column using the new full expression
+alter table "public"."user_scores" add column "total_points" integer generated always as (
+  group_stage_points + knockout_points + matchday1 + matchday2 + matchday3 + last_32 + last_16 + qf + sf + final + third
+) stored;
 
 
-  create policy "Authenticated users can read all prediction picks"
+create policy "Authenticated users can read all prediction picks"
   on "public"."group_stage_prediction_picks"
   as permissive
   for select
   to authenticated
-using (true);
+  using (true);
 
-
-
-  create policy "Authenticated users can read all group predictions"
+create policy "Authenticated users can read all group predictions"
   on "public"."group_stage_predictions"
   as permissive
   for select
   to authenticated
-using (true);
+  using (true);
 
-
-
-  create policy "read user_scores"
+create policy "read user_scores"
   on "public"."user_scores"
   as permissive
   for select
   to authenticated
-using (true);
-
-
-
+  using (true);
