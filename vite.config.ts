@@ -17,10 +17,10 @@ export default defineConfig({
     viteReact(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'robots.txt', 'logo192.png', 'logo512.png'],
+      includeAssets: ['worldcup.png', 'robots.txt', 'logo192.png', 'logo512.png'],
       manifest: {
-        name: 'Football Predictions',
-        short_name: 'Predictions',
+        name: 'Prediction',
+        short_name: 'Prediction',
         description:
           'Predict match scores, group standings, and knockouts with your team.',
         theme_color: '#328f97',
@@ -30,31 +30,21 @@ export default defineConfig({
         scope: '/',
         icons: [
           {
-            src: 'favicon.svg',
+            src: 'worldcup.png',
             sizes: 'any',
-            type: 'image/svg+xml',
+            type: 'image/png',
             purpose: 'any',
           },
           {
-            src: 'favicon.svg',
+            src: 'worldcup.png',
             sizes: 'any',
-            type: 'image/svg+xml',
+            type: 'image/png',
             purpose: 'maskable',
-          },
-          {
-            src: 'logo192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: 'logo512.png',
-            sizes: '512x512',
-            type: 'image/png',
           },
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,svg,png,woff2}'],
         navigateFallback: '/index.html',
       },
     }),
