@@ -15,6 +15,8 @@ export type MatchWithTeams = {
   awayTeam: MatchTeam | null
   fullTimeHome: number | null
   fullTimeAway: number | null
+  halfTimeHome: number | null
+  halfTimeAway: number | null
 }
 
 export type ScorePrediction = {

@@ -12,6 +12,8 @@ export async function getMatchesWithTeams(): Promise<MatchWithTeams[]> {
       group_name,
       full_time_home,
       full_time_away,
+      half_time_home,
+      half_time_away,
       home_team:teams!matches_home_team_id_fkey(id, name, tla, crest_url),
       away_team:teams!matches_away_team_id_fkey(id, name, tla, crest_url)
     `)
@@ -27,6 +29,8 @@ export async function getMatchesWithTeams(): Promise<MatchWithTeams[]> {
     groupName: row.group_name,
     fullTimeHome: row.full_time_home,
     fullTimeAway: row.full_time_away,
+    halfTimeHome: row.half_time_home,
+    halfTimeAway: row.half_time_away,
     homeTeam: row.home_team
       ? { id: row.home_team.id, name: row.home_team.name, tla: row.home_team.tla, crestUrl: row.home_team.crest_url }
       : null,
