@@ -6,4 +6,13 @@ export type LeaderboardEntry = {
   feature1Points: number
   feature2Points: number
   totalPoints: number | null
+  matchday1: number
+  matchday2: number
+  matchday3: number
+  last32: number
+  last16: number
+  qf: number
+  sf: number
+  final: number
+  third: number
 }
