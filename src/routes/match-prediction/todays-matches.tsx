@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Header } from '#/components/Header'
+import { DailyLeaderboard } from '#/components/match-prediction/DailyLeaderboard'
 import { MatchList } from '#/components/match-prediction/MatchList'
 import { MatchPredictionDrawer } from '#/components/match-prediction/MatchPredictionDrawer'
 import { createMatchesQueryOptions } from '#/hooks/createMatchesQueryOptions'
@@ -43,6 +44,8 @@ function TodaysMatchesPage() {
   return (
     <div className="page">
       <Header>Today's Matches</Header>
+
+      <DailyLeaderboard />
 
       {todaysMatches.length === 0 ? (
         <p className="text-sm text-center text-muted-foreground py-8">

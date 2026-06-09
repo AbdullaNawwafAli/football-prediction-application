@@ -15,6 +15,7 @@ import {
 import { Skeleton } from '#/components/shadcn/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/shadcn/ui/tabs'
 import createLeaderboardQueryOptions from '#/hooks/createLeaderboardQueryOptions'
+import { useAuthStore } from '#/stores/auth.store'
 import type { LeaderboardEntry } from '#/types/leaderboard'
 
 type Player = {
@@ -46,7 +47,26 @@ function toPlayers(
     }))
 }
 
-function CategoryColumn({ title, players }: { title: string; players: Player[] }) {
+function getUserRank(
+  entries: LeaderboardEntry[],
+  key: 'feature1Points' | 'feature2Points' | 'totalPoints',
+  userId: string,
+): number | null {
+  const idx = [...entries]
+    .sort((a, b) => (b[key] ?? 0) - (a[key] ?? 0))
+    .findIndex((e) => e.userId === userId)
+  return idx === -1 ? null : idx + 1
+}
+
+function CategoryColumn({
+  title,
+  players,
+  userRank,
+}: {
+  title: string
+  players: Player[]
+  userRank?: number | null
+}) {
   return (
     <div className="flex flex-col gap-1 px-2 py-3 min-w-0">
       
@@ -84,21 +104,39 @@ function CategoryColumn({ title, players }: { title: string; players: Player[] }
         <CarouselPrevious className="left-0" />
         <CarouselNext className="right-0" />
       </Carousel>
+      {userRank != null && userRank > 3 && (
+        <p className="text-xs text-muted-foreground text-center pb-1">
+          You're in position {userRank}
+        </p>
+      )}
     </div>
   )
 }
 
 export function TopLeaderboardCard() {
   const { data: entries, isPending } = useQuery(createLeaderboardQueryOptions())
+  const currentUserId = useAuthStore((s) => s.profile?.id)
 
   if (isPending || !entries) {
     return <Skeleton className="w-full flex-1 rounded-xl" style={{ minHeight: '180px' }} />
   }
 
   const categories = [
-    { title: 'Bracket', players: toPlayers(entries, 'feature1Points') },
-    { title: 'Match', players: toPlayers(entries, 'feature2Points') },
-    { title: 'Overall', players: toPlayers(entries, 'totalPoints') },
+    {
+      title: 'Bracket',
+      players: toPlayers(entries, 'feature1Points'),
+      userRank: currentUserId ? getUserRank(entries, 'feature1Points', currentUserId) : null,
+    },
+    {
+      title: 'Match',
+      players: toPlayers(entries, 'feature2Points'),
+      userRank: currentUserId ? getUserRank(entries, 'feature2Points', currentUserId) : null,
+    },
+    {
+      title: 'Overall',
+      players: toPlayers(entries, 'totalPoints'),
+      userRank: currentUserId ? getUserRank(entries, 'totalPoints', currentUserId) : null,
+    },
   ]
 
   return (
@@ -122,7 +160,7 @@ export function TopLeaderboardCard() {
             </TabsList>
             {categories.map((cat) => (
               <TabsContent key={cat.title} value={cat.title}>
-                <CategoryColumn title={cat.title} players={cat.players} />
+                <CategoryColumn title={cat.title} players={cat.players} userRank={cat.userRank} />
               </TabsContent>
             ))}
           </Tabs>
@@ -130,7 +168,7 @@ export function TopLeaderboardCard() {
         {/* Desktop: all three side by side */}
         <div className="hidden sm:grid grid-cols-3 divide-x divide-border h-full">
           {categories.map((cat) => (
-            <CategoryColumn key={cat.title} title={cat.title} players={cat.players} />
+            <CategoryColumn key={cat.title} title={cat.title} players={cat.players} userRank={cat.userRank} />
           ))}
         </div>
       </CardContent>
