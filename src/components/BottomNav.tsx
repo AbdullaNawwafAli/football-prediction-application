@@ -16,17 +16,17 @@ export default function BottomNav() {
 
   return (
     <Tabs value={activeTab} className="shrink-0 overflow-hidden border-b border-border">
-      <TabsList className="grid !h-12 sm:!h-14 w-full grid-cols-4 rounded-none bg-transparent p-0">
+      <TabsList className="grid !h-15 sm:!h-16 w-full grid-cols-4 rounded-none bg-transparent p-0">
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
           <TabsTrigger
             key={to}
             value={to}
             asChild
-            className="flex h-full flex-col items-center justify-center gap-1 rounded-none text-muted-foreground data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none sm:flex-row sm:gap-2"
+            className="flex h-full flex-col items-center justify-start pt-3 gap-1 rounded-none text-muted-foreground data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none sm:pt-0 sm:justify-center sm:flex-row sm:gap-2"
           >
             <Link to={to}>
-              <Icon className="size-6 sm:size-5" />
-              <span className="hidden text-xs sm:inline">{label}</span>
+              <Icon className="size-5 sm:size-5" />
+              <span className="hidden text-xs md:inline">{label}</span>
             </Link>
           </TabsTrigger>
         ))}
