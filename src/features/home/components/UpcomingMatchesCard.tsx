@@ -14,12 +14,17 @@ import { createUserScorePredictionsQueryOptions } from '#/hooks/createUserScoreP
 import type { MatchWithTeams } from '#/types/matches'
 import { useAuthStore } from '#/stores/auth.store'
 
+function isSameDay(a: Date, b: Date) {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
+}
+
 function getUpcomingMatches(matches: MatchWithTeams[]) {
-  const now = new Date()
-  const cutoff = new Date(now.getTime() + 24 * 60 * 60 * 1000)
+  const today = new Date()
+  const tomorrow = new Date(today)
+  tomorrow.setDate(today.getDate() + 1)
   return matches.filter((m) => {
     const d = new Date(m.utcDate)
-    return d > now && d <= cutoff
+    return isSameDay(d, today) || isSameDay(d, tomorrow)
   })
 }
 
@@ -52,7 +57,7 @@ export function UpcomingMatchesCard() {
             </div>
           ) : upcomingMatches.length === 0 ? (
             <p className="text-sm text-center text-muted-foreground py-4">
-              No matches in the next 24 hours.
+              No upcoming matches today or tomorrow.
             </p>
           ) : (
             <MatchList

@@ -22,22 +22,24 @@ function groupMatchesByDate(matches: MatchWithTeams[]): [string, MatchWithTeams[
   return Array.from(groups.entries())
 }
 
-function isTodayDate(utcDate: string): boolean {
-  const today = new Date()
-  const matchDate = new Date(utcDate)
-  return (
-    matchDate.getFullYear() === today.getFullYear() &&
-    matchDate.getMonth() === today.getMonth() &&
-    matchDate.getDate() === today.getDate()
-  )
+function isSameDayAs(utcDate: string, ref: Date): boolean {
+  const d = new Date(utcDate)
+  return d.getFullYear() === ref.getFullYear() && d.getMonth() === ref.getMonth() && d.getDate() === ref.getDate()
 }
 
 export function MatchList({ matches, predictions, onMatchSelect }: Props) {
   const predictionMap = new Map(predictions.map((p) => [p.matchId, p]))
   const grouped = groupMatchesByDate(matches)
 
+  const today = new Date()
+  const tomorrow = new Date(today)
+  tomorrow.setDate(today.getDate() + 1)
+
   const todayGroupIndex = grouped.findIndex(([, groupMatches]) =>
-    groupMatches.some((m) => isTodayDate(m.utcDate)),
+    groupMatches.some((m) => isSameDayAs(m.utcDate, today)),
+  )
+  const tomorrowGroupIndex = grouped.findIndex(([, groupMatches]) =>
+    groupMatches.some((m) => isSameDayAs(m.utcDate, tomorrow)),
   )
 
   useEffect(() => {
@@ -54,10 +56,11 @@ export function MatchList({ matches, predictions, onMatchSelect }: Props) {
     <div className="rounded-lg border bg-card overflow-hidden divide-y divide-border">
       {grouped.map(([dateLabel, groupMatches], idx) => {
         const isToday = idx === todayGroupIndex
+        const isTomorrow = idx === tomorrowGroupIndex
         return (
           <div key={dateLabel} id={isToday ? 'today' : undefined}>
-            <div className={`px-4 py-2 text-xs font-semibold uppercase tracking-wide ${isToday ? 'bg-primary/10 text-primary' : 'bg-muted/40 text-muted-foreground'}`}>
-              {isToday ? `Today · ${dateLabel}` : dateLabel}
+            <div className={`px-4 py-2 text-xs font-semibold uppercase tracking-wide ${isToday ? 'bg-primary/10 text-primary' : isTomorrow ? 'bg-muted/60 text-foreground' : 'bg-muted/40 text-muted-foreground'}`}>
+              {isToday ? `Today · ${dateLabel}` : isTomorrow ? `Tomorrow · ${dateLabel}` : dateLabel}
             </div>
             <div className="divide-y divide-border">
               {groupMatches.map((match) => (

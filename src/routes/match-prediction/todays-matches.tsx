@@ -18,15 +18,17 @@ export const Route = createFileRoute('/match-prediction/todays-matches')({
   component: TodaysMatchesPage,
 })
 
-function getTodaysMatches(matches: MatchWithTeams[]) {
+function isSameDay(a: Date, b: Date) {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
+}
+
+function getUpcomingMatches(matches: MatchWithTeams[]) {
   const today = new Date()
+  const tomorrow = new Date(today)
+  tomorrow.setDate(today.getDate() + 1)
   return matches.filter((m) => {
     const d = new Date(m.utcDate)
-    return (
-      d.getFullYear() === today.getFullYear() &&
-      d.getMonth() === today.getMonth() &&
-      d.getDate() === today.getDate()
-    )
+    return isSameDay(d, today) || isSameDay(d, tomorrow)
   })
 }
 
@@ -39,21 +41,21 @@ function TodaysMatchesPage() {
     createUserScorePredictionsQueryOptions(profile?.id ?? ''),
   )
 
-  const todaysMatches = getTodaysMatches(matches)
+  const upcomingMatches = getUpcomingMatches(matches)
 
   return (
     <div className="page">
-      <Header>Today's Matches</Header>
+      <Header>Upcoming Matches</Header>
 
       <DailyLeaderboard />
 
-      {todaysMatches.length === 0 ? (
+      {upcomingMatches.length === 0 ? (
         <p className="text-sm text-center text-muted-foreground py-8">
-          No matches scheduled for today.
+          No upcoming matches.
         </p>
       ) : (
         <MatchList
-          matches={todaysMatches}
+          matches={upcomingMatches}
           predictions={predictions}
           onMatchSelect={setSelectedMatchId}
         />
