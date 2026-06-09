@@ -248,6 +248,8 @@ export type Database = {
           id: number
           matchday: number | null
           next_match_id: number | null
+          next_match_loser_id: number | null
+          next_match_loser_slot: string | null
           next_match_slot: string | null
           stage: string
           status: Database["public"]["Enums"]["match_status"] | null
@@ -268,6 +270,8 @@ export type Database = {
           id: number
           matchday?: number | null
           next_match_id?: number | null
+          next_match_loser_id?: number | null
+          next_match_loser_slot?: string | null
           next_match_slot?: string | null
           stage: string
           status?: Database["public"]["Enums"]["match_status"] | null
@@ -288,6 +292,8 @@ export type Database = {
           id?: number
           matchday?: number | null
           next_match_id?: number | null
+          next_match_loser_id?: number | null
+          next_match_loser_slot?: string | null
           next_match_slot?: string | null
           stage?: string
           status?: Database["public"]["Enums"]["match_status"] | null
@@ -312,6 +318,13 @@ export type Database = {
           {
             foreignKeyName: "matches_next_match_id_fkey"
             columns: ["next_match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_next_match_loser_id_fkey"
+            columns: ["next_match_loser_id"]
             isOneToOne: false
             referencedRelation: "matches"
             referencedColumns: ["id"]
