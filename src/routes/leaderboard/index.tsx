@@ -39,7 +39,7 @@ function LeaderboardPage() {
         </Button>
         <Button variant="outline" size="sm">
           <a
-            href="https://youtu.be/tcn0NSq8ApA?si=NCt6U3yfX8uFUJHC"
+            href="https://youtu.be/4rG1sP1rhow?si=3Zr_GVy057p1UURm"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => { void supabase.from('profiles').update({ rick_rolled: true }).eq('id', currentUserId) }}
