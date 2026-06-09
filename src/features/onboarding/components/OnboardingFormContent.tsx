@@ -30,7 +30,7 @@ function OnboardingFormContent() {
       flushSync(() => setProfile(profile))
       setPlaying(true)
       form.setFieldValue('profile_picture', undefined)
-      navigate({ to: '/dashboard', replace: true })
+      navigate({ to: '/home', replace: true })
     },
     onError: (error) => {
       toast.error(error.message)
