@@ -246,6 +246,7 @@ export type Database = {
           home_booking_score: number | null
           home_team_id: number | null
           id: number
+          matchday: number | null
           next_match_id: number | null
           next_match_slot: string | null
           stage: string
@@ -265,6 +266,7 @@ export type Database = {
           home_booking_score?: number | null
           home_team_id?: number | null
           id: number
+          matchday?: number | null
           next_match_id?: number | null
           next_match_slot?: string | null
           stage: string
@@ -284,6 +286,7 @@ export type Database = {
           home_booking_score?: number | null
           home_team_id?: number | null
           id?: number
+          matchday?: number | null
           next_match_id?: number | null
           next_match_slot?: string | null
           stage?: string
@@ -433,27 +436,54 @@ export type Database = {
       user_scores: {
         Row: {
           feature1_points: number | null
-          feature2_points: number
+          feature2_points: number | null
+          final: number
           group_stage_points: number
           knockout_points: number
+          last_16: number
+          last_32: number
+          matchday1: number
+          matchday2: number
+          matchday3: number
+          qf: number
+          sf: number
+          third: number
           total_points: number | null
           updated_at: string
           user_id: string
         }
         Insert: {
           feature1_points?: number | null
-          feature2_points?: number
+          feature2_points?: number | null
+          final?: number
           group_stage_points?: number
           knockout_points?: number
+          last_16?: number
+          last_32?: number
+          matchday1?: number
+          matchday2?: number
+          matchday3?: number
+          qf?: number
+          sf?: number
+          third?: number
           total_points?: number | null
           updated_at?: string
           user_id: string
         }
         Update: {
           feature1_points?: number | null
-          feature2_points?: number
+          feature2_points?: number | null
+          final?: number
           group_stage_points?: number
           knockout_points?: number
+          last_16?: number
+          last_32?: number
+          matchday1?: number
+          matchday2?: number
+          matchday3?: number
+          qf?: number
+          sf?: number
+          third?: number
           total_points?: number | null
           updated_at?: string
           user_id?: string
