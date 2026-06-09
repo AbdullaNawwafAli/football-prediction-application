@@ -14,6 +14,7 @@ type Props = {
   isPending: boolean
   mode: 'feature1' | 'feature2' | 'all'
   onUserClick?: (userId: string, displayName: string) => void
+  hideAvatar?: boolean
 }
 
 const stageColumns = [
@@ -59,6 +60,7 @@ export function LeaderboardTable({
   isPending,
   mode,
   onUserClick,
+  hideAvatar,
 }: Props) {
   if (isPending) {
     return (
@@ -93,10 +95,12 @@ export function LeaderboardTable({
             <div className="size-10 sm:size-14 shrink-0 flex items-center justify-center">
               <RankBadge rank={entry.rank} />
             </div>
-            <Avatar size="lg" className="size-10! sm:size-14! shrink-0">
-              <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
-              <AvatarFallback>{initials}</AvatarFallback>
-            </Avatar>
+            {!hideAvatar && (
+              <Avatar size="lg" className="size-10! sm:size-14! shrink-0">
+                <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
+                <AvatarFallback>{initials}</AvatarFallback>
+              </Avatar>
+            )}
             {/* Name + chips */}
             <div className="flex-1 min-w-0">
               <UserHoverCard entry={entry}>
