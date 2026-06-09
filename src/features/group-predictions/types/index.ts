@@ -1,6 +1,7 @@
 export type TeamInGroup = {
   teamId: number
   name: string
+  shortName: string | null
   tla: string | null
   crestUrl: string | null
   isCorrect?: boolean

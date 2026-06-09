@@ -14,7 +14,7 @@ export async function getGroupsWithTeams(): Promise<GroupOrder[]> {
 
   const { data: teams, error: teamsError } = await supabase
     .from('teams')
-    .select('id, name, tla, crest_url')
+    .select('id, name, short_name, tla, crest_url')
     .in('id', teamIds)
 
   if (teamsError) throw teamsError
@@ -29,6 +29,7 @@ export async function getGroupsWithTeams(): Promise<GroupOrder[]> {
     grouped.get(row.group_name)!.push({
       teamId: team.id,
       name: team.name,
+      shortName: team.short_name,
       tla: team.tla,
       crestUrl: team.crest_url,
     })

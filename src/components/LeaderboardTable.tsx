@@ -64,14 +64,14 @@ export function LeaderboardTable({
   }
 
   const stageColumns = [
-    { key: 'matchday1', label: 'MD1',   value: (e: LeaderboardEntry) => e.matchday1 },
-    { key: 'matchday2', label: 'MD2',   value: (e: LeaderboardEntry) => e.matchday2 },
-    { key: 'matchday3', label: 'MD3',   value: (e: LeaderboardEntry) => e.matchday3 },
-    { key: 'last32',    label: 'L32',   value: (e: LeaderboardEntry) => e.last32    },
-    { key: 'last16',    label: 'L16',   value: (e: LeaderboardEntry) => e.last16    },
-    { key: 'qf',        label: 'QF',    value: (e: LeaderboardEntry) => e.qf        },
-    { key: 'sf',        label: 'SF',    value: (e: LeaderboardEntry) => e.sf        },
-    { key: 'f3rd',      label: 'F/3rd', value: (e: LeaderboardEntry) => e.final + e.third },
+    { key: 'matchday1', label: 'MD1', value: (e: LeaderboardEntry) => e.matchday1 },
+    { key: 'matchday2', label: 'MD2', value: (e: LeaderboardEntry) => e.matchday2 },
+    { key: 'matchday3', label: 'MD3', value: (e: LeaderboardEntry) => e.matchday3 },
+    { key: 'last32', label: 'L32', value: (e: LeaderboardEntry) => e.last32 },
+    { key: 'last16', label: 'L16', value: (e: LeaderboardEntry) => e.last16 },
+    { key: 'qf', label: 'QF', value: (e: LeaderboardEntry) => e.qf },
+    { key: 'sf', label: 'SF', value: (e: LeaderboardEntry) => e.sf },
+    { key: 'f3rd', label: 'F/3rd', value: (e: LeaderboardEntry) => e.final + e.third },
   ]
 
   return (
@@ -83,7 +83,7 @@ export function LeaderboardTable({
             <TableHead className={mode === 'feature2' ? 'min-w-28' : 'w-full'}>Player</TableHead>
             {mode === 'all' ? (
               <>
-                <TableHead className="w-32 text-center">Stage</TableHead>
+                <TableHead className="w-32 text-center">Bracket</TableHead>
                 <TableHead className="w-32 text-center">Matches</TableHead>
                 <TableHead className="w-32 text-center">Overall</TableHead>
               </>
@@ -95,7 +95,7 @@ export function LeaderboardTable({
                 <TableHead className="w-14 text-center font-semibold">Total</TableHead>
               </>
             ) : (
-              <TableHead className="text-right whitespace-nowrap pr-4">Stage Pts</TableHead>
+              <TableHead className="text-right whitespace-nowrap pr-4">Bracket Pts</TableHead>
             )}
           </TableRow>
         </TableHeader>

@@ -5,9 +5,10 @@ import {
   PointerSensor,
   TouchSensor,
   useSensor,
-  useSensors,
-  type DragEndEvent,
+  useSensors
+
 } from '@dnd-kit/core'
+import type { DragEndEvent } from '@dnd-kit/core';
 import {
   SortableContext,
   sortableKeyboardCoordinates,

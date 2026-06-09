@@ -1,6 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, Check, X } from 'lucide-react'
+import { Check, X } from 'lucide-react'
 import { cn } from '#/lib/shadcn/utils/utils'
 import type { TeamInGroup } from '../types'
 
@@ -32,18 +32,19 @@ export function SortableTeamItem({ id, position, team, disabled, showCorrectness
         isDragging && 'opacity-50 shadow-lg z-10',
         disabled ? 'cursor-default' : 'cursor-grab active:cursor-grabbing',
       )}
+      {...(!disabled ? { ...attributes, ...listeners } : {})}
     >
       <span className="w-5 text-center text-xs font-semibold text-muted-foreground">
         {position}
       </span>
 
       {team.crestUrl ? (
-        <img src={team.crestUrl} alt={team.tla ?? team.name} className="h-6 w-6 object-contain" />
+        <img src={team.crestUrl} alt={team.shortName ?? team.name} className="h-6 w-6 object-contain" />
       ) : (
         <div className="h-6 w-6 rounded-full bg-muted" />
       )}
 
-      <span className="flex-1 font-medium">{team.tla ?? team.name}</span>
+      <span className="flex-1 font-medium">{team.shortName ?? team.name}</span>
 
       {showCorrectness && team.isCorrect !== undefined ? (
         team.isCorrect ? (
@@ -51,12 +52,6 @@ export function SortableTeamItem({ id, position, team, disabled, showCorrectness
         ) : (
           <X className="h-4 w-4 text-red-500 shrink-0" />
         )
-      ) : !disabled ? (
-        <GripVertical
-          className="h-4 w-4 touch-none text-muted-foreground"
-          {...attributes}
-          {...listeners}
-        />
       ) : null}
     </div>
   )
