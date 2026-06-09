@@ -96,6 +96,11 @@ export function GroupPredictionsForm({ submitRef, onMutationStateChange }: Props
 
   return (
     <div className="h-full flex flex-col px-4 py-6">
+      {isOpen && (
+        <p className="text-sm text-muted-foreground mb-4">
+          Drag and drop the teams in each group to predict their finishing order.
+        </p>
+      )}
       {/* Mobile: one group per slide (vertical) */}
       <div className="sm:hidden flex-1 flex items-center justify-center py-14">
         <Carousel orientation="vertical" opts={{ loop: false, watchDrag: false }} className="w-full">
