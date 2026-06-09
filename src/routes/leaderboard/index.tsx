@@ -37,8 +37,15 @@ function LeaderboardPage() {
             Get More Points
           </a>
         </Button>
-        <Button variant="outline" size="sm" disabled>
-          Actually Get More Points
+        <Button variant="outline" size="sm">
+          <a
+            href="https://youtu.be/tcn0NSq8ApA?si=NCt6U3yfX8uFUJHC"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => { void supabase.from('profiles').update({ rick_rolled: true }).eq('id', currentUserId) }}
+          >
+            Football Heritage
+          </a>
         </Button>
       </div>
       <div className="rounded-lg border bg-card overflow-hidden">

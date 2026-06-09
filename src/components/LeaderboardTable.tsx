@@ -4,14 +4,6 @@ import {
   AvatarImage,
 } from '#/components/shadcn/ui/avatar'
 import { Skeleton } from '#/components/shadcn/ui/skeleton'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '#/components/shadcn/ui/table'
 import { cn } from '#/lib/shadcn/utils/utils'
 import type { LeaderboardEntry } from '#/types/leaderboard'
 import { UserHoverCard } from './UserHoverCard'
@@ -23,6 +15,17 @@ type Props = {
   mode: 'feature1' | 'feature2' | 'all'
   onUserClick?: (userId: string, displayName: string) => void
 }
+
+const stageColumns = [
+  { key: 'matchday1', label: 'MD1', value: (e: LeaderboardEntry) => e.matchday1 },
+  { key: 'matchday2', label: 'MD2', value: (e: LeaderboardEntry) => e.matchday2 },
+  { key: 'matchday3', label: 'MD3', value: (e: LeaderboardEntry) => e.matchday3 },
+  { key: 'last32', label: 'L32', value: (e: LeaderboardEntry) => e.last32 },
+  { key: 'last16', label: 'L16', value: (e: LeaderboardEntry) => e.last16 },
+  { key: 'qf', label: 'QF', value: (e: LeaderboardEntry) => e.qf },
+  { key: 'sf', label: 'SF', value: (e: LeaderboardEntry) => e.sf },
+  { key: 'f3rd', label: 'F/3rd', value: (e: LeaderboardEntry) => e.final + e.third },
+]
 
 function RankBadge({ rank }: { rank: number }) {
   if (rank === 1)
@@ -43,7 +46,7 @@ function RankBadge({ rank }: { rank: number }) {
         3
       </span>
     )
-  return <span className="text-sm text-muted-foreground">{rank}</span>
+  return <span className="w-6 text-center text-sm text-muted-foreground">{rank}</span>
 }
 
 export function LeaderboardTable({
@@ -57,134 +60,105 @@ export function LeaderboardTable({
     return (
       <div className="space-y-2 p-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <Skeleton key={i} className="h-12 w-full rounded-lg" />
+          <Skeleton key={i} className="h-14 w-full rounded-lg" />
         ))}
       </div>
     )
   }
 
-  const stageColumns = [
-    { key: 'matchday1', label: 'MD1', value: (e: LeaderboardEntry) => e.matchday1 },
-    { key: 'matchday2', label: 'MD2', value: (e: LeaderboardEntry) => e.matchday2 },
-    { key: 'matchday3', label: 'MD3', value: (e: LeaderboardEntry) => e.matchday3 },
-    { key: 'last32', label: 'L32', value: (e: LeaderboardEntry) => e.last32 },
-    { key: 'last16', label: 'L16', value: (e: LeaderboardEntry) => e.last16 },
-    { key: 'qf', label: 'QF', value: (e: LeaderboardEntry) => e.qf },
-    { key: 'sf', label: 'SF', value: (e: LeaderboardEntry) => e.sf },
-    { key: 'f3rd', label: 'F/3rd', value: (e: LeaderboardEntry) => e.final + e.third },
-  ]
-
   return (
-    <div className={mode === 'feature2' ? 'overflow-x-auto' : undefined}>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-12 text-center">#</TableHead>
-            <TableHead className={mode === 'feature2' ? 'min-w-28' : 'w-full'}>Player</TableHead>
-            {mode === 'all' ? (
-              <>
-                <TableHead className="w-32 text-center">Bracket</TableHead>
-                <TableHead className="w-32 text-center">Matches</TableHead>
-                <TableHead className="w-32 text-center">Overall</TableHead>
-              </>
-            ) : mode === 'feature2' ? (
-              <>
-                {stageColumns.map(({ key, label }) => (
-                  <TableHead key={key} className="w-10 text-center text-xs px-1">{label}</TableHead>
-                ))}
-                <TableHead className="w-14 text-center font-semibold">Total</TableHead>
-              </>
-            ) : (
-              <TableHead className="text-right whitespace-nowrap pr-4">Bracket Pts</TableHead>
-            )}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {entries.map((entry) => {
-            const isCurrentUser = entry.userId === currentUserId
-            const initials = entry.displayName
-              .split(' ')
-              .map((n) => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2)
+    <div className="divide-y divide-border">
+      {entries.map((entry) => {
+        const isCurrentUser = entry.userId === currentUserId
+        const initials = entry.displayName
+          .split(' ')
+          .map((n) => n[0])
+          .join('')
+          .toUpperCase()
+          .slice(0, 2)
 
-            return (
-              <TableRow
-                key={entry.userId}
-                className={cn(isCurrentUser && 'bg-muted/40')}
-              >
-                <TableCell className="text-center">
-                  <RankBadge rank={entry.rank} />
-                </TableCell>
-                <TableCell className="max-w-0">
-                  <UserHoverCard entry={entry}>
-                    {onUserClick ? (
-                      <button
-                        type="button"
-                        onClick={() => onUserClick(entry.userId, entry.displayName)}
-                        className="flex items-center gap-2 w-full text-left hover:opacity-80 transition-opacity"
-                      >
-                        <Avatar size="sm" className="shrink-0">
-                          <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
-                          <AvatarFallback>{initials}</AvatarFallback>
-                        </Avatar>
-                        <span className={cn('text-sm truncate', isCurrentUser && 'font-semibold')}>
-                          {entry.displayName}
-                          {isCurrentUser && (
-                            <span className="ml-1.5 text-xs text-muted-foreground font-normal">(you)</span>
-                          )}
-                        </span>
-                      </button>
-                    ) : (
-                      <span className="flex items-center gap-2 w-full text-left hover:opacity-80 transition-opacity">
-                        <Avatar size="sm" className="shrink-0">
-                          <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
-                          <AvatarFallback>{initials}</AvatarFallback>
-                        </Avatar>
-                        <span className={cn('text-sm truncate', isCurrentUser && 'font-semibold')}>
-                          {entry.displayName}
-                          {isCurrentUser && (
-                            <span className="ml-1.5 text-xs text-muted-foreground font-normal">(you)</span>
-                          )}
-                        </span>
-                      </span>
-                    )}
-                  </UserHoverCard>
-                </TableCell>
-                {mode === 'all' ? (
-                  <>
-                    <TableCell className="text-center font-mono font-medium tabular-nums">
-                      {entry.feature1Points}
-                    </TableCell>
-                    <TableCell className="text-center font-mono font-medium tabular-nums">
-                      {entry.feature2Points}
-                    </TableCell>
-                    <TableCell className="text-center font-mono font-medium tabular-nums">
-                      {entry.totalPoints ?? 0}
-                    </TableCell>
-                  </>
-                ) : mode === 'feature2' ? (
-                  <>
-                    {stageColumns.map(({ key, value }) => (
-                      <TableCell key={key} className="text-center font-mono text-xs tabular-nums px-1">
-                        {value(entry)}
-                      </TableCell>
-                    ))}
-                    <TableCell className="text-center font-mono font-semibold tabular-nums">
-                      {entry.feature2Points}
-                    </TableCell>
-                  </>
-                ) : (
-                  <TableCell className="text-center font-mono font-medium tabular-nums">
-                    {entry.feature1Points}
-                  </TableCell>
+        const primaryScore =
+          mode === 'feature1'
+            ? entry.feature1Points
+            : mode === 'feature2'
+              ? entry.feature2Points
+              : (entry.totalPoints ?? 0)
+
+        const inner = (
+          <div className="flex items-center gap-3 px-4 py-3 w-full text-left">
+            <RankBadge rank={entry.rank} />
+            <Avatar size="default" className="shrink-0">
+              <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+            <UserHoverCard entry={entry}>
+              <div className="flex-1 min-w-0">
+                <p className={cn('text-sm truncate', isCurrentUser && 'font-semibold')}>
+                  {entry.displayName}
+                  {isCurrentUser && (
+                    <span className="ml-1.5 text-xs text-muted-foreground font-normal">(you)</span>
+                  )}
+                </p>
+                {mode === 'feature1' && (
+                  <div className="flex gap-1.5 mt-1.5">
+                    <div className="flex flex-col items-center gap-0.5 px-2 py-1 rounded bg-muted/60">
+                      <span className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground leading-none">Group</span>
+                      <span className="text-xs font-bold tabular-nums leading-none">{entry.matchday1 + entry.matchday2 + entry.matchday3}</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-0.5 px-2 py-1 rounded bg-muted/60">
+                      <span className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground leading-none">Knockout</span>
+                      <span className="text-xs font-bold tabular-nums leading-none">{entry.last32 + entry.last16 + entry.qf + entry.sf + entry.final + entry.third}</span>
+                    </div>
+                  </div>
                 )}
-              </TableRow>
-            )
-          })}
-        </TableBody>
-      </Table>
+                {mode === 'feature2' && (
+                  <div className="flex flex-wrap gap-1.5 mt-1.5">
+                    {stageColumns.map((col) => (
+                      <div key={col.key} className="flex flex-col items-center gap-0.5 min-w-7 px-1.5 py-1 rounded bg-muted/60">
+                        <span className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground leading-none">{col.label}</span>
+                        <span className="text-xs font-bold tabular-nums leading-none">{col.value(entry)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {mode === 'all' && (
+                  <div className="flex gap-1.5 mt-1.5">
+                    <div className="flex flex-col items-center gap-0.5 px-2 py-1 rounded bg-muted/60">
+                      <span className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground leading-none">Bracket</span>
+                      <span className="text-xs font-bold tabular-nums leading-none">{entry.feature1Points}</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-0.5 px-2 py-1 rounded bg-muted/60">
+                      <span className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground leading-none">Match</span>
+                      <span className="text-xs font-bold tabular-nums leading-none">{entry.feature2Points}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </UserHoverCard>
+            <span className="font-mono font-semibold text-sm tabular-nums shrink-0">
+              {primaryScore} pts
+            </span>
+          </div>
+        )
+
+        return onUserClick ? (
+          <button
+            key={entry.userId}
+            type="button"
+            onClick={() => onUserClick(entry.userId, entry.displayName)}
+            className={cn('block w-full hover:bg-muted/50 transition-colors', isCurrentUser && 'bg-muted/40')}
+          >
+            {inner}
+          </button>
+        ) : (
+          <div
+            key={entry.userId}
+            className={cn(isCurrentUser && 'bg-muted/40')}
+          >
+            {inner}
+          </div>
+        )
+      })}
     </div>
   )
 }
