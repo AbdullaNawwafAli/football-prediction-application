@@ -10,11 +10,12 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+  type CarouselApi,
 } from '#/components/shadcn/ui/carousel'
+import { Button } from '#/components/shadcn/ui/button'
 import { Skeleton } from '#/components/shadcn/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/shadcn/ui/tabs'
+import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 import createLeaderboardQueryOptions from '#/hooks/createLeaderboardQueryOptions'
 import { useAuthStore } from '#/stores/auth.store'
 import type { LeaderboardEntry } from '#/types/leaderboard'
@@ -68,43 +69,52 @@ function CategoryColumn({
   players: Player[]
   userRank?: number | null
 }) {
+  const [api, setApi] = useState<CarouselApi>()
+
   return (
     <div className="flex flex-col gap-1 px-2 py-3 min-w-0">
-      
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground text-center">
         {title}
       </p>
-      <Carousel opts={{ loop: true }} className="w-full">
-        <CarouselContent>
-          {players.map((player) => {
-            const initials = player.displayName
-              .split(' ')
-              .map((n) => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2)
-            return (
-              <CarouselItem key={player.rank}>
-                <div className="flex flex-col items-center gap-4 py-4">
-                  <span className={`text-sm font-bold ${RANK_COLOR[player.rank] ?? ''}`}>
-                    {RANK_LABEL[player.rank] ?? `#${player.rank}`}
-                  </span>
-                  <Avatar  className="size-20">
-                    <AvatarImage src={player.avatarUrl} alt={player.displayName} />
-                    <AvatarFallback>{initials}</AvatarFallback>
-                  </Avatar>
-                  <p className="font-semibold text-base text-center leading-tight line-clamp-1 w-full px-2">
-                    {player.displayName}
-                  </p>
-                  <p className="text-sm text-muted-foreground">{player.points} pts</p>
-                </div>
-              </CarouselItem>
-            )
-          })}
-        </CarouselContent>
-        <CarouselPrevious className="left-0" />
-        <CarouselNext className="right-0" />
-      </Carousel>
+      <div className="flex items-center gap-1">
+        <Button variant="outline" size="icon-sm" className="rounded-full shrink-0" onClick={() => api?.scrollPrev()}>
+          <ChevronLeftIcon />
+          <span className="sr-only">Previous</span>
+        </Button>
+        <Carousel opts={{ loop: true }} className="min-w-0 flex-1" setApi={setApi}>
+          <CarouselContent>
+            {players.map((player) => {
+              const initials = player.displayName
+                .split(' ')
+                .map((n) => n[0])
+                .join('')
+                .toUpperCase()
+                .slice(0, 2)
+              return (
+                <CarouselItem key={player.rank}>
+                  <div className="flex flex-col items-center gap-4 py-4">
+                    <span className={`text-sm font-bold ${RANK_COLOR[player.rank] ?? ''}`}>
+                      {RANK_LABEL[player.rank] ?? `#${player.rank}`}
+                    </span>
+                    <Avatar className="size-20">
+                      <AvatarImage src={player.avatarUrl} alt={player.displayName} />
+                      <AvatarFallback>{initials}</AvatarFallback>
+                    </Avatar>
+                    <p className="font-semibold text-base text-center leading-tight line-clamp-1 w-full px-2">
+                      {player.displayName}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{player.points} pts</p>
+                  </div>
+                </CarouselItem>
+              )
+            })}
+          </CarouselContent>
+        </Carousel>
+        <Button variant="outline" size="icon-sm" className="rounded-full shrink-0" onClick={() => api?.scrollNext()}>
+          <ChevronRightIcon />
+          <span className="sr-only">Next</span>
+        </Button>
+      </div>
       {userRank != null && userRank > 3 && (
         <p className="text-xs text-muted-foreground text-center pb-1">
           You're in position {userRank}

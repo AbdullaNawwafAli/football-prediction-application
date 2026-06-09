@@ -55,12 +55,8 @@ const FAQ = [
     a: 'Yes — you can edit your predictions up to 1 hour before the first match of that stage kicks off. Once within that window your predictions for that stage are locked in.',
   },
   {
-    q: 'Can I change my group/knockout stage predictions?',
-    a: 'Yes — you can edit your predictions up to 1 hour before the first match of that stage kicks off. Once within that window your predictions for that stage are locked in.',
-  },
-  {
     q: 'I have a complaint about the application?',
-    a: 'Please direct it to the recreation club members.',
+    a: 'Please direct it to the HDFC Recreational club members.',
   }
 ]
 
