@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { ArrowRight } from 'lucide-react'
 import { Header } from '#/components/Header'
 import { Button } from '#/components/shadcn/ui/button'
 import { LeaderboardTable } from '#/components/LeaderboardTable'
@@ -38,9 +39,9 @@ function Feature1HomePage() {
         <Button
           variant="default"
           size="sm"
-          onClick={() => setSelectedUser({ userId: currentUserId, displayName: profile?.display_name ?? '' })}
+          onClick={() => { setSelectedUser({ userId: currentUserId, displayName: profile?.display_name ?? '' }); setActiveSheet('group') }}
         >
-          My Group
+          My Group <ArrowRight className="size-3.5" />
         </Button>
         <Button
           variant="outline"
@@ -48,7 +49,7 @@ function Feature1HomePage() {
           onClick={() => setOwnKnockoutOpen(true)}
           disabled={!knockoutTeamsAssigned}
         >
-          My Knockout
+          My Knockout <ArrowRight className="size-3.5" />
         </Button>
       </div>
 

@@ -64,15 +64,6 @@ export function GroupPredictionsSheet({ userId, displayName, open, onOpenChange,
           <span className="font-semibold text-base flex-1">
             {isOwnProfile ? 'Group Predictions' : `${displayName}'s Predictions`}
           </span>
-          {!isOwnProfile && onViewKnockout && (
-            <button
-              type="button"
-              onClick={onViewKnockout}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0"
-            >
-              Knockout →
-            </button>
-          )}
           <Suspense fallback={null}>
             <LockStatusBadge />
           </Suspense>
@@ -91,7 +82,7 @@ export function GroupPredictionsSheet({ userId, displayName, open, onOpenChange,
           </Suspense>
         </div>
 
-        {isOwnProfile && (
+        {isOwnProfile ? (
           <SheetFooter className="border-t px-4 py-4 shrink-0">
             <Button
               className="w-full"
@@ -101,7 +92,13 @@ export function GroupPredictionsSheet({ userId, displayName, open, onOpenChange,
               {mutationState.isPending ? 'Saving…' : 'Save Predictions'}
             </Button>
           </SheetFooter>
-        )}
+        ) : onViewKnockout ? (
+          <SheetFooter className="border-t px-4 py-4 shrink-0">
+            <Button variant="outline" className="w-full" onClick={onViewKnockout}>
+              Knockout Predictions <ArrowRight className="size-4" />
+            </Button>
+          </SheetFooter>
+        ) : null}
       </SheetContent>
     </Sheet>
   )
