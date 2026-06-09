@@ -28,6 +28,16 @@ export function KnockoutPredictionsReadOnly({ userId }: Props) {
   const { matches, teamById } = matchesResult
   const feederMap = buildFeederMap(matches)
 
+  if (Object.keys(savedPicks).length === 0) {
+    return (
+      <div className="h-full flex items-center justify-center px-4 py-12">
+        <p className="text-sm text-muted-foreground text-center">
+          This user hasn't made knockout predictions yet.
+        </p>
+      </div>
+    )
+  }
+
   const matchesByStage = new Map<string, KnockoutMatchData[]>()
   for (const stage of KNOCKOUT_STAGES) {
     const stageMatches = matches.filter((m) => m.stage === stage)

@@ -27,7 +27,8 @@ function Feature1HomePage() {
   const { data: knockoutTeamsAssigned } = useSuspenseQuery(createKnockoutTeamsAssignedQueryOptions())
 
   const [selectedUser, setSelectedUser] = useState<{ userId: string; displayName: string } | null>(null)
-  const [knockoutOpen, setKnockoutOpen] = useState(false)
+  const [activeSheet, setActiveSheet] = useState<'group' | 'knockout'>('group')
+  const [ownKnockoutOpen, setOwnKnockoutOpen] = useState(false)
 
   return (
     <div className="page">
@@ -44,7 +45,7 @@ function Feature1HomePage() {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setKnockoutOpen(true)}
+          onClick={() => setOwnKnockoutOpen(true)}
           disabled={!knockoutTeamsAssigned}
         >
           My Knockout
@@ -57,15 +58,25 @@ function Feature1HomePage() {
           currentUserId={currentUserId}
           isPending={isPending}
           mode="feature1"
-          onUserClick={(userId, displayName) => setSelectedUser({ userId, displayName })}
+          onUserClick={(userId, displayName) => { setSelectedUser({ userId, displayName }); setActiveSheet('group') }}
         />
       </div>
 
-      {selectedUser && (
+      {selectedUser && activeSheet === 'group' && (
         <GroupPredictionsSheet
           userId={selectedUser.userId}
           displayName={selectedUser.displayName}
-          open={!!selectedUser}
+          open={true}
+          onOpenChange={(open) => { if (!open) setSelectedUser(null) }}
+          onViewKnockout={() => setActiveSheet('knockout')}
+        />
+      )}
+
+      {selectedUser && activeSheet === 'knockout' && (
+        <KnockoutPredictionsSheet
+          userId={selectedUser.userId}
+          displayName={selectedUser.displayName}
+          open={true}
           onOpenChange={(open) => { if (!open) setSelectedUser(null) }}
         />
       )}
@@ -73,8 +84,8 @@ function Feature1HomePage() {
       <KnockoutPredictionsSheet
         userId={currentUserId}
         displayName={profile?.display_name ?? ''}
-        open={knockoutOpen}
-        onOpenChange={setKnockoutOpen}
+        open={ownKnockoutOpen}
+        onOpenChange={setOwnKnockoutOpen}
       />
     </div>
   )

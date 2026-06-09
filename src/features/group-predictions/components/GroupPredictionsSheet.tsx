@@ -18,6 +18,7 @@ type Props = {
   displayName: string
   open: boolean
   onOpenChange: (open: boolean) => void
+  onViewKnockout?: () => void
 }
 
 function LoadingSkeleton() {
@@ -35,7 +36,7 @@ function LoadingSkeleton() {
   )
 }
 
-export function GroupPredictionsSheet({ userId, displayName, open, onOpenChange }: Props) {
+export function GroupPredictionsSheet({ userId, displayName, open, onOpenChange, onViewKnockout }: Props) {
   const currentUserId = useAuthStore((s) => s.profile?.id)
   const isOwnProfile = userId === currentUserId
 
@@ -63,6 +64,15 @@ export function GroupPredictionsSheet({ userId, displayName, open, onOpenChange 
           <span className="font-semibold text-base flex-1">
             {isOwnProfile ? 'Group Predictions' : `${displayName}'s Predictions`}
           </span>
+          {!isOwnProfile && onViewKnockout && (
+            <button
+              type="button"
+              onClick={onViewKnockout}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0"
+            >
+              Knockout →
+            </button>
+          )}
           <Suspense fallback={null}>
             <LockStatusBadge />
           </Suspense>
