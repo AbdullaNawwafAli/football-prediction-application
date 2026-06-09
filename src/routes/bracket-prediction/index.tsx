@@ -82,14 +82,16 @@ function Feature1HomePage() {
             displayName={selectedUser.displayName}
             open={groupSheetOpen}
             onOpenChange={(open) => { if (!open) closeGroupSheet() }}
-            onViewKnockout={() => setActiveSheet('knockout')}
+            onViewKnockout={knockoutTeamsAssigned ? () => setActiveSheet('knockout') : undefined}
           />
-          <KnockoutPredictionsSheet
-            userId={selectedUser.userId}
-            displayName={selectedUser.displayName}
-            open={activeSheet === 'knockout'}
-            onOpenChange={(open) => { if (!open) setActiveSheet('group') }}
-          />
+          {knockoutTeamsAssigned && (
+            <KnockoutPredictionsSheet
+              userId={selectedUser.userId}
+              displayName={selectedUser.displayName}
+              open={activeSheet === 'knockout'}
+              onOpenChange={(open) => { if (!open) setActiveSheet('group') }}
+            />
+          )}
         </>
       )}
 
