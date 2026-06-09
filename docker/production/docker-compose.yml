@@ -1,0 +1,39 @@
+services:
+  football-predictions:
+    build:
+      context: ../..
+      dockerfile: docker/production/Dockerfile
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O /dev/null --server-response http://0.0.0.0:80/ 2>&1 | grep -q 'HTTP/'",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.football-predictions.rule=Host(`predictions.hdfc.com.mv`)"
+      - "traefik.http.routers.football-predictions.entrypoints=websecure"
+      - "traefik.http.routers.football-predictions.tls.certresolver=le"
+      - "traefik.http.routers.football-predictions-http.rule=Host(`predictions.hdfc.com.mv`)"
+      - "traefik.http.routers.football-predictions-http.entrypoints=web"
+      - "traefik.http.routers.football-predictions-http.middlewares=predictions-redirect-to-https"
+      - "traefik.http.services.football-predictions.loadbalancer.server.port=80"
+      - "traefik.http.middlewares.predictions-redirect-to-https.redirectscheme.scheme=https"
+    restart: always
+    env_file:
+      - ../../.env
+    networks:
+      - traefik
+    ports:
+      - "3009:80"
+
+networks:
+  traefik:
+    external: true

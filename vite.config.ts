@@ -17,7 +17,7 @@ export default defineConfig({
     viteReact(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'robots.txt'],
+      includeAssets: ['favicon.svg', 'robots.txt', 'logo192.png', 'logo512.png'],
       manifest: {
         name: 'Football Predictions',
         short_name: 'Predictions',
@@ -40,6 +40,16 @@ export default defineConfig({
             sizes: 'any',
             type: 'image/svg+xml',
             purpose: 'maskable',
+          },
+          {
+            src: 'logo192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'logo512.png',
+            sizes: '512x512',
+            type: 'image/png',
           },
         ],
       },
