@@ -7,10 +7,20 @@ import {
 } from '#/components/shadcn/ui/accordion'
 import { Sheet, SheetContent, SheetTitle } from '#/components/shadcn/ui/sheet'
 
+const KNOCKOUT_STAGE_POINTS = [
+  { stage: 'Round of 32', points: 5 },
+  { stage: 'Round of 16', points: 10 },
+  { stage: 'Quarter Finals', points: 15 },
+  { stage: 'Semi Finals', points: 20 },
+  { stage: 'Third Place', points: 25 },
+  { stage: 'Final', points: 30 },
+]
+
+
 const FAQ = [
   {
     q: 'How are match score predictions scored?',
-    a: 'Predict the exact final score and earn 3 points. Predict the correct result (win/draw/loss) without the exact score and earn 1 point. Incorrect predictions earn 0 points.',
+    a: 'Predict the exact final score and earn 5 points. Predict the correct result (win/draw/loss) without the exact score and earn 3 point. Incorrect predictions earn 0 points.',
   },
   {
     q: 'How are group stage bracket predictions scored?',
@@ -18,16 +28,40 @@ const FAQ = [
   },
   {
     q: 'How are knockout stage predictions scored?',
-    a: 'Predict the winner of a knockout match correctly. Points increase each round — later rounds are worth more. Points per round are set by the competition organisers.',
+    a: (
+      <div className="flex flex-col gap-2">
+        <p>Predict the winner of a knockout match correctly. Points increase each round:</p>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+          {KNOCKOUT_STAGE_POINTS.map(({ stage, points }) => (
+            <div key={stage} className="contents">
+              <span>{stage}</span>
+              <span className="font-medium text-foreground">{points} pts</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
   },
   {
-    q: 'What is the total score?',
-    a: 'Your total score is the sum of all your group stage, knockout, and match prediction points combined.',
+    q: 'What is the Overall?',
+    a: 'Your Overall is the sum of all your group stage, knockout, and match prediction points combined.',
   },
   {
-    q: 'Can I change my predictions?',
-    a: 'Yes — you can edit your predictions any time before a match kicks off. Once a match is underway your prediction for that game is locked in.',
+    q: 'Can I change my match predictions?',
+    a: 'Yes — you can edit your predictions any time up to 1 hour before a match kicks off. Once within that window your prediction for that game is locked in.',
   },
+  {
+    q: 'Can I change my group/knockout stage predictions?',
+    a: 'Yes — you can edit your predictions up to 1 hour before the first match of that stage kicks off. Once within that window your predictions for that stage are locked in.',
+  },
+  {
+    q: 'Can I change my group/knockout stage predictions?',
+    a: 'Yes — you can edit your predictions up to 1 hour before the first match of that stage kicks off. Once within that window your predictions for that stage are locked in.',
+  },
+  {
+    q: 'I have a complaint about the application?',
+    a: 'Please direct it to the recreation club members.',
+  }
 ]
 
 type Props = { open: boolean; onOpenChange: (open: boolean) => void }

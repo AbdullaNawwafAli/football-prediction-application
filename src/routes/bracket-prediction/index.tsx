@@ -46,8 +46,8 @@ function Feature1HomePage() {
         <Button
           variant="outline"
           size="sm"
+          disabled={!knockoutTeamsAssigned}
           onClick={() => setOwnKnockoutOpen(true)}
-
         >
           My Knockout <ArrowRight className="size-3.5" />
         </Button>
@@ -69,11 +69,11 @@ function Feature1HomePage() {
           displayName={selectedUser.displayName}
           open={true}
           onOpenChange={(open) => { if (!open) setSelectedUser(null) }}
-          onViewKnockout={() => setActiveSheet('knockout')}
+          onViewKnockout={knockoutTeamsAssigned ? () => setActiveSheet('knockout') : undefined}
         />
       )}
 
-      {selectedUser && activeSheet === 'knockout' && (
+      {selectedUser && activeSheet === 'knockout' && knockoutTeamsAssigned && (
         <KnockoutPredictionsSheet
           userId={selectedUser.userId}
           displayName={selectedUser.displayName}
