@@ -44,7 +44,7 @@ export function GroupPredictionsReadOnly({ userId }: Props) {
     <div className="h-full flex flex-col px-4 py-6">
       {/* Mobile: one group per slide (vertical) */}
       <div className="sm:hidden flex-1 flex items-center justify-center py-14">
-        <Carousel orientation="vertical" opts={{ loop: false }} className="w-full">
+        <Carousel orientation="vertical" opts={{ loop: false, watchDrag: false }} className="w-full">
           <CarouselContent className="h-72">
             {groups.map(({ groupName }) => (
               <CarouselItem key={groupName} className="flex items-center justify-center">
