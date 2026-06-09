@@ -30,23 +30,27 @@ const stageColumns = [
 function RankBadge({ rank }: { rank: number }) {
   if (rank === 1)
     return (
-      <span className="inline-flex size-6 items-center justify-center rounded-full bg-yellow-500/10 text-xs font-bold text-yellow-500">
+      <span className="inline-flex size-8 items-center justify-center rounded-full bg-yellow-500/10 font-mono text-sm font-semibold text-yellow-500">
         1
       </span>
     )
   if (rank === 2)
     return (
-      <span className="inline-flex size-6 items-center justify-center rounded-full bg-slate-400/10 text-xs font-bold text-slate-400">
+      <span className="inline-flex size-8 items-center justify-center rounded-full bg-slate-400/10 font-mono text-sm font-semibold text-slate-400">
         2
       </span>
     )
   if (rank === 3)
     return (
-      <span className="inline-flex size-6 items-center justify-center rounded-full bg-amber-600/10 text-xs font-bold text-amber-600">
+      <span className="inline-flex size-8 items-center justify-center rounded-full bg-amber-600/10 font-mono text-sm font-semibold text-amber-600">
         3
       </span>
     )
-  return <span className="w-6 text-center text-sm text-muted-foreground">{rank}</span>
+  return (
+    <span className="inline-flex size-8 items-center justify-center rounded-full font-mono text-sm font-semibold text-muted-foreground">
+      {rank}
+    </span>
+  )
 }
 
 export function LeaderboardTable({
@@ -85,30 +89,25 @@ export function LeaderboardTable({
               : (entry.totalPoints ?? 0)
 
         const inner = (
-          <div className="px-4 py-3 w-full text-left">
-            {/* Inline row: rank · avatar · name */}
-            <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 px-4 py-3 w-full text-left">
+            <div className="size-10 sm:size-14 shrink-0 flex items-center justify-center">
               <RankBadge rank={entry.rank} />
-              <Avatar size="lg" className="shrink-0">
-                <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
-                <AvatarFallback>{initials}</AvatarFallback>
-              </Avatar>
-              <UserHoverCard entry={entry}>
-                <div className="flex-1 min-w-0">
-                  <p className={cn('text-sm truncate', isCurrentUser && 'font-semibold')}>
-                    {entry.displayName}
-                    {isCurrentUser && (
-                      <span className="ml-1.5 text-xs text-muted-foreground font-normal">(you)</span>
-                    )}
-                  </p>
-                </div>
-              </UserHoverCard>
             </div>
-            {/* Chips row: invisible spacers (rank + avatar) align chips with name */}
-            <div className="flex items-start gap-3 mt-1.5">
-              <div className="size-6 shrink-0" />
-              <div className="size-10 shrink-0" />
-              <div className="flex flex-wrap gap-1.5 min-w-0">
+            <Avatar size="lg" className="size-10! sm:size-14! shrink-0">
+              <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+            {/* Name + chips */}
+            <div className="flex-1 min-w-0">
+              <UserHoverCard entry={entry}>
+                <p className={cn('text-sm truncate', isCurrentUser && 'font-semibold')}>
+                  {entry.displayName}
+                  {isCurrentUser && (
+                    <span className="ml-1.5 text-xs text-muted-foreground font-normal">(you)</span>
+                  )}
+                </p>
+              </UserHoverCard>
+              <div className="flex flex-wrap gap-1.5 mt-1.5">
                 {mode === 'feature1' && (
                   <>
                     <div className="flex flex-col items-center gap-0.5 px-2 py-1 rounded bg-muted/60">
@@ -141,7 +140,8 @@ export function LeaderboardTable({
                 )}
               </div>
             </div>
-            <p className="text-center font-mono font-semibold text-sm mt-2">
+            {/* Points — far right, vertically centered */}
+            <p className="shrink-0 font-mono font-semibold text-sm">
               {primaryScore} pts
             </p>
           </div>
