@@ -1,12 +1,8 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Header } from '#/components/Header'
-import {
-  UserScoreCard,
-  UpcomingMatchesCard,
-  TopLeaderboardCard,
-  createUserScoreQueryOptions,
-} from '#/features/home'
+import { UserScoreCard, UpcomingMatchesCard, TopLeaderboardCard } from '#/features/home'
+import createLeaderboardQueryOptions from '#/hooks/createLeaderboardQueryOptions'
 import { useAuthStore } from '#/stores/auth.store'
 
 export const Route = createFileRoute('/home')({
@@ -22,7 +18,16 @@ function DashboardPage() {
   const profile = useAuthStore((s) => s.profile)
 
   const { data: score } = useSuspenseQuery(
-    createUserScoreQueryOptions(profile?.id ?? ''),
+    createLeaderboardQueryOptions({
+      select: (entries) => {
+        const entry = entries.find((e) => e.userId === profile?.id)
+        return {
+          feature1Points: entry?.feature1Points ?? 0,
+          feature2Points: entry?.feature2Points ?? 0,
+          totalPoints: entry?.totalPoints ?? null,
+        }
+      },
+    }),
   )
 
   return (

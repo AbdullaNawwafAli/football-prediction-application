@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useSuspenseQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useAuthStore } from '#/stores/auth.store'
 import { createGroupsQueryOptions } from '../hooks/createGroupsQueryOptions'
@@ -43,6 +43,7 @@ function buildInitialOrder(
 }
 
 export function GroupPredictionsForm({ submitRef, onMutationStateChange }: Props) {
+  const queryClient = useQueryClient()
   const profile = useAuthStore((s) => s.profile)
   const userId = profile!.id
 
@@ -66,7 +67,10 @@ export function GroupPredictionsForm({ submitRef, onMutationStateChange }: Props
       }
       return upsertGroupPredictions(userId, predictions)
     },
-    onSuccess: () => toast.success('Predictions saved.'),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['group-predictions', 'user-predictions', userId] })
+      toast.success('Predictions saved.')
+    },
     onError: () => toast.error('Failed to save predictions. Please try again.'),
   })
 

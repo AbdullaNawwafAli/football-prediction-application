@@ -23,7 +23,7 @@ function buildFeederMap(matches: KnockoutMatchData[]) {
 
 export function KnockoutPredictionsReadOnly({ userId }: Props) {
   const { data: matchesResult } = useSuspenseQuery(createKnockoutMatchesQueryOptions())
-  const { data: savedPicks } = useSuspenseQuery(createUserKnockoutPredictionsQueryOptions(userId))
+  const { data: savedPicks } = useSuspenseQuery(createUserKnockoutPredictionsQueryOptions(userId, 5 * 60 * 1000))
 
   const { matches, teamById } = matchesResult
   const feederMap = buildFeederMap(matches)

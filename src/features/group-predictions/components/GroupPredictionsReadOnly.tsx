@@ -36,7 +36,7 @@ function buildOrderedTeams(
 
 export function GroupPredictionsReadOnly({ userId }: Props) {
   const { data: groups } = useSuspenseQuery(createGroupsQueryOptions())
-  const { data: predictionsMap } = useSuspenseQuery(createUserPredictionsQueryOptions(userId))
+  const { data: predictionsMap } = useSuspenseQuery(createUserPredictionsQueryOptions(userId, 5 * 60 * 1000))
 
   const orderedTeams = buildOrderedTeams(groups, predictionsMap)
 

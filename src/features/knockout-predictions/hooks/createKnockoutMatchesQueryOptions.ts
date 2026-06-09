@@ -5,6 +5,6 @@ export function createKnockoutMatchesQueryOptions() {
   return queryOptions({
     queryKey: ['knockout', 'matches'],
     queryFn: () => getKnockoutMatches(),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 60 * 1000,
   })
 }

@@ -5,5 +5,6 @@ export function createMatchesQueryOptions() {
   return queryOptions({
     queryKey: ['matches'],
     queryFn: getMatchesWithTeams,
+    staleTime: 60 * 1000,
   })
 }

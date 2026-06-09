@@ -6,5 +6,6 @@ export function createUserScorePredictionsQueryOptions(userId: string) {
     queryKey: ['score-predictions', userId],
     queryFn: () => getUserScorePredictions(userId),
     enabled: !!userId,
+    staleTime: 60 * 1000,
   })
 }

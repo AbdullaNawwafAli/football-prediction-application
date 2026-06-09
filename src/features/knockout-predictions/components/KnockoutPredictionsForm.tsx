@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useSuspenseQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useAuthStore } from '#/stores/auth.store'
 import { createKnockoutMatchesQueryOptions } from '../hooks/createKnockoutMatchesQueryOptions'
@@ -34,6 +34,7 @@ type Props = {
 }
 
 export function KnockoutPredictionsForm({ submitRef, onMutationStateChange }: Props) {
+  const queryClient = useQueryClient()
   const profile = useAuthStore((s) => s.profile)
   const userId = profile!.id
 
@@ -70,7 +71,10 @@ export function KnockoutPredictionsForm({ submitRef, onMutationStateChange }: Pr
 
   const mutation = useMutation({
     mutationFn: () => upsertKnockoutPredictions(userId, picks),
-    onSuccess: () => toast.success('Predictions saved.'),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['knockout', 'picks', userId] })
+      toast.success('Predictions saved.')
+    },
     onError: () => toast.error('Failed to save predictions. Please try again.'),
   })
 

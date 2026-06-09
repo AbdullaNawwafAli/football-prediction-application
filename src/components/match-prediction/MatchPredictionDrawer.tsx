@@ -11,9 +11,9 @@ import {
   DrawerFooter,
   DrawerClose,
 } from '#/components/shadcn/ui/drawer'
-import { supabase } from '#/lib/supabase/supabase'
 import { useAuthStore } from '#/stores/auth.store'
 import { upsertScorePrediction } from '#/services/upsertScorePrediction'
+import { createMatchOpenQueryOptions } from '#/hooks/createMatchOpenQueryOptions'
 import type { MatchWithTeams, ScorePrediction } from '#/types/matches'
 
 type Props = {
@@ -72,7 +72,7 @@ export function MatchPredictionDrawer({ matchId, matches, predictions, onClose }
 
     setSaving(true)
     try {
-      const { data: isOpen } = await supabase.rpc('match_open', { match_ext_id: match.matchId })
+      const isOpen = await queryClient.fetchQuery(createMatchOpenQueryOptions(match.matchId))
       if (!isOpen) {
         toast.error('This match is no longer open for predictions.')
         onClose()

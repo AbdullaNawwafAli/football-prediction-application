@@ -7,6 +7,7 @@ export default function createLeaderboardQueryOptions<TData = LeaderboardEntry[]
   options?: Omit<UseQueryOptions<LeaderboardEntry[], TError, TData>, 'queryKey' | 'queryFn'>
 ) {
   return queryOptions({
+    staleTime: 60 * 1000,
     ...options,
     queryKey: ['leaderboard'],
     queryFn: () => getLeaderboardApi(),

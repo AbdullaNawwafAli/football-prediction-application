@@ -5,6 +5,6 @@ export function createGroupsQueryOptions() {
   return queryOptions({
     queryKey: ['group-predictions', 'groups'],
     queryFn: () => getGroupsWithTeams(),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 60 * 1000,
   })
 }
