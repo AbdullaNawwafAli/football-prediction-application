@@ -45,8 +45,19 @@ export function GroupPredictionsReadOnly({ userId }: Props) {
   const { data: predictionsMap } = useSuspenseQuery(createUserPredictionsQueryOptions(userId, 5 * 60 * 1000))
   const { data: isOpen } = useSuspenseQuery(createLockStatusQueryOptions())
 
+  const hasPredictions = Object.keys(predictionsMap).length > 0
   const orderedTeams = buildOrderedTeams(groups, predictionsMap)
   const showCorrectness = !isOpen
+
+  if (!hasPredictions) {
+    return (
+      <div className="h-full flex items-center justify-center px-4 py-12">
+        <p className="text-sm text-muted-foreground text-center">
+          This user hasn't made group predictions yet.
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="h-full flex flex-col px-4 py-6">
