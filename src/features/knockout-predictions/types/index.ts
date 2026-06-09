@@ -15,6 +15,7 @@ export type KnockoutMatchData = {
 }
 
 export type KnockoutPicksMap = Record<number, number>
+export type KnockoutCorrectnessMap = Record<number, boolean | null>
 
 export const KNOCKOUT_STAGES = ['LAST_32', 'LAST_16', 'QUARTER_FINALS', 'SEMI_FINALS', 'FINAL'] as const
 

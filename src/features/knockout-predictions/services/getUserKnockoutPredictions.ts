@@ -1,17 +1,21 @@
 import { supabase } from '#/lib/supabase/supabase'
-import type { KnockoutPicksMap } from '../types'
+import type { KnockoutPicksMap, KnockoutCorrectnessMap } from '../types'
 
-export async function getUserKnockoutPredictions(userId: string): Promise<KnockoutPicksMap> {
+export async function getUserKnockoutPredictions(
+  userId: string,
+): Promise<{ picks: KnockoutPicksMap; correctness: KnockoutCorrectnessMap }> {
   const { data, error } = await supabase
     .from('knockout_predictions')
-    .select('match_id, predicted_winner_id')
+    .select('match_id, predicted_winner_id, is_correct')
     .eq('user_id', userId)
 
   if (error) throw error
 
-  const map: KnockoutPicksMap = {}
+  const picks: KnockoutPicksMap = {}
+  const correctness: KnockoutCorrectnessMap = {}
   for (const row of data) {
-    map[row.match_id] = row.predicted_winner_id
+    picks[row.match_id] = row.predicted_winner_id
+    correctness[row.match_id] = row.is_correct
   }
-  return map
+  return { picks, correctness }
 }

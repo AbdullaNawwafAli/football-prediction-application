@@ -8,7 +8,7 @@ import {
 } from '#/components/shadcn/ui/carousel'
 import type { CarouselApi } from '#/components/shadcn/ui/carousel'
 import { cn } from '#/lib/shadcn/utils/utils'
-import type { KnockoutMatchData, KnockoutTeam, KnockoutPicksMap } from '../types'
+import type { KnockoutMatchData, KnockoutTeam, KnockoutPicksMap, KnockoutCorrectnessMap } from '../types'
 import { STAGE_LABELS } from '../types'
 import { resolveTeams } from '../utils/resolveTeams'
 import { MobileMatchCard } from './MobileMatchCard'
@@ -21,6 +21,7 @@ type Props = {
   picks: KnockoutPicksMap
   onPick: (matchId: number, teamId: number) => void
   disabled: boolean
+  correctness?: KnockoutCorrectnessMap
 }
 
 export function MobileBracketStepper({
@@ -31,6 +32,7 @@ export function MobileBracketStepper({
   picks,
   onPick,
   disabled,
+  correctness,
 }: Props) {
   const [api, setApi] = useState<CarouselApi>()
   const [stageIndex, setStageIndex] = useState(0)
@@ -138,6 +140,7 @@ export function MobileBracketStepper({
                         pickedTeamId={picks[match.matchId]}
                         onPick={onPick}
                         disabled={disabled}
+                        isCorrect={correctness?.[match.matchId]}
                       />
                     )
                   })}

@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createKnockoutMatchesQueryOptions } from '../hooks/createKnockoutMatchesQueryOptions'
 import { createUserKnockoutPredictionsQueryOptions } from '../hooks/createUserKnockoutPredictionsQueryOptions'
+import { createKnockoutLockStatusQueryOptions } from '../hooks/createKnockoutLockStatusQueryOptions'
 import { KnockoutBracket } from './KnockoutBracket'
 import { KNOCKOUT_STAGES } from '../types'
 import type { KnockoutMatchData } from '../types'
@@ -23,12 +24,13 @@ function buildFeederMap(matches: KnockoutMatchData[]) {
 
 export function KnockoutPredictionsReadOnly({ userId }: Props) {
   const { data: matchesResult } = useSuspenseQuery(createKnockoutMatchesQueryOptions())
-  const { data: savedPicks } = useSuspenseQuery(createUserKnockoutPredictionsQueryOptions(userId, 5 * 60 * 1000))
+  const { data: savedData } = useSuspenseQuery(createUserKnockoutPredictionsQueryOptions(userId, 5 * 60 * 1000))
+  const { data: isOpen } = useSuspenseQuery(createKnockoutLockStatusQueryOptions())
 
   const { matches, teamById } = matchesResult
   const feederMap = buildFeederMap(matches)
 
-  if (Object.keys(savedPicks).length === 0) {
+  if (Object.keys(savedData.picks).length === 0) {
     return (
       <div className="h-full flex items-center justify-center px-4 py-12">
         <p className="text-sm text-muted-foreground text-center">
@@ -50,9 +52,10 @@ export function KnockoutPredictionsReadOnly({ userId }: Props) {
         matchesByStage={matchesByStage}
         teamById={teamById}
         feederMap={feederMap}
-        picks={savedPicks}
+        picks={savedData.picks}
         onPick={() => {}}
         disabled={true}
+        correctness={!isOpen ? savedData.correctness : undefined}
       />
     </div>
   )

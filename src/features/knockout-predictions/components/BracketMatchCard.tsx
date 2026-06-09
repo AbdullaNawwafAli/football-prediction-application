@@ -1,3 +1,4 @@
+import { Check, X } from 'lucide-react'
 import { cn } from '#/lib/shadcn/utils/utils'
 import type { KnockoutTeam } from '../types'
 
@@ -8,17 +9,20 @@ type Props = {
   pickedTeamId: number | undefined
   onPick: (matchId: number, teamId: number) => void
   disabled: boolean
+  isCorrect?: boolean | null
 }
 
 function TeamRow({
   team,
   picked,
   disabled,
+  isCorrect,
   onClick,
 }: {
   team: KnockoutTeam | null
   picked: boolean
   disabled: boolean
+  isCorrect?: boolean | null
   onClick: () => void
 }) {
   const isTbd = team === null
@@ -50,20 +54,29 @@ function TeamRow({
           <span className={cn('text-[11px] truncate leading-none', picked && 'font-semibold')}>
             {team.tla ?? team.name}
           </span>
-          {picked && <span className="ml-auto text-[10px] opacity-70">✓</span>}
+          {picked && (
+            isCorrect === true ? (
+              <Check className="ml-auto size-3 text-green-500 shrink-0" />
+            ) : isCorrect === false ? (
+              <X className="ml-auto size-3 text-red-500 shrink-0" />
+            ) : (
+              <span className="ml-auto text-[10px] opacity-70">✓</span>
+            )
+          )}
         </>
       )}
     </button>
   )
 }
 
-export function BracketMatchCard({ matchId, homeTeam, awayTeam, pickedTeamId, onPick, disabled }: Props) {
+export function BracketMatchCard({ matchId, homeTeam, awayTeam, pickedTeamId, onPick, disabled, isCorrect }: Props) {
   return (
     <div className="rounded border bg-card overflow-hidden w-full">
       <TeamRow
         team={homeTeam}
         picked={pickedTeamId === homeTeam?.teamId}
         disabled={disabled}
+        isCorrect={pickedTeamId === homeTeam?.teamId ? isCorrect : undefined}
         onClick={() => homeTeam && onPick(matchId, homeTeam.teamId)}
       />
       <div className="h-px bg-border" />
@@ -71,6 +84,7 @@ export function BracketMatchCard({ matchId, homeTeam, awayTeam, pickedTeamId, on
         team={awayTeam}
         picked={pickedTeamId === awayTeam?.teamId}
         disabled={disabled}
+        isCorrect={pickedTeamId === awayTeam?.teamId ? isCorrect : undefined}
         onClick={() => awayTeam && onPick(matchId, awayTeam.teamId)}
       />
     </div>

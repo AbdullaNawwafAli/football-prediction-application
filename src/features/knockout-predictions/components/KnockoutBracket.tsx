@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import type { KnockoutMatchData, KnockoutTeam, KnockoutPicksMap } from '../types'
+import type { KnockoutMatchData, KnockoutTeam, KnockoutPicksMap, KnockoutCorrectnessMap } from '../types'
 import { KNOCKOUT_STAGES, STAGE_LABELS } from '../types'
 import { resolveTeams } from '../utils/resolveTeams'
 import { BracketMatchCard } from './BracketMatchCard'
@@ -17,6 +17,7 @@ type Props = {
   picks: KnockoutPicksMap
   onPick: (matchId: number, teamId: number) => void
   disabled: boolean
+  correctness?: KnockoutCorrectnessMap
 }
 
 function MatchColumn({
@@ -26,6 +27,7 @@ function MatchColumn({
   picks,
   onPick,
   disabled,
+  correctness,
 }: Omit<Props, 'matchesByStage'> & { matches: KnockoutMatchData[] }) {
   return (
     <div className="flex flex-col justify-around flex-1 min-w-0" style={{ height: BRACKET_HEIGHT }}>
@@ -40,6 +42,7 @@ function MatchColumn({
             pickedTeamId={picks[match.matchId]}
             onPick={onPick}
             disabled={disabled}
+            isCorrect={correctness?.[match.matchId]}
           />
         )
       })}
@@ -47,7 +50,7 @@ function MatchColumn({
   )
 }
 
-export function KnockoutBracket({ matchesByStage, teamById, feederMap, picks, onPick, disabled }: Props) {
+export function KnockoutBracket({ matchesByStage, teamById, feederMap, picks, onPick, disabled, correctness }: Props) {
   const stages = KNOCKOUT_STAGES.filter((s) => matchesByStage.has(s))
 
   if (stages.length === 0) {
@@ -72,6 +75,7 @@ export function KnockoutBracket({ matchesByStage, teamById, feederMap, picks, on
           picks={picks}
           onPick={onPick}
           disabled={disabled}
+          correctness={correctness}
         />
       </div>
 
@@ -107,6 +111,7 @@ export function KnockoutBracket({ matchesByStage, teamById, feederMap, picks, on
                   picks={picks}
                   onPick={onPick}
                   disabled={disabled}
+                  correctness={correctness}
                 />
               </Fragment>
             ))}

@@ -39,7 +39,7 @@ export function KnockoutPredictionsForm({ submitRef, onMutationStateChange }: Pr
   const userId = profile!.id
 
   const { data: matchesResult } = useSuspenseQuery(createKnockoutMatchesQueryOptions())
-  const { data: savedPicks } = useSuspenseQuery(createUserKnockoutPredictionsQueryOptions(userId))
+  const { data: savedData } = useSuspenseQuery(createUserKnockoutPredictionsQueryOptions(userId))
   const { data: isOpen } = useSuspenseQuery(createKnockoutLockStatusQueryOptions())
 
   const { matches, teamById } = matchesResult
@@ -53,11 +53,11 @@ export function KnockoutPredictionsForm({ submitRef, onMutationStateChange }: Pr
     if (stageMatches.length > 0) matchesByStage.set(stage, stageMatches)
   }
 
-  const [picks, setPicks] = useState<KnockoutPicksMap>(() => ({ ...savedPicks }))
+  const [picks, setPicks] = useState<KnockoutPicksMap>(() => ({ ...savedData.picks }))
 
   useEffect(() => {
-    setPicks({ ...savedPicks })
-  }, [savedPicks])
+    setPicks({ ...savedData.picks })
+  }, [savedData.picks])
 
   function handlePick(matchId: number, teamId: number) {
     setPicks((prev) => {
@@ -98,6 +98,7 @@ export function KnockoutPredictionsForm({ submitRef, onMutationStateChange }: Pr
         picks={picks}
         onPick={handlePick}
         disabled={!isOpen}
+        correctness={!isOpen ? savedData.correctness : undefined}
       />
     </div>
   )
