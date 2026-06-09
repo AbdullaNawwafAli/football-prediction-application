@@ -28,8 +28,20 @@ function Feature1HomePage() {
   const { data: knockoutTeamsAssigned } = useSuspenseQuery(createKnockoutTeamsAssignedQueryOptions())
 
   const [selectedUser, setSelectedUser] = useState<{ userId: string; displayName: string } | null>(null)
+  const [groupSheetOpen, setGroupSheetOpen] = useState(false)
   const [activeSheet, setActiveSheet] = useState<'group' | 'knockout'>('group')
   const [ownKnockoutOpen, setOwnKnockoutOpen] = useState(false)
+
+  function openGroupSheet(userId: string, displayName: string) {
+    setSelectedUser({ userId, displayName })
+    setActiveSheet('group')
+    setGroupSheetOpen(true)
+  }
+
+  function closeGroupSheet() {
+    setGroupSheetOpen(false)
+    setTimeout(() => setSelectedUser(null), 300)
+  }
 
   return (
     <div className="page">
@@ -39,7 +51,7 @@ function Feature1HomePage() {
         <Button
           variant="default"
           size="sm"
-          onClick={() => { setSelectedUser({ userId: currentUserId, displayName: profile?.display_name ?? '' }); setActiveSheet('group') }}
+          onClick={() => openGroupSheet(currentUserId, profile?.display_name ?? '')}
         >
           My Group <ArrowRight className="size-3.5" />
         </Button>
@@ -59,27 +71,26 @@ function Feature1HomePage() {
           currentUserId={currentUserId}
           isPending={isPending}
           mode="feature1"
-          onUserClick={(userId, displayName) => { setSelectedUser({ userId, displayName }); setActiveSheet('group') }}
+          onUserClick={(userId, displayName) => openGroupSheet(userId, displayName)}
         />
       </div>
 
-      {selectedUser && activeSheet === 'group' && (
-        <GroupPredictionsSheet
-          userId={selectedUser.userId}
-          displayName={selectedUser.displayName}
-          open={true}
-          onOpenChange={(open) => { if (!open) setSelectedUser(null) }}
-          onViewKnockout={knockoutTeamsAssigned ? () => setActiveSheet('knockout') : undefined}
-        />
-      )}
-
-      {selectedUser && activeSheet === 'knockout' && knockoutTeamsAssigned && (
-        <KnockoutPredictionsSheet
-          userId={selectedUser.userId}
-          displayName={selectedUser.displayName}
-          open={true}
-          onOpenChange={(open) => { if (!open) setSelectedUser(null) }}
-        />
+      {selectedUser && (
+        <>
+          <GroupPredictionsSheet
+            userId={selectedUser.userId}
+            displayName={selectedUser.displayName}
+            open={groupSheetOpen}
+            onOpenChange={(open) => { if (!open) closeGroupSheet() }}
+            onViewKnockout={() => setActiveSheet('knockout')}
+          />
+          <KnockoutPredictionsSheet
+            userId={selectedUser.userId}
+            displayName={selectedUser.displayName}
+            open={activeSheet === 'knockout'}
+            onOpenChange={(open) => { if (!open) setActiveSheet('group') }}
+          />
+        </>
       )}
 
       <KnockoutPredictionsSheet
