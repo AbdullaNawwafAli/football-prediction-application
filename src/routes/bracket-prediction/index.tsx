@@ -7,7 +7,7 @@ import { LeaderboardTable } from '#/components/LeaderboardTable'
 import createLeaderboardQueryOptions from '#/hooks/createLeaderboardQueryOptions'
 import { useAuthStore } from '#/stores/auth.store'
 import { GroupPredictionsSheet } from '#/features/group-predictions'
-import { KnockoutPredictionsSheet } from '#/features/knockout-predictions'
+import { KnockoutPredictionsSheet, createKnockoutTeamsAssignedQueryOptions } from '#/features/knockout-predictions'
 
 export const Route = createFileRoute('/bracket-prediction/')({
   beforeLoad: ({ context }) => {
@@ -24,6 +24,7 @@ function Feature1HomePage() {
   const { data: entries, isPending } = useSuspenseQuery(
     createLeaderboardQueryOptions(),
   )
+  const { data: knockoutTeamsAssigned } = useSuspenseQuery(createKnockoutTeamsAssignedQueryOptions())
 
   const [selectedUser, setSelectedUser] = useState<{ userId: string; displayName: string } | null>(null)
   const [knockoutOpen, setKnockoutOpen] = useState(false)
@@ -44,6 +45,7 @@ function Feature1HomePage() {
           variant="outline"
           size="sm"
           onClick={() => setKnockoutOpen(true)}
+          disabled={!knockoutTeamsAssigned}
         >
           My Knockout
         </Button>
