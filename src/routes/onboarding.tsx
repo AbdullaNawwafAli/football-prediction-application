@@ -7,10 +7,9 @@ export const Route = createFileRoute('/onboarding')({
 
 function OnboardingPage() {
     return (
-        <div className="page">
-            <div className='flex w-full h-full items-center justify-center'>
+        <div className="relative flex h-full items-center justify-center px-3 sm:px-4 overflow-hidden">
+
             <OnboardingForm />
-            </div>
         </div>
     )
 }
