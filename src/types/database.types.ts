@@ -345,6 +345,7 @@ export type Database = {
           display_name: string
           email: string
           favorite_team: number
+          football_heri: boolean | null
           id: string
           rick_rolled: boolean | null
           updated_at: string
@@ -355,6 +356,7 @@ export type Database = {
           display_name: string
           email: string
           favorite_team: number
+          football_heri?: boolean | null
           id: string
           rick_rolled?: boolean | null
           updated_at?: string
@@ -365,6 +367,7 @@ export type Database = {
           display_name?: string
           email?: string
           favorite_team?: number
+          football_heri?: boolean | null
           id?: string
           rick_rolled?: boolean | null
           updated_at?: string
