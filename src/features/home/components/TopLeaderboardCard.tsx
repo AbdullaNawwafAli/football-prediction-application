@@ -72,11 +72,11 @@ function CategoryColumn({
   const [api, setApi] = useState<CarouselApi>()
 
   return (
-    <div className="flex flex-col gap-1 px-2 py-3 min-w-0">
+    <div className="flex flex-col gap-1 px-4 py-3 min-w-0">
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground text-center">
         {title}
       </p>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-0">
         <Button variant="outline" size="icon-sm" className="rounded-full shrink-0" onClick={() => api?.scrollPrev()}>
           <ChevronLeftIcon />
           <span className="sr-only">Previous</span>
