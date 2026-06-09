@@ -5,10 +5,16 @@ import { useAuthStore } from '#/stores/auth.store'
 import { createGroupsQueryOptions } from '../hooks/createGroupsQueryOptions'
 import { createUserPredictionsQueryOptions } from '../hooks/createUserPredictionsQueryOptions'
 import { createLockStatusQueryOptions } from '../hooks/createLockStatusQueryOptions'
-import { createFirstGroupMatchQueryOptions } from '../hooks/createFirstGroupMatchQueryOptions'
 import { upsertGroupPredictions } from '../services/upsertGroupPredictions'
 import { GroupSortableList } from './GroupSortableList'
-import { LockCountdownBanner } from '#/components/LockCountdownBanner'
+import { Card } from '#/components/shadcn/ui/card'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '#/components/shadcn/ui/carousel'
 import type { TeamInGroup, GroupOrder } from '../types'
 
 type Props = {
@@ -43,7 +49,6 @@ export function GroupPredictionsForm({ submitRef, onMutationStateChange }: Props
   const { data: groups } = useSuspenseQuery(createGroupsQueryOptions())
   const { data: predictionsMap } = useSuspenseQuery(createUserPredictionsQueryOptions(userId))
   const { data: isOpen } = useSuspenseQuery(createLockStatusQueryOptions())
-  const { data: firstMatchTime } = useSuspenseQuery(createFirstGroupMatchQueryOptions())
 
   const [order, setOrder] = useState<Record<string, TeamInGroup[]>>(() =>
     buildInitialOrder(groups, predictionsMap),
@@ -81,10 +86,31 @@ export function GroupPredictionsForm({ submitRef, onMutationStateChange }: Props
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10 space-y-8">
-      <LockCountdownBanner isOpen={isOpen} firstMatchTime={firstMatchTime} />
+    <div className="h-full flex flex-col px-4 py-6">
+      {/* Mobile: one group per slide (vertical) */}
+      <div className="sm:hidden flex-1 flex items-center justify-center py-14">
+        <Carousel orientation="vertical" opts={{ loop: false }} className="w-full">
+          <CarouselContent className="h-72">
+            {groups.map(({ groupName }) => (
+              <CarouselItem key={groupName} className="flex items-center justify-center">
+                <Card className="w-full p-4">
+                  <GroupSortableList
+                    groupName={groupName}
+                    teams={order[groupName] ?? []}
+                    onReorder={handleReorder}
+                    disabled={!isOpen}
+                  />
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+      </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Desktop: all groups in grid */}
+      <div className="hidden sm:grid grid-cols-2 md:grid-cols-4 gap-4">
         {groups.map(({ groupName }) => (
           <GroupSortableList
             key={groupName}
@@ -95,7 +121,6 @@ export function GroupPredictionsForm({ submitRef, onMutationStateChange }: Props
           />
         ))}
       </div>
-
     </div>
   )
 }

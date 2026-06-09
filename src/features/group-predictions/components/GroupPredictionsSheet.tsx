@@ -1,5 +1,6 @@
 import { Suspense, useRef, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
+import { LockStatusBadge } from './LockStatusBadge'
 import { Skeleton } from '#/components/shadcn/ui/skeleton'
 import { Button } from '#/components/shadcn/ui/button'
 import {
@@ -59,12 +60,15 @@ export function GroupPredictionsSheet({ userId, displayName, open, onOpenChange 
           >
             <ArrowRight className="size-4" />
           </button>
-          <span className="font-semibold text-base">
+          <span className="font-semibold text-base flex-1">
             {isOwnProfile ? 'Group Predictions' : `${displayName}'s Predictions`}
           </span>
+          <Suspense fallback={null}>
+            <LockStatusBadge />
+          </Suspense>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto flex flex-col">
           <Suspense fallback={<LoadingSkeleton />}>
             {isOwnProfile ? (
               <GroupPredictionsForm
