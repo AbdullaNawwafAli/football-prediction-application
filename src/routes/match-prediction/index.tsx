@@ -25,7 +25,7 @@ function MatchPredictionPage() {
       <Header>Matches</Header>
       <div className="flex flex-wrap gap-2">
         <Button asChild size="sm">
-          <Link to="/match-prediction/todays-matches">Upcoming Matches</Link>
+          <Link to="/match-prediction/upcoming-matches">Upcoming Matches</Link>
         </Button>
         <Button asChild variant="outline" size="sm">
           <Link to="/match-prediction/all-matches">All Matches</Link>
