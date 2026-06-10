@@ -32,7 +32,7 @@ function LeaderboardPage() {
             href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => { void supabase.from('profiles').update({ rick_rolled: true }).eq('id', currentUserId) }}
+            onClick={() => { void supabase.from('profiles').update({ rick_rolled: true }).eq('id', currentUserId).then() }}
           >
             Get More Points
           </a>
@@ -42,7 +42,7 @@ function LeaderboardPage() {
             href="https://youtu.be/4rG1sP1rhow?si=3Zr_GVy057p1UURm"
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => { void supabase.from('profiles').update({ football_heri: true }).eq('id', currentUserId) }}
+            onClick={() => { void supabase.from('profiles').update({ football_heri: true }).eq('id', currentUserId).then() }}
           >
             Football Heritage
           </a>
