@@ -33,7 +33,7 @@ export function UserScoreCard({ displayName, score }: Props) {
     <Card size="sm" className="w-full">
       <CardHeader className="gap-0">
         <CardTitle>
-          <span className="text-xl">{displayName}</span>
+          <span className="text-xl capitalize">{displayName}</span>
         </CardTitle>
         <CardDescription>Points you've earned so far</CardDescription>
       </CardHeader>

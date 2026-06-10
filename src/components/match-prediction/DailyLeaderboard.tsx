@@ -34,7 +34,7 @@ function Podium({ entries }: { entries: DailyLeaderboardEntry[] }) {
           <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
           <AvatarFallback className={size === 'sm' ? 'text-xs' : undefined}>{initials}</AvatarFallback>
         </Avatar>
-        <p className={`font-medium text-center leading-tight line-clamp-1 w-20 ${size === 'sm' ? 'text-xs' : 'text-sm'}`}>
+        <p className={`font-medium text-center leading-tight line-clamp-1 w-20 capitalize ${size === 'sm' ? 'text-xs' : 'text-sm'}`}>
           {entry.displayName}
         </p>
         <p className="text-xs text-muted-foreground">{entry.pointsToday} pts today</p>

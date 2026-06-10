@@ -55,7 +55,7 @@ export function KnockoutPredictionsSheet({ userId, displayName, open, onOpenChan
           >
             <ArrowRight className="size-4" />
           </button>
-          <span className="font-semibold text-base flex-1">
+          <span className="font-semibold text-base flex-1 capitalize">
             {isOwnProfile ? 'Knockout Predictions' : `${displayName}'s Predictions`}
           </span>
           <Suspense fallback={null}>

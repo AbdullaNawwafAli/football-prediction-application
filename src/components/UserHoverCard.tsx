@@ -36,7 +36,7 @@ export function UserHoverCard({ entry, children }: Props) {
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-1 min-w-0">
-            <p className="font-semibold text-sm truncate">{entry.displayName}</p>
+            <p className="font-semibold text-sm truncate capitalize">{entry.displayName}</p>
             {isLoading ? (
               <>
                 <Skeleton className="h-3 w-32" />

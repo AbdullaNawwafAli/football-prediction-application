@@ -100,7 +100,7 @@ function CategoryColumn({
                       <AvatarImage src={player.avatarUrl} alt={player.displayName} />
                       <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
-                    <p className="font-semibold text-base text-center leading-tight line-clamp-1 w-full px-2">
+                    <p className="font-semibold text-base text-center leading-tight line-clamp-1 w-full px-2 capitalize">
                       {player.displayName}
                     </p>
                     <p className="text-sm text-muted-foreground">{player.points} pts</p>

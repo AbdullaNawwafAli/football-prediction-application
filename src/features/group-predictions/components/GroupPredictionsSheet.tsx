@@ -61,7 +61,7 @@ export function GroupPredictionsSheet({ userId, displayName, open, onOpenChange,
           >
             <ArrowRight className="size-4" />
           </button>
-          <span className="font-semibold text-base flex-1">
+          <span className="font-semibold text-base flex-1 capitalize">
             {isOwnProfile ? 'Group Predictions' : `${displayName}'s Predictions`}
           </span>
           <Suspense fallback={null}>

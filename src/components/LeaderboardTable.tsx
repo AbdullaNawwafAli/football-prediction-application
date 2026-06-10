@@ -104,7 +104,7 @@ export function LeaderboardTable({
             {/* Name + chips */}
             <div className="flex-1 min-w-0">
               <UserHoverCard entry={entry}>
-                <p className={cn('text-sm truncate', isCurrentUser && 'font-semibold')}>
+                <p className={cn('text-sm truncate capitalize', isCurrentUser && 'font-semibold')}>
                   {entry.displayName}
                   {isCurrentUser && (
                     <span className="ml-1.5 text-xs text-muted-foreground font-normal">(you)</span>
