@@ -11,22 +11,8 @@ import { MatchList } from '#/components/match-prediction/MatchList'
 import { MatchPredictionDrawer } from '#/components/match-prediction/MatchPredictionDrawer'
 import { createMatchesQueryOptions } from '#/hooks/createMatchesQueryOptions'
 import { createUserScorePredictionsQueryOptions } from '#/hooks/createUserScorePredictionsQueryOptions'
-import type { MatchWithTeams } from '#/types/matches'
 import { useAuthStore } from '#/stores/auth.store'
-
-function isSameDay(a: Date, b: Date) {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
-}
-
-function getUpcomingMatches(matches: MatchWithTeams[]) {
-  const today = new Date()
-  const tomorrow = new Date(today)
-  tomorrow.setDate(today.getDate() + 1)
-  return matches.filter((m) => {
-    const d = new Date(m.utcDate)
-    return isSameDay(d, today) || isSameDay(d, tomorrow)
-  })
-}
+import { getUpcomingMatches } from '#/utils/matchFilters'
 
 export function UpcomingMatchesCard() {
   const profile = useAuthStore((s) => s.profile)

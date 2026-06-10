@@ -95,9 +95,11 @@ Deno.serve(async (_req)=>{
     }
   }
   // ── 4. Upsert is_correct for every pick ──────────────────────────────────────
-  const { error: picksUpsertError } = await supabase.from("group_stage_prediction_picks").upsert(updatedPicks, {
-    onConflict: "id"
-  });
+  const pickUpdatePromises = updatedPicks.map(({ id, is_correct })=>supabase.from("group_stage_prediction_picks").update({
+      is_correct
+    }).eq("id", id));
+  const pickResults = await Promise.all(pickUpdatePromises);
+  const picksUpsertError = pickResults.find((r)=>r.error)?.error ?? null;
   if (picksUpsertError) {
     return new Response(JSON.stringify({
       success: false,
@@ -160,17 +162,19 @@ Deno.serve(async (_req)=>{
     });
   }
   // Sum group points per user
-  const userPoints = new Map();
+  const userGroupPoints = new Map();
   for (const row of groupTotals ?? []){
-    userPoints.set(row.user_id, (userPoints.get(row.user_id) ?? 0) + row.group_points);
+    userGroupPoints.set(row.user_id, (userGroupPoints.get(row.user_id) ?? 0) + row.group_points);
   }
-  // Add knockout points
+  // Sum knockout points per user
+  const userKnockoutPoints = new Map();
   for (const row of knockoutTotals ?? []){
-    userPoints.set(row.user_id, (userPoints.get(row.user_id) ?? 0) + row.points_awarded);
+    userKnockoutPoints.set(row.user_id, (userKnockoutPoints.get(row.user_id) ?? 0) + row.points_awarded);
   }
-  const userScoreRows = Array.from(userPoints.entries()).map(([user_id, feature1_points])=>({
+  const userScoreRows = Array.from(affectedUserIds).map((user_id)=>({
       user_id,
-      feature1_points,
+      group_stage_points: userGroupPoints.get(user_id) ?? 0,
+      knockout_points: userKnockoutPoints.get(user_id) ?? 0,
       updated_at: new Date().toISOString()
     }));
   const { error: scoresError } = await supabase.from("user_scores").upsert(userScoreRows, {
