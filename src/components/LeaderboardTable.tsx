@@ -116,11 +116,11 @@ export function LeaderboardTable({
                   <>
                     <div className="flex flex-col items-center gap-0.5 px-2 py-1 rounded bg-muted/60">
                       <span className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground leading-none">Group</span>
-                      <span className="text-xs font-bold tabular-nums leading-none">{entry.matchday1 + entry.matchday2 + entry.matchday3}</span>
+                      <span className="text-xs font-bold tabular-nums leading-none">{entry.groupStagePoints}</span>
                     </div>
                     <div className="flex flex-col items-center gap-0.5 px-2 py-1 rounded bg-muted/60">
                       <span className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground leading-none">Knockout</span>
-                      <span className="text-xs font-bold tabular-nums leading-none">{entry.last32 + entry.last16 + entry.qf + entry.sf + entry.final + entry.third}</span>
+                      <span className="text-xs font-bold tabular-nums leading-none">{entry.knockoutPoints}</span>
                     </div>
                   </>
                 )}

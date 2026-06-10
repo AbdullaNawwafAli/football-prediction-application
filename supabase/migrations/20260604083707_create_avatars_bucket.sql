@@ -1,6 +1,7 @@
 -- Create a public bucket for avatars
 insert into storage.buckets (id, name, public)
-values ('avatars', 'avatars', true);
+values ('avatars', 'avatars', true)
+on conflict (id) do nothing;
 
 -- Anyone can read avatars (for leaderboard display)
 create policy "avatars are publicly readable"

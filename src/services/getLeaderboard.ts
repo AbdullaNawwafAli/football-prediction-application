@@ -6,6 +6,7 @@ export async function getLeaderboardApi(): Promise<LeaderboardEntry[]> {
     .from('profiles')
     .select(`id, display_name, avatar_url,
       user_scores(feature1_points, feature2_points, total_points,
+        group_stage_points, knockout_points,
         matchday1, matchday2, matchday3, last_32, last_16, qf, sf, final, third)`)
 
   if (error) throw error
@@ -23,6 +24,8 @@ export async function getLeaderboardApi(): Promise<LeaderboardEntry[]> {
         feature1Points: s?.feature1_points ?? 0,
         feature2Points: s?.feature2_points ?? 0,
         totalPoints: s?.total_points ?? null,
+        groupStagePoints: s?.group_stage_points ?? 0,
+        knockoutPoints: s?.knockout_points ?? 0,
         matchday1: s?.matchday1 ?? 0,
         matchday2: s?.matchday2 ?? 0,
         matchday3: s?.matchday3 ?? 0,
