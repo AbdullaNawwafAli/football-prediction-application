@@ -43,7 +43,7 @@ export function Header({ children }: HeaderProps) {
           <button type="button" className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <Avatar size="default">
               <AvatarImage
-                src={profile?.avatar_url ?? ''}
+                src={profile?.avatar_url ?? undefined}
                 alt={profile?.display_name}
               />
               <AvatarFallback>{initials}</AvatarFallback>
