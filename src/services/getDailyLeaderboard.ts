@@ -10,7 +10,7 @@ export type DailyLeaderboardEntry = {
 
 export async function getDailyLeaderboardApi(date: Date): Promise<DailyLeaderboardEntry[]> {
   const start = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString()
-  const end   = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString()
+  const end = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString()
 
   const { data: matchRows, error: matchError } = await supabase
     .from('matches')

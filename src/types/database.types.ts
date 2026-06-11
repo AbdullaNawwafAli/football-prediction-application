@@ -233,6 +233,21 @@ export type Database = {
         }
         Relationships: []
       }
+      knockoutlock: {
+        Row: {
+          id: number
+          locked: boolean | null
+        }
+        Insert: {
+          id?: number
+          locked?: boolean | null
+        }
+        Update: {
+          id?: number
+          locked?: boolean | null
+        }
+        Relationships: []
+      }
       matches: {
         Row: {
           away_booking_score: number | null
