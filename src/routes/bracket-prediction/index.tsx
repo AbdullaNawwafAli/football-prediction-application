@@ -9,6 +9,7 @@ import createLeaderboardQueryOptions from '#/hooks/createLeaderboardQueryOptions
 import { useAuthStore } from '#/stores/auth.store'
 import { GroupPredictionsSheet } from '#/features/group-predictions'
 import { KnockoutPredictionsSheet, createKnockoutTeamsAssignedQueryOptions } from '#/features/knockout-predictions'
+import { createKnockoutLockStatusQueryOptions } from '#/features/knockout-predictions/hooks/createKnockoutLockStatusQueryOptions'
 
 export const Route = createFileRoute('/bracket-prediction/')({
   beforeLoad: ({ context }) => {
@@ -26,6 +27,7 @@ function Feature1HomePage() {
     createLeaderboardQueryOptions(),
   )
   const { data: knockoutTeamsAssigned } = useSuspenseQuery(createKnockoutTeamsAssignedQueryOptions())
+  const { data: isKnockoutOpen } = useSuspenseQuery(createKnockoutLockStatusQueryOptions())
 
   const [selectedUser, setSelectedUser] = useState<{ userId: string; displayName: string } | null>(null)
   const [groupSheetOpen, setGroupSheetOpen] = useState(false)
@@ -58,7 +60,7 @@ function Feature1HomePage() {
         <Button
           variant="outline"
           size="sm"
-          disabled={!knockoutTeamsAssigned}
+          disabled={!knockoutTeamsAssigned || !isKnockoutOpen}
           onClick={() => setOwnKnockoutOpen(true)}
         >
           My Knockout <ArrowRight className="size-3.5" />
