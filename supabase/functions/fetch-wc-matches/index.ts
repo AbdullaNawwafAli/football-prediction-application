@@ -40,6 +40,7 @@ Deno.serve(async (_req)=>{
       status: m.status,
       stage: m.stage,
       group_name: m.group ?? null,
+      matchday: m.matchday ?? null,
       home_team_id: m.homeTeam.id ?? null,
       away_team_id: m.awayTeam.id ?? null,
       duration: m.score.duration ?? null,

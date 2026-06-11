@@ -43,6 +43,7 @@ Deno.serve(async (_req)=>{
       home_team_id: m.homeTeam.id ?? null,
       away_team_id: m.awayTeam.id ?? null,
       duration: m.score.duration ?? null,
+      matchday: m.matchday ?? null,
       full_time_home: homeScore,
       full_time_away: awayScore,
       half_time_home: halfTimeHome,

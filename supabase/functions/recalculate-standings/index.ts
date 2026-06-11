@@ -82,27 +82,41 @@ Deno.serve(async (_req)=>{
       status: 500
     });
   }
-  // ── 4. Award group stage points based on fresh standings ─────────────────────
-  const baseUrl = Deno.env.get("SUPABASE_URL");
-  const internalHeaders = {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
-    "x-internal-secret": Deno.env.get("INTERNAL_SECRET")
-  };
-  const awardRes = await fetch(`${baseUrl}/functions/v1/award-group-stage-points`, {
-    method: "POST",
-    headers: internalHeaders
-  });
-  const awardData = await awardRes.json();
-  return new Response(JSON.stringify({
-    success: true,
-    standings_updated: standingsRows.length,
-    award: awardData
-  }), {
-    headers: {
-      "Content-Type": "application/json"
-    }
-  });
+  // ── 4. Award group stage points only if matches are IN_PLAY or FINISHED ────────
+  const hasAwardableMatches = matches.some((m)=>m.stage === "GROUP_STAGE" && (m.status === "IN_PLAY" || m.status === "FINISHED"));
+  if (hasAwardableMatches) {
+    const baseUrl = Deno.env.get("SUPABASE_URL");
+    const internalHeaders = {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+      "x-internal-secret": Deno.env.get("INTERNAL_SECRET")
+    };
+    const awardRes = await fetch(`${baseUrl}/functions/v1/award-group-stage-points`, {
+      method: "POST",
+      headers: internalHeaders
+    });
+    const awardData = await awardRes.json();
+    return new Response(JSON.stringify({
+      success: true,
+      standings_updated: standingsRows.length,
+      award: awardData
+    }), {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  } else {
+    return new Response(JSON.stringify({
+      success: true,
+      standings_updated: standingsRows.length,
+      award: null,
+      message: "No IN_PLAY or FINISHED matches to award points for"
+    }), {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  }
 });
 // ── buildStandings ────────────────────────────────────────────────────────────
 function buildStandings(matches) {

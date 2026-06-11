@@ -49,11 +49,40 @@ Deno.serve(async (_req)=>{
     });
   }
   // ── 2. Fetch points per round ─────────────────────────────────────────────────
+  console.log("\n=== DEBUGGING KNOCKOUT_ROUND_POINTS ===");
+  // Test 1: Count rows in the table
+  const { data: countData, error: countError } = await supabase.from("knockout_round_points").select("*", {
+    count: "exact",
+    head: true
+  });
+  console.log("1️⃣ Table exists check:", {
+    rowCount: countData?.length,
+    error: countError?.message
+  });
+  // Test 2: Fetch with all columns to see structure
+  const { data: allCols, error: allColsError } = await supabase.from("knockout_round_points").select("*");
+  console.log("2️⃣ All columns fetch:", {
+    error: allColsError?.message,
+    rowCount: allCols?.length,
+    firstRow: allCols?.[0],
+    columnNames: allCols?.[0] ? Object.keys(allCols[0]) : "N/A"
+  });
+  // Test 3: Fetch just stage and points (the actual query)
   const { data: roundPoints, error: roundError } = await supabase.from("knockout_round_points").select("stage, points");
+  console.log("3️⃣ Stage+Points fetch:", {
+    error: roundError?.message,
+    dataLength: roundPoints?.length,
+    data: roundPoints
+  });
   if (roundError) {
     return new Response(JSON.stringify({
       success: false,
-      error: roundError
+      error: "Failed to fetch roundPoints",
+      details: roundError,
+      debug: {
+        countError: countError?.message,
+        allColsError: allColsError?.message
+      }
     }), {
       headers: {
         "Content-Type": "application/json"
@@ -61,10 +90,29 @@ Deno.serve(async (_req)=>{
       status: 500
     });
   }
-  const pointsForStage = new Map((roundPoints ?? []).map((r)=>[
+  if (!roundPoints || roundPoints.length === 0) {
+    console.error("❌ No roundPoints data returned");
+    return new Response(JSON.stringify({
+      success: false,
+      error: "knockout_round_points table is empty or data structure mismatch",
+      debug: {
+        allRows: allCols
+      }
+    }), {
+      headers: {
+        "Content-Type": "application/json"
+      },
+      status: 500
+    });
+  }
+  const pointsForStage = new Map(roundPoints.map((r)=>[
       r.stage,
       r.points
     ]));
+  console.log("✅ Points map created:", {
+    size: pointsForStage.size,
+    entries: Array.from(pointsForStage.entries())
+  });
   // ── 3. Evaluate each prediction ───────────────────────────────────────────────
   // A prediction is only scored once the match is FINISHED and has a decided winner.
   // Draws (winner_id = null) leave predictions as incorrect until extra time / pens
@@ -83,6 +131,9 @@ Deno.serve(async (_req)=>{
     const points_awarded = is_correct ? pointsForStage.get(match.stage) ?? 0 : 0;
     updatedPredictions.push({
       id: pred.id,
+      user_id: pred.user_id,
+      match_id: pred.match_id,
+      predicted_winner_id: pred.predicted_winner_id,
       is_correct,
       points_awarded,
       updated_at: new Date().toISOString()
