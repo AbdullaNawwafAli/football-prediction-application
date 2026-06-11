@@ -104,15 +104,17 @@ export function LeaderboardTable({
             {/* Name + chips */}
             <div className="flex-1 min-w-0">
               <UserHoverCard entry={entry}>
-                <p className={cn('text-sm truncate capitalize', isCurrentUser && 'font-semibold')}>
-                  {entry.displayName}
-                  {isCurrentUser && (
-                    <span className="ml-1.5 text-xs text-muted-foreground font-normal">(you)</span>
-                  )}
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <p className={cn('text-sm truncate capitalize', isCurrentUser && 'font-semibold')}>
+                    {entry.displayName}
+                    {isCurrentUser && (
+                      <span className="ml-1.5 text-xs text-muted-foreground font-normal">(you)</span>
+                    )}
+                  </p>
                   {entry.favoriteTeamCrestUrl && (
-                    <img src={entry.favoriteTeamCrestUrl} alt="" className="inline-block ml-1.5 size-4 object-contain align-middle" />
+                    <img src={entry.favoriteTeamCrestUrl} alt="" className="shrink-0 size-4 object-contain" />
                   )}
-                </p>
+                </div>
               </UserHoverCard>
               <div className="flex flex-wrap gap-1.5 mt-1.5">
                 {mode === 'feature1' && (
