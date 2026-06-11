@@ -12,9 +12,10 @@ type AvatarPreviewProps = {
   errors?: Array<{ message?: string } | undefined>
   isInvalid?: boolean
   className?: string
+  initialUrl?: string
 }
 
-const AvatarPreview = ({ file, onChange, errors, isInvalid, className }: AvatarPreviewProps) => {
+const AvatarPreview = ({ file, onChange, errors, isInvalid, className, initialUrl }: AvatarPreviewProps) => {
   const id = useId()
   const inputRef = useRef<HTMLInputElement>(null)
   const [previewUrl, setPreviewUrl] = useState<string | undefined>()
@@ -59,7 +60,7 @@ const AvatarPreview = ({ file, onChange, errors, isInvalid, className }: AvatarP
       <label htmlFor={id} className="group cursor-pointer">
         <div className="relative">
           <Avatar className={cn("size-24", hasError && "ring-2 ring-destructive ring-offset-2", className)}>
-            <AvatarImage src={previewUrl} alt="Profile picture preview" />
+            <AvatarImage src={previewUrl ?? initialUrl} alt="Profile picture preview" />
             <AvatarFallback>
               <UserRound className="size-1/2 text-muted-foreground" />
             </AvatarFallback>

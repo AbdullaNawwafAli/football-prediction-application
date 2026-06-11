@@ -13,6 +13,7 @@ import { supabase } from '#/lib/supabase/supabase'
 import { useAuthStore } from '#/stores/auth.store'
 import { useAudioStore } from '#/stores/audio.store'
 import { HelpSheet } from '#/components/HelpSheet'
+import { EditProfileDialog } from '#/features/edit-profile'
 import { CircleHelp, Volume2, VolumeX } from 'lucide-react'
 import { useState } from 'react'
 import type { ReactNode } from 'react'
@@ -25,6 +26,7 @@ export function Header({ children }: HeaderProps) {
   const profile = useAuthStore((s) => s.profile)
   const { isPlaying, toggle } = useAudioStore()
   const [helpOpen, setHelpOpen] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
 
   const initials =
     profile?.display_name
@@ -49,9 +51,10 @@ export function Header({ children }: HeaderProps) {
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <DropdownMenuItem
-            onSelect={() => supabase.auth.signOut()}
-          >
+          <DropdownMenuItem onSelect={() => setEditOpen(true)}>
+            Edit profile
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => supabase.auth.signOut()}>
             Log out
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -74,6 +77,7 @@ export function Header({ children }: HeaderProps) {
         {isPlaying ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
       </button>
       <HelpSheet open={helpOpen} onOpenChange={setHelpOpen} />
+      <EditProfileDialog open={editOpen} onOpenChange={setEditOpen} />
     </header>
   )
 }
