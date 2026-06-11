@@ -109,6 +109,9 @@ export function LeaderboardTable({
                   {isCurrentUser && (
                     <span className="ml-1.5 text-xs text-muted-foreground font-normal">(you)</span>
                   )}
+                  {entry.favoriteTeamCrestUrl && (
+                    <img src={entry.favoriteTeamCrestUrl} alt="" className="inline-block ml-1.5 size-4 object-contain align-middle" />
+                  )}
                 </p>
               </UserHoverCard>
               <div className="flex flex-wrap gap-1.5 mt-1.5">

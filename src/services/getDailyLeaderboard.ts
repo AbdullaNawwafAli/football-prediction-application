@@ -5,6 +5,7 @@ export type DailyLeaderboardEntry = {
   userId: string
   displayName: string
   avatarUrl: string
+  favoriteTeamCrestUrl: string | null
   pointsToday: number
 }
 
@@ -24,20 +25,33 @@ export async function getDailyLeaderboardApi(date: Date): Promise<DailyLeaderboa
 
   const { data, error } = await supabase
     .from('score_predictions')
-    .select('user_id, points_awarded, profiles(display_name, avatar_url)')
+    .select('user_id, points_awarded, profiles(display_name, avatar_url, favorite_team)')
     .in('match_id', matchIds)
     .not('points_awarded', 'is', null)
   if (error) throw error
 
-  const map = new Map<string, { displayName: string; avatarUrl: string; points: number }>()
+  const map = new Map<string, { displayName: string; avatarUrl: string; favoriteTeam: number | null; points: number }>()
   for (const row of data ?? []) {
     const profile = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles
     const prev = map.get(row.user_id) ?? {
       displayName: (profile as any)?.display_name ?? '',
       avatarUrl: (profile as any)?.avatar_url ?? '',
+      favoriteTeam: (profile as any)?.favorite_team ?? null,
       points: 0,
     }
     map.set(row.user_id, { ...prev, points: prev.points + (row.points_awarded ?? 0) })
+  }
+
+  const teamIds = [...new Set([...map.values()].map((v) => v.favoriteTeam).filter(Boolean))] as number[]
+  const crestMap = new Map<number, string>()
+  if (teamIds.length > 0) {
+    const { data: teams } = await supabase
+      .from('teams')
+      .select('id, crest_url')
+      .in('id', teamIds)
+    for (const t of teams ?? []) {
+      if (t.crest_url) crestMap.set(t.id, t.crest_url)
+    }
   }
 
   return [...map.entries()]
@@ -51,6 +65,7 @@ export async function getDailyLeaderboardApi(date: Date): Promise<DailyLeaderboa
       userId,
       displayName: v.displayName,
       avatarUrl: v.avatarUrl,
+      favoriteTeamCrestUrl: v.favoriteTeam ? (crestMap.get(v.favoriteTeam) ?? null) : null,
       pointsToday: v.points,
     }))
 }

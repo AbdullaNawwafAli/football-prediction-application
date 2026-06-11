@@ -24,6 +24,7 @@ type Player = {
   rank: number
   displayName: string
   avatarUrl: string
+  favoriteTeamCrestUrl: string | null
   points: number
 }
 
@@ -45,6 +46,7 @@ function toPlayers(
       rank: i + 1,
       displayName: e.displayName,
       avatarUrl: e.avatarUrl,
+      favoriteTeamCrestUrl: e.favoriteTeamCrestUrl,
       points: e[key] ?? 0,
     }))
 }
@@ -100,9 +102,14 @@ function CategoryColumn({
                       <AvatarImage src={player.avatarUrl} alt={player.displayName} />
                       <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
-                    <p className="font-semibold text-base text-center leading-tight line-clamp-1 w-full px-2 capitalize">
-                      {player.displayName}
-                    </p>
+                    <div className="flex items-center justify-center gap-1.5">
+                      <p className="font-semibold text-base text-center leading-tight line-clamp-1 capitalize">
+                        {player.displayName}
+                      </p>
+                      {player.favoriteTeamCrestUrl && (
+                        <img src={player.favoriteTeamCrestUrl} alt="" className="size-5 shrink-0 object-contain" />
+                      )}
+                    </div>
                     <p className="text-sm text-muted-foreground">{player.points} pts</p>
                   </div>
                 </CarouselItem>

@@ -34,9 +34,14 @@ function Podium({ entries }: { entries: DailyLeaderboardEntry[] }) {
           <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
           <AvatarFallback className={size === 'sm' ? 'text-xs' : undefined}>{initials}</AvatarFallback>
         </Avatar>
-        <p className={`font-medium text-center leading-tight line-clamp-1 w-20 capitalize ${size === 'sm' ? 'text-xs' : 'text-sm'}`}>
-          {entry.displayName}
-        </p>
+        <div className="flex items-center justify-center gap-1">
+          <p className={`font-medium text-center leading-tight line-clamp-1 capitalize ${size === 'sm' ? 'text-xs' : 'text-sm'}`}>
+            {entry.displayName}
+          </p>
+          {entry.favoriteTeamCrestUrl && (
+            <img src={entry.favoriteTeamCrestUrl} alt="" className="size-4 shrink-0 object-contain" />
+          )}
+        </div>
         <p className="text-xs text-muted-foreground">{entry.pointsToday} pts today</p>
       </div>
     )
