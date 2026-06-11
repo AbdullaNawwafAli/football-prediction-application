@@ -41,7 +41,10 @@ export async function getDailyLeaderboardApi(date: Date): Promise<DailyLeaderboa
   }
 
   return [...map.entries()]
-    .sort((a, b) => b[1].points - a[1].points)
+    .sort((a, b) => {
+      const diff = b[1].points - a[1].points
+      return diff !== 0 ? diff : a[1].displayName.localeCompare(b[1].displayName)
+    })
     .slice(0, 3)
     .map(([userId, v], i) => ({
       rank: i + 1,

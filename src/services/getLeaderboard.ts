@@ -37,6 +37,9 @@ export async function getLeaderboardApi(): Promise<LeaderboardEntry[]> {
         third:     s?.third     ?? 0,
       }
     })
-    .sort((a, b) => (b.totalPoints ?? 0) - (a.totalPoints ?? 0))
+    .sort((a, b) => {
+      const diff = (b.totalPoints ?? 0) - (a.totalPoints ?? 0)
+      return diff !== 0 ? diff : a.displayName.localeCompare(b.displayName)
+    })
     .map((entry, index) => ({ ...entry, rank: index + 1 }))
 }
