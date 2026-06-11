@@ -1,5 +1,6 @@
 import { Suspense, useRef, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { LockStatusBadge } from './LockStatusBadge'
 import { Skeleton } from '#/components/shadcn/ui/skeleton'
 import { Button } from '#/components/shadcn/ui/button'
@@ -12,6 +13,7 @@ import {
 import { useAuthStore } from '#/stores/auth.store'
 import { GroupPredictionsForm } from './GroupPredictionsForm'
 import { GroupPredictionsReadOnly } from './GroupPredictionsReadOnly'
+import { createLockStatusQueryOptions } from '../hooks/createLockStatusQueryOptions'
 
 type Props = {
   userId: string
@@ -19,6 +21,16 @@ type Props = {
   open: boolean
   onOpenChange: (open: boolean) => void
   onViewKnockout?: () => void
+}
+
+function LockedGroupStageNotice() {
+  const { data: isOpen } = useSuspenseQuery(createLockStatusQueryOptions())
+  if (isOpen) return null
+  return (
+    <p className="text-sm text-muted-foreground bg-muted/50 border-b px-4 py-3">
+      Group Stage points are not set in stone, it will change based on the team positions until the end of the group stage.
+    </p>
+  )
 }
 
 function LoadingSkeleton() {
@@ -70,6 +82,9 @@ export function GroupPredictionsSheet({ userId, displayName, open, onOpenChange,
         </div>
 
         <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col">
+          <Suspense fallback={null}>
+            <LockedGroupStageNotice />
+          </Suspense>
           <Suspense fallback={<LoadingSkeleton />}>
             {isOwnProfile ? (
               <GroupPredictionsForm
