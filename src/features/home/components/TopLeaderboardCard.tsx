@@ -40,7 +40,10 @@ function toPlayers(
   key: 'feature1Points' | 'feature2Points' | 'totalPoints',
 ): Player[] {
   return [...entries]
-    .sort((a, b) => (b[key] ?? 0) - (a[key] ?? 0))
+    .sort((a, b) => {
+      const diff = (b[key] ?? 0) - (a[key] ?? 0)
+      return diff !== 0 ? diff : a.displayName.localeCompare(b.displayName)
+    })
     .slice(0, 3)
     .map((e, i) => ({
       rank: i + 1,
@@ -57,7 +60,10 @@ function getUserRank(
   userId: string,
 ): number | null {
   const idx = [...entries]
-    .sort((a, b) => (b[key] ?? 0) - (a[key] ?? 0))
+    .sort((a, b) => {
+      const diff = (b[key] ?? 0) - (a[key] ?? 0)
+      return diff !== 0 ? diff : a.displayName.localeCompare(b.displayName)
+    })
     .findIndex((e) => e.userId === userId)
   return idx === -1 ? null : idx + 1
 }

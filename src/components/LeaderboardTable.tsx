@@ -72,9 +72,21 @@ export function LeaderboardTable({
     )
   }
 
+  const sortKey =
+    mode === 'feature1' ? 'feature1Points'
+    : mode === 'feature2' ? 'feature2Points'
+    : 'totalPoints'
+
+  const sorted = [...entries]
+    .sort((a, b) => {
+      const diff = (b[sortKey] ?? 0) - (a[sortKey] ?? 0)
+      return diff !== 0 ? diff : a.displayName.localeCompare(b.displayName)
+    })
+    .map((e, i) => ({ ...e, rank: i + 1 }))
+
   return (
     <div className="divide-y divide-border">
-      {entries.map((entry) => {
+      {sorted.map((entry) => {
         const isCurrentUser = entry.userId === currentUserId
         const initials = entry.displayName
           .split(' ')
