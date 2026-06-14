@@ -14,12 +14,33 @@ export async function getMatchesWithTeams(): Promise<MatchWithTeams[]> {
       full_time_away,
       half_time_home,
       half_time_away,
-      home_team:teams!matches_home_team_id_fkey(id, name, tla, crest_url),
-      away_team:teams!matches_away_team_id_fkey(id, name, tla, crest_url)
+      home_team_id,
+      away_team_id
     `)
     .order('utc_date', { ascending: true })
 
   if (error) throw error
+
+  // Team name/tla/crest are identical across every match a team plays, so we
+  // don't duplicate them on each match row. Fetch the distinct teams once and
+  // join client-side — this is the bulk of the matches-query egress saving.
+  const teamIds = [
+    ...new Set(data.flatMap((r) => [r.home_team_id, r.away_team_id]).filter((id): id is number => id != null)),
+  ]
+
+  const teamMap = new Map<number, { id: number; name: string; tla: string | null; crestUrl: string | null }>()
+  if (teamIds.length > 0) {
+    const { data: teams, error: teamsError } = await supabase
+      .from('teams')
+      .select('id, name, tla, crest_url')
+      .in('id', teamIds)
+    if (teamsError) throw teamsError
+    for (const t of teams) {
+      teamMap.set(t.id, { id: t.id, name: t.name, tla: t.tla, crestUrl: t.crest_url })
+    }
+  }
+
+  const toTeam = (id: number | null) => (id != null ? (teamMap.get(id) ?? null) : null)
 
   return data.map((row) => ({
     matchId: row.id,
@@ -31,11 +52,7 @@ export async function getMatchesWithTeams(): Promise<MatchWithTeams[]> {
     fullTimeAway: row.full_time_away,
     halfTimeHome: row.half_time_home,
     halfTimeAway: row.half_time_away,
-    homeTeam: row.home_team
-      ? { id: row.home_team.id, name: row.home_team.name, tla: row.home_team.tla, crestUrl: row.home_team.crest_url }
-      : null,
-    awayTeam: row.away_team
-      ? { id: row.away_team.id, name: row.away_team.name, tla: row.away_team.tla, crestUrl: row.away_team.crest_url }
-      : null,
+    homeTeam: toTeam(row.home_team_id),
+    awayTeam: toTeam(row.away_team_id),
   }))
 }

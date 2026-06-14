@@ -6,7 +6,7 @@ export default async function getProfileApi(
 ): Promise<ProfileData | null> {
     const { data: profile } = await supabase
         .from("profiles")
-        .select("*")
+        .select("id, display_name, email, avatar_url, favorite_team")
         .eq("id", userId)
         .single();
 

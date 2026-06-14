@@ -1,13 +1,24 @@
 import { supabase } from '#/lib/supabase/supabase'
 import type { LeaderboardEntry } from '#/types/leaderboard'
 
-export async function getLeaderboardApi(): Promise<LeaderboardEntry[]> {
+/**
+ * Fetch all leaderboard entries.
+ *
+ * @param detailed When true (leaderboard page) we pull the full per-stage points
+ *   breakdown. When false (home Top-3 card) we only select the three headline
+ *   totals the card actually renders, so every user's ~11 breakdown columns stay
+ *   out of the response. Breakdown fields default to 0 in light mode.
+ */
+export async function getLeaderboardApi(detailed = true): Promise<LeaderboardEntry[]> {
+  const scoreColumns = detailed
+    ? `user_scores(feature1_points, feature2_points, total_points,
+        group_stage_points, knockout_points,
+        matchday1, matchday2, matchday3, last_32, last_16, qf, sf, final, third)`
+    : `user_scores(feature1_points, feature2_points, total_points)`
+
   const { data, error } = await supabase
     .from('profiles')
-    .select(`id, display_name, avatar_url, favorite_team,
-      user_scores(feature1_points, feature2_points, total_points,
-        group_stage_points, knockout_points,
-        matchday1, matchday2, matchday3, last_32, last_16, qf, sf, final, third)`)
+    .select(`id, display_name, avatar_url, favorite_team, ${scoreColumns}`)
 
   if (error) throw error
 

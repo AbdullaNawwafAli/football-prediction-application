@@ -1,8 +1,6 @@
 import { create } from 'zustand'
 import type { Session, User } from '@supabase/supabase-js'
-import type { Database } from '@/types/database.types'
-
-type Profile = Database['public']['Tables']['profiles']['Row']
+import type { ProfileData as Profile } from '#/types/profile-data'
 
 interface AuthState {
     session: Session | null

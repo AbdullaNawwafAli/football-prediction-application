@@ -16,7 +16,7 @@ import { Button } from '#/components/shadcn/ui/button'
 import { Skeleton } from '#/components/shadcn/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/shadcn/ui/tabs'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
-import createLeaderboardQueryOptions from '#/hooks/createLeaderboardQueryOptions'
+import createTopLeaderboardQueryOptions from '#/hooks/createTopLeaderboardQueryOptions'
 import { useAuthStore } from '#/stores/auth.store'
 import { transformedAvatarUrl } from '#/utils/avatarUrl'
 import type { LeaderboardEntry } from '#/types/leaderboard'
@@ -169,7 +169,7 @@ function MobileCategoryTabs({ categories }: { categories: Category[] }) {
 }
 
 export function TopLeaderboardCard() {
-  const { data: entries, isPending } = useQuery(createLeaderboardQueryOptions())
+  const { data: entries, isPending } = useQuery(createTopLeaderboardQueryOptions())
   const currentUserId = useAuthStore((s) => s.profile?.id)
 
   if (isPending || !entries) {

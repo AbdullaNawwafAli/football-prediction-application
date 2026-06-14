@@ -5,7 +5,7 @@ export function createKnockoutLockStatusQueryOptions() {
   return queryOptions({
     queryKey: ['knockout', 'lock'],
     queryFn: () => getKnockoutStageLockStatus(),
-    staleTime: 60 * 1000,
-    refetchInterval: 60 * 1000,
+    staleTime: 60 * 60 * 1000,
+    refetchInterval: 60 * 60 * 1000,
   })
 }

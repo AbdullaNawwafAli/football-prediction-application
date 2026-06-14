@@ -2,9 +2,7 @@ import { createRouter } from '@tanstack/react-router'
 import { routeTree } from '#/routeTree.gen'
 import { getQueryClient } from '#/lib/tanstack-query/query-client'
 import type { Session } from '@supabase/supabase-js'
-import type { Database } from '#/types/database.types'
-
-type Profile = Database['public']['Tables']['profiles']['Row']
+import type { ProfileData as Profile } from '#/types/profile-data'
 
 // Define the shape explicitly — this is what beforeLoad sees as context
 export interface RouterContext {
