@@ -110,7 +110,7 @@ export function LeaderboardTable({
             </div>
             {!hideAvatar && (
               <Avatar size="lg" className="size-10! sm:size-14! shrink-0">
-                <AvatarImage src={transformedAvatarUrl(entry.avatarUrl, 56)} alt={entry.displayName} loading="lazy" />
+                <AvatarImage src={transformedAvatarUrl(entry.avatarUrl)} alt={entry.displayName} loading="lazy" />
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
             )}

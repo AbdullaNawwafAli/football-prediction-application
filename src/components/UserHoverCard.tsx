@@ -33,7 +33,7 @@ export function UserHoverCard({ entry, children }: Props) {
       <HoverCardContent className="w-72" side="bottom" align="start">
         <div className="flex gap-3">
           <Avatar size="lg" className="size-14 shrink-0">
-            <AvatarImage src={transformedAvatarUrl(entry.avatarUrl, 56)} alt={entry.displayName} />
+            <AvatarImage src={transformedAvatarUrl(entry.avatarUrl)} alt={entry.displayName} />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-1 min-w-0">

@@ -44,7 +44,7 @@ export function Header({ children }: HeaderProps) {
           <button type="button" className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <Avatar size="default">
               <AvatarImage
-                src={transformedAvatarUrl(profile?.avatar_url, 32)}
+                src={transformedAvatarUrl(profile?.avatar_url)}
                 alt={profile?.display_name}
               />
               <AvatarFallback>{initials}</AvatarFallback>

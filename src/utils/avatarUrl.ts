@@ -1,18 +1,23 @@
 import { supabase } from '#/lib/supabase/supabase'
 
 /**
- * Convert a stored avatar public URL into a CDN image-transform URL that serves
- * a resized/compressed variant. Avatars are uploaded at full resolution but only
- * ever rendered small, so requesting a transformed variant drastically reduces
- * Storage (cached) egress.
+ * One canonical rendered size (CSS px) for every avatar in the app. We always
+ * request this single transform variant — regardless of the slot it's shown in —
+ * so the same URL is reused across the header, leaderboard, hover card, etc. That
+ * maximises browser/SW/CDN cache hits and minimises Storage (cached) egress.
  *
- * @param url   The stored `avatar_url` (a public object URL), or null/undefined.
- * @param size  Target render size in CSS px. Request 2x for retina sharpness.
+ * 96 covers our largest avatar slot (the home carousel) at 2x retina; smaller
+ * slots simply downscale the same cached image. The resulting WebP is a few KB.
  */
-export function transformedAvatarUrl(
-  url: string | null | undefined,
-  size: number
-): string | undefined {
+const AVATAR_RENDER_SIZE = 96
+
+/**
+ * Convert a stored avatar public URL into a CDN image-transform URL that serves
+ * the single canonical resized/compressed variant.
+ *
+ * @param url The stored `avatar_url` (a public object URL), or null/undefined.
+ */
+export function transformedAvatarUrl(url: string | null | undefined): string | undefined {
   if (!url) return undefined
 
   const marker = '/avatars/'
@@ -21,7 +26,7 @@ export function transformedAvatarUrl(
   if (idx === -1) return url
 
   const path = url.slice(idx + marker.length)
-  const dimension = size * 2
+  const dimension = AVATAR_RENDER_SIZE * 2
 
   const { data } = supabase.storage.from('avatars').getPublicUrl(path, {
     transform: { width: dimension, height: dimension, resize: 'cover', quality: 70 },

@@ -5,6 +5,7 @@ import { cn } from "#/lib/shadcn/utils/utils"
 import { FieldDescription, FieldError } from "../../../components/shadcn/ui/field"
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"]
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5 MB
 
 type AvatarPreviewProps = {
   file: File | undefined
@@ -44,6 +45,13 @@ const AvatarPreview = ({ file, onChange, errors, isInvalid, className, initialUr
 
     if (!ALLOWED_TYPES.includes(selected.type)) {
       setTypeError("Only JPG, PNG, and WebP images are allowed")
+      onChange(undefined)
+      if (inputRef.current) inputRef.current.value = ""
+      return
+    }
+
+    if (selected.size > MAX_FILE_SIZE) {
+      setTypeError("Image must be smaller than 5MB")
       onChange(undefined)
       if (inputRef.current) inputRef.current.value = ""
       return

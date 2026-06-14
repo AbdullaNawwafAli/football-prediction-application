@@ -13,11 +13,15 @@ import { updateProfileApi } from '../services/updateProfile'
 import z from 'zod'
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2 MB
 
 const editProfileSchema = z.object({
   display_name: z.string().min(1, 'Display name is required').max(20, 'Display name must be less than 20 characters'),
   profile_picture: z.union([
-    z.instanceof(File).refine((file) => ALLOWED_TYPES.includes(file.type), { message: 'Only JPG, PNG, and WebP images are allowed' }),
+    z
+      .instanceof(File)
+      .refine((file) => ALLOWED_TYPES.includes(file.type), { message: 'Only JPG, PNG, and WebP images are allowed' })
+      .refine((file) => file.size <= MAX_FILE_SIZE, { message: 'Image must be smaller than 5MB' }),
     z.undefined(),
   ]),
 })
@@ -83,7 +87,7 @@ export function EditProfileDialog({ open, onOpenChange }: Props) {
                     onChange={field.handleChange}
                     errors={field.state.meta.errors}
                     isInvalid={field.state.meta.isTouched && !field.state.meta.isValid}
-                    initialUrl={transformedAvatarUrl(profile?.avatar_url, 96)}
+                    initialUrl={transformedAvatarUrl(profile?.avatar_url)}
                   />
                 )}
               </form.AppField>

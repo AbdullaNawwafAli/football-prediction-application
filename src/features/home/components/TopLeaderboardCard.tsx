@@ -106,7 +106,7 @@ function CategoryColumn({
                       {RANK_LABEL[player.rank] ?? `#${player.rank}`}
                     </span>
                     <Avatar className="size-20">
-                      <AvatarImage src={transformedAvatarUrl(player.avatarUrl, 80)} alt={player.displayName} />
+                      <AvatarImage src={transformedAvatarUrl(player.avatarUrl)} alt={player.displayName} />
                       <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
                     <div className="flex items-center justify-center gap-1.5">
