@@ -25,6 +25,10 @@ export function transformedAvatarUrl(url: string | null | undefined): string | u
   // Not a Supabase avatars URL (e.g. local blob preview) — leave untouched.
   if (idx === -1) return url
 
+  // Local dev Supabase doesn't run imgproxy, so /render/image/ returns 404.
+  // Serve the plain object URL instead — transformation is a production concern only.
+  if (import.meta.env.DEV) return url
+
   const path = url.slice(idx + marker.length)
   const dimension = AVATAR_RENDER_SIZE * 2
 
