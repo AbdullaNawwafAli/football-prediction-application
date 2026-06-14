@@ -8,6 +8,7 @@ import { FieldGroup } from '#/components/shadcn/ui/field'
 import { useAppForm } from '#/components/tanstack-form/hooks/hooks'
 import { useAuthStore } from '#/stores/auth.store'
 import AvatarPreview from '#/features/onboarding/components/AvatarPreview'
+import { transformedAvatarUrl } from '#/utils/avatarUrl'
 import { updateProfileApi } from '../services/updateProfile'
 import z from 'zod'
 
@@ -82,7 +83,7 @@ export function EditProfileDialog({ open, onOpenChange }: Props) {
                     onChange={field.handleChange}
                     errors={field.state.meta.errors}
                     isInvalid={field.state.meta.isTouched && !field.state.meta.isValid}
-                    initialUrl={profile?.avatar_url ?? undefined}
+                    initialUrl={transformedAvatarUrl(profile?.avatar_url, 96)}
                   />
                 )}
               </form.AppField>

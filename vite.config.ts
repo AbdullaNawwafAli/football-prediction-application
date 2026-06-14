@@ -46,6 +46,22 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,svg,png,woff2}'],
         navigateFallback: '/index.html',
+        // Serve avatars from the service worker after first load so returning
+        // PWA sessions don't re-hit the Storage CDN (reduces cached egress).
+        runtimeCaching: [
+          {
+            urlPattern: /\/storage\/v1\/(object|render\/image)\/public\/avatars\//,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'avatars',
+              expiration: {
+                maxEntries: 200,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
       },
     }),
   ],

@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '#/components/shadcn/ui/avat
 import { Skeleton } from '#/components/shadcn/ui/skeleton'
 import type { LeaderboardEntry } from '#/types/leaderboard'
 import createUserProfileQueryOptions from '#/hooks/createUserProfileQueryOptions'
+import { transformedAvatarUrl } from '#/utils/avatarUrl'
 
 type Props = {
   entry: LeaderboardEntry
@@ -32,7 +33,7 @@ export function UserHoverCard({ entry, children }: Props) {
       <HoverCardContent className="w-72" side="bottom" align="start">
         <div className="flex gap-3">
           <Avatar size="lg" className="size-14 shrink-0">
-            <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
+            <AvatarImage src={transformedAvatarUrl(entry.avatarUrl, 56)} alt={entry.displayName} />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-1 min-w-0">

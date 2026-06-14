@@ -1,4 +1,5 @@
 import { supabase } from '#/lib/supabase/supabase'
+import { resizeImage } from '#/utils/resizeImage'
 import type { Database } from '#/types/database.types'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
@@ -22,12 +23,13 @@ export async function updateProfileApi({ userId, displayName, profilePicture }: 
       if (removeError) throw removeError
     }
 
-    const fileExt = profilePicture.name.split('.').pop()
+    const optimized = await resizeImage(profilePicture)
+    const fileExt = optimized.name.split('.').pop()
     const filePath = `${userId}/profile-${Date.now()}.${fileExt}`
 
     const { error: uploadError } = await supabase.storage
       .from('avatars')
-      .upload(filePath, profilePicture)
+      .upload(filePath, optimized, { cacheControl: '31536000' })
 
     if (uploadError) throw uploadError
 

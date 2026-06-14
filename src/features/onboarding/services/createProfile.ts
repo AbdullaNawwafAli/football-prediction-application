@@ -1,4 +1,5 @@
 import { supabase } from "#/lib/supabase/supabase"
+import { resizeImage } from "#/utils/resizeImage"
 import type { ProfileInsert, ProfileData, CreateProfileDto } from "#/types/profile-data"
 
 export async function createProfileApi({
@@ -11,12 +12,13 @@ export async function createProfileApi({
   let avatarUrl: string | null = null
 
   if (profilePicture) {
-    const fileExt = profilePicture.name.split(".").pop()
+    const optimized = await resizeImage(profilePicture)
+    const fileExt = optimized.name.split(".").pop()
     const filePath = `${userId}/profile.${fileExt}`
 
     const { error: uploadError } = await supabase.storage
       .from("avatars")
-      .upload(filePath, profilePicture, { upsert: true })
+      .upload(filePath, optimized, { upsert: true, cacheControl: '31536000' })
 
     if (uploadError) throw uploadError
 

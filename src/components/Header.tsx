@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '#/components/shadcn/ui/dropdown-menu'
 import { supabase } from '#/lib/supabase/supabase'
+import { transformedAvatarUrl } from '#/utils/avatarUrl'
 import { useAuthStore } from '#/stores/auth.store'
 import { useAudioStore } from '#/stores/audio.store'
 import { HelpSheet } from '#/components/HelpSheet'
@@ -43,7 +44,7 @@ export function Header({ children }: HeaderProps) {
           <button type="button" className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <Avatar size="default">
               <AvatarImage
-                src={profile?.avatar_url ?? undefined}
+                src={transformedAvatarUrl(profile?.avatar_url, 32)}
                 alt={profile?.display_name}
               />
               <AvatarFallback>{initials}</AvatarFallback>

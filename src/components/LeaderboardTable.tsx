@@ -6,6 +6,7 @@ import {
 import { Skeleton } from '#/components/shadcn/ui/skeleton'
 import { cn } from '#/lib/shadcn/utils/utils'
 import type { LeaderboardEntry } from '#/types/leaderboard'
+import { transformedAvatarUrl } from '#/utils/avatarUrl'
 import { UserHoverCard } from './UserHoverCard'
 
 type Props = {
@@ -109,7 +110,7 @@ export function LeaderboardTable({
             </div>
             {!hideAvatar && (
               <Avatar size="lg" className="size-10! sm:size-14! shrink-0">
-                <AvatarImage src={entry.avatarUrl} alt={entry.displayName} />
+                <AvatarImage src={transformedAvatarUrl(entry.avatarUrl, 56)} alt={entry.displayName} loading="lazy" />
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
             )}
