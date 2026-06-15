@@ -4,6 +4,7 @@ const COUNTABLE_STATUSES = new Set(["IN_PLAY", "PAUSED", "FINISHED", "AWARDED"])
 
 interface TeamStats {
   team_id: number;
+  team_name: string;
   group_name: string;
   played: number;
   won: number;
@@ -50,8 +51,15 @@ Deno.serve(async (_req) => {
     );
   }
 
+  // Fetch team names from database
+  const { data: teams } = await supabase
+    .from("teams")
+    .select("id, name");
+
+  const teamNameMap = new Map(teams?.map(t => [t.id, t.name]) || []);
+
   // ── 2. Build standings ───────────────────────────────────────────────────────
-  const { standingsRows, error: buildError } = buildStandings(matches);
+  const { standingsRows, error: buildError } = buildStandings(matches, teamNameMap);
 
   if (buildError) {
     return new Response(
@@ -80,9 +88,9 @@ Deno.serve(async (_req) => {
   }
 
   // ── 4. Award group stage points only if matches are IN_PLAY or FINISHED ────────
-  const hasAwardableMatches = matches.some(m => 
-    m.stage === "GROUP_STAGE" && 
-    (m.status === "IN_PLAY" || m.status === "FINISHED")
+  const hasAwardableMatches = matches.some(m =>
+    m.stage === "GROUP_STAGE" &&
+    (m.status === "IN_PLAY" || m.status === "FINISHED" || m.status === "AWARDED")
   );
 
   if (hasAwardableMatches) {
@@ -123,7 +131,7 @@ Deno.serve(async (_req) => {
 // ── buildStandings ────────────────────────────────────────────────────────────
 
 function buildStandings(
-  matches: any[]
+  matches: any[], teamNameMap: Map<number, string>
 ): { standingsRows: TeamStats[]; error: string | null } {
   const groupMatches = matches.filter((m) => m.stage === "GROUP_STAGE" && m.group_name);
 
@@ -133,6 +141,7 @@ function buildStandings(
     if (!statsMap.has(teamId)) {
       statsMap.set(teamId, {
         team_id: teamId,
+        team_name: teamNameMap.get(teamId) || "Unknown",
         group_name: groupName,
         played: 0,
         won: 0,
@@ -202,7 +211,8 @@ function buildStandings(
       b.points - a.points ||
       b.goal_difference - a.goal_difference ||
       b.goals_for - a.goals_for ||
-      a.booking_points - b.booking_points
+      a.booking_points - b.booking_points ||
+      a.team_name.localeCompare(b.team_name)
     );
     teams.forEach((t, idx) => {
       t.group_position = idx + 1;
