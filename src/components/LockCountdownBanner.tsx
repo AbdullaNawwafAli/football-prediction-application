@@ -30,7 +30,7 @@ export function LockCountdownBanner({ isOpen, firstMatchTime }: Props) {
       return
     }
 
-    const lockTime = new Date(firstMatchTime).getTime() - 60 * 60 * 1000
+    const lockTime = new Date(firstMatchTime).getTime()
 
     const update = () => setTimeLeft(Math.max(0, lockTime - Date.now()))
     update()

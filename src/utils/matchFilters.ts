@@ -10,7 +10,7 @@ function isSameDay(a: Date, b: Date) {
 
 export function getUpcomingMatches(matches: MatchWithTeams[]) {
   const now = new Date()
-  const cutoff = new Date(now.getTime() + 60 * 60 * 1000)
+  const cutoff = now
   const tomorrow = new Date(now)
   tomorrow.setDate(now.getDate() + 1)
 

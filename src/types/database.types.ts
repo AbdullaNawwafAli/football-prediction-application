@@ -123,6 +123,7 @@ export type Database = {
           played: number
           points: number
           team_id: number
+          team_name: string | null
           won: number
         }
         Insert: {
@@ -137,6 +138,7 @@ export type Database = {
           played?: number
           points?: number
           team_id: number
+          team_name?: string | null
           won?: number
         }
         Update: {
@@ -151,6 +153,7 @@ export type Database = {
           played?: number
           points?: number
           team_id?: number
+          team_name?: string | null
           won?: number
         }
         Relationships: [
@@ -537,10 +540,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_feature2_points: { Args: never; Returns: Json }
+      award_group_stage_points: { Args: never; Returns: Json }
+      award_knockout_points: { Args: never; Returns: Json }
       group_stage_open: { Args: never; Returns: boolean }
       knockout_stage_open: { Args: never; Returns: boolean }
       match_open: { Args: { match_ext_id: number }; Returns: boolean }
       recalculate_group_standings: { Args: never; Returns: undefined }
+      recalculate_standings: { Args: never; Returns: Json }
       rollup_user_scores: { Args: never; Returns: undefined }
     }
     Enums: {

@@ -28,7 +28,7 @@ export function LockStatusBadge() {
       setTimeLeft(null)
       return
     }
-    const lockTime = new Date(firstMatchTime).getTime() - 60 * 60 * 1000
+    const lockTime = new Date(firstMatchTime).getTime()
     const update = () => setTimeLeft(Math.max(0, lockTime - Date.now()))
     update()
     const id = setInterval(update, 1000)

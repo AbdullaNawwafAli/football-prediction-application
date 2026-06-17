@@ -78,7 +78,7 @@ export function MatchCard({ match, prediction, onSelect }: Props) {
   const isFinished = match.status === 'FINISHED' || match.status === 'AWARDED'
   const isLive = ['IN_PLAY', 'PAUSED', 'EXTRA_TIME', 'PENALTY_SHOOTOUT'].includes(match.status)
   const teamsUnassigned = !match.homeTeam || !match.awayTeam
-  const isPredictionLocked = Date.now() >= new Date(match.utcDate).getTime() - 60 * 60 * 1000
+  const isPredictionLocked = Date.now() >= new Date(match.utcDate).getTime()
 
   const referenceHome = match.fullTimeHome ?? match.halfTimeHome
   const referenceAway = match.fullTimeAway ?? match.halfTimeAway

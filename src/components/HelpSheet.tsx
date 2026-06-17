@@ -48,11 +48,11 @@ const FAQ = [
   },
   {
     q: 'Can I change my match predictions?',
-    a: 'Yes — you can edit your predictions any time up to 1 hour before a match kicks off. Once within that window your prediction for that game is locked in.',
+    a: 'Yes — you can edit your predictions any time up to the moment a match kicks off. Once the match starts your prediction for that game is locked in.',
   },
   {
     q: 'Can I change my group/knockout stage predictions?',
-    a: 'Yes — you can edit your predictions up to 1 hour before the first match of that stage kicks off. Once within that window your predictions for that stage are locked in.',
+    a: 'Yes — you can edit your predictions up to the moment the first match of that stage kicks off. Once that match starts your predictions for that stage are locked in.',
   },
   {
     q: 'I have a complaint about the application?',
