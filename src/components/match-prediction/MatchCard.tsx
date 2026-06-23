@@ -1,5 +1,6 @@
 import { cn } from '#/lib/shadcn/utils/utils'
 import type { MatchWithTeams, ScorePrediction } from '#/types/matches'
+import { isPredictionLocked } from '#/utils/isPredictionLocked'
 
 type Props = {
   match: MatchWithTeams
@@ -78,7 +79,7 @@ export function MatchCard({ match, prediction, onSelect }: Props) {
   const isFinished = match.status === 'FINISHED' || match.status === 'AWARDED'
   const isLive = ['IN_PLAY', 'PAUSED', 'EXTRA_TIME', 'PENALTY_SHOOTOUT'].includes(match.status)
   const teamsUnassigned = !match.homeTeam || !match.awayTeam
-  const isPredictionLocked = Date.now() >= new Date(match.utcDate).getTime()
+  const predictionLocked = isPredictionLocked(match.utcDate)
 
   const referenceHome = match.fullTimeHome ?? match.halfTimeHome
   const referenceAway = match.fullTimeAway ?? match.halfTimeAway
@@ -101,12 +102,12 @@ export function MatchCard({ match, prediction, onSelect }: Props) {
     <button
       type="button"
       onClick={() => onSelect(match.matchId)}
-      disabled={teamsUnassigned || isPredictionLocked}
+      disabled={teamsUnassigned || predictionLocked}
       className={cn(
         'w-full flex items-center gap-3 px-4 py-3 text-left transition-colors',
-        !isPredictionLocked && 'hover:bg-muted/50 active:bg-muted',
-        (isFinished || isPredictionLocked) && 'opacity-75',
-        (teamsUnassigned || isPredictionLocked) && 'cursor-not-allowed',
+        !predictionLocked && 'hover:bg-muted/50 active:bg-muted',
+        (isFinished || predictionLocked) && 'opacity-75',
+        (teamsUnassigned || predictionLocked) && 'cursor-not-allowed',
       )}
     >
       <div className="flex-1 min-w-0 flex items-center gap-2">

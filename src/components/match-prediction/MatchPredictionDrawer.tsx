@@ -13,6 +13,7 @@ import {
 } from '#/components/shadcn/ui/drawer'
 import { useAuthStore } from '#/stores/auth.store'
 import { upsertScorePrediction } from '#/services/upsertScorePrediction'
+import { isPredictionLocked } from '#/utils/isPredictionLocked'
 import type { MatchWithTeams, ScorePrediction } from '#/types/matches'
 
 type Props = {
@@ -58,8 +59,16 @@ export function MatchPredictionDrawer({ matchId, matches, predictions, onClose }
     ? match.status === 'FINISHED' || match.status === 'AWARDED'
     : false
 
+  const isLocked = match ? isPredictionLocked(match.utcDate) : false
+
   async function handleSubmit() {
     if (!profile || !match) return
+
+    if (isPredictionLocked(match.utcDate)) {
+      toast.error('Predictions are locked — this match has already started.')
+      onClose()
+      return
+    }
 
     const home = parseInt(homeScore, 10)
     const away = parseInt(awayScore, 10)
@@ -122,7 +131,7 @@ export function MatchPredictionDrawer({ matchId, matches, predictions, onClose }
                 onChange={(e) => setHomeScore(e.target.value.replace(/\D/g, ''))}
                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); awayRef.current?.focus() } }}
                 className="w-20 text-center text-lg font-mono"
-                disabled={saving || isOffline || isFinished}
+                disabled={saving || isOffline || isFinished || isLocked}
                 placeholder="0"
               />
             </div>
@@ -145,11 +154,15 @@ export function MatchPredictionDrawer({ matchId, matches, predictions, onClose }
                 onChange={(e) => setAwayScore(e.target.value.replace(/\D/g, ''))}
                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSubmit() } }}
                 className="w-20 text-center text-lg font-mono"
-                disabled={saving || isOffline || isFinished}
+                disabled={saving || isOffline || isFinished || isLocked}
                 placeholder="0"
               />
             </div>
           </div>
+
+          {isLocked && !isFinished && (
+            <p className="text-sm text-center text-muted-foreground">Predictions are locked — this match has started.</p>
+          )}
 
           {isOffline && (
             <p className="text-sm text-center text-muted-foreground">You are offline — saving is disabled.</p>
@@ -157,7 +170,7 @@ export function MatchPredictionDrawer({ matchId, matches, predictions, onClose }
         </div>
 
         <DrawerFooter className="pt-2">
-          {!isFinished && (
+          {!isFinished && !isLocked && (
             <Button
               onClick={handleSubmit}
               disabled={saving || isOffline || homeScore === '' || awayScore === ''}
