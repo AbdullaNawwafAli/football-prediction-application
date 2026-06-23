@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   Avatar,
   AvatarFallback,
@@ -27,6 +28,24 @@ const stageColumns = [
   { key: 'qf', label: 'QF', value: (e: LeaderboardEntry) => e.qf },
   { key: 'sf', label: 'SF', value: (e: LeaderboardEntry) => e.sf },
   { key: 'f3rd', label: 'F/3rd', value: (e: LeaderboardEntry) => e.final + e.third },
+]
+
+type ChipSort = 'matchday1' | 'matchday2' | 'matchday3' | 'ko'
+type SortBy = 'default' | ChipSort
+
+const chipAccessors: Record<ChipSort, (e: LeaderboardEntry) => number> = {
+  matchday1: (e) => e.matchday1,
+  matchday2: (e) => e.matchday2,
+  matchday3: (e) => e.matchday3,
+  ko: (e) => e.last32 + e.last16 + e.qf + e.sf + e.final + e.third,
+}
+
+const sortButtons: { key: SortBy; label: string }[] = [
+  { key: 'default', label: 'Total' },
+  { key: 'matchday1', label: 'MD1' },
+  { key: 'matchday2', label: 'MD2' },
+  { key: 'matchday3', label: 'MD3' },
+  { key: 'ko', label: 'KO' },
 ]
 
 function RankBadge({ rank }: { rank: number }) {
@@ -63,6 +82,8 @@ export function LeaderboardTable({
   onUserClick,
   hideAvatar,
 }: Props) {
+  const [sortBy, setSortBy] = useState<SortBy>('default')
+
   if (isPending) {
     return (
       <div className="space-y-2 p-4">
@@ -80,13 +101,37 @@ export function LeaderboardTable({
 
   const sorted = [...entries]
     .sort((a, b) => {
+      if (sortBy !== 'default') {
+        const chipDiff = chipAccessors[sortBy](b) - chipAccessors[sortBy](a)
+        if (chipDiff !== 0) return chipDiff
+      }
       const diff = (b[sortKey] ?? 0) - (a[sortKey] ?? 0)
       return diff !== 0 ? diff : a.displayName.localeCompare(b.displayName)
     })
     .map((e, i) => ({ ...e, rank: i + 1 }))
 
   return (
-    <div className="divide-y divide-border">
+    <div>
+      {mode === 'feature2' && (
+        <div className="flex flex-wrap gap-1.5 px-4 py-2 border-b bg-muted/30">
+          {sortButtons.map((b) => (
+            <button
+              key={b.key}
+              type="button"
+              onClick={() => setSortBy(b.key)}
+              className={cn(
+                'text-[11px] font-medium px-2 py-1 rounded transition-colors',
+                sortBy === b.key
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted/60 hover:bg-muted',
+              )}
+            >
+              {b.label}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="divide-y divide-border">
       {sorted.map((entry) => {
         const isCurrentUser = entry.userId === currentUserId
         const initials = entry.displayName
@@ -187,6 +232,7 @@ export function LeaderboardTable({
           </div>
         )
       })}
+      </div>
     </div>
   )
 }
