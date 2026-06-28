@@ -1,7 +1,5 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-type SupabaseClient = ReturnType<typeof createClient>;
-
 Deno.serve(async (_req) => {
   const FOOTBALL_API_KEY = Deno.env.get("FOOTBALL_DATA_API_KEY")!;
   const supabase = createClient(
@@ -9,7 +7,7 @@ Deno.serve(async (_req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
   );
 
-  // ── 1. Fetch matches from API ────────────────────────────────────────────────
+  // ── 1. Fetch matches from the football API ─────────────────────────────
   const res = await fetch(
     "https://api.football-data.org/v4/competitions/WC/matches?season=2026",
     { headers: { "X-Auth-Token": FOOTBALL_API_KEY } }
@@ -20,16 +18,14 @@ Deno.serve(async (_req) => {
       { headers: { "Content-Type": "application/json" }, status: 500 }
     );
   }
-
   const data = await res.json();
 
-  // ── 2. Map API response → matches rows ──────────────────────────────────────
+  // ── 2. Map API response → matches rows ─────────────────────────────────
   const matches = (data.matches as any[]).map((m) => {
-    const homeScore = m.score.fullTime.home as number | null;
-    const awayScore = m.score.fullTime.away as number | null;
-    const halfTimeHome = m.score.halfTime.home as number | null;
-    const halfTimeAway = m.score.halfTime.away as number | null;
-
+    const homeScore = m.score.fullTime.home;
+    const awayScore = m.score.fullTime.away;
+    const halfTimeHome = m.score.halfTime.home;
+    const halfTimeAway = m.score.halfTime.away;
     const effectiveHome = homeScore ?? halfTimeHome;
     const effectiveAway = awayScore ?? halfTimeAway;
 
@@ -37,19 +33,18 @@ Deno.serve(async (_req) => {
     if (effectiveHome !== null && effectiveAway !== null) {
       if (effectiveHome > effectiveAway) winner_id = m.homeTeam.id;
       else if (effectiveAway > effectiveHome) winner_id = m.awayTeam.id;
-      // draw → winner_id stays null
     }
 
     return {
-      id: m.id as number,
-      utc_date: m.utcDate as string,
-      status: m.status as string,
-      stage: m.stage as string,
-      group_name: (m.group as string | null) ?? null,
-      home_team_id: (m.homeTeam.id as number | null) ?? null,
-      away_team_id: (m.awayTeam.id as number | null) ?? null,
-      duration: (m.score.duration as string | null) ?? null,
-      matchday: (m.matchday as number | null) ?? null, 
+      id: m.id,
+      utc_date: m.utcDate,
+      status: m.status,
+      stage: m.stage,
+      group_name: m.group ?? null,
+      home_team_id: m.homeTeam.id ?? null,
+      away_team_id: m.awayTeam.id ?? null,
+      duration: m.score.duration ?? null,
+      matchday: m.matchday ?? null,
       full_time_home: homeScore,
       full_time_away: awayScore,
       half_time_home: halfTimeHome,
@@ -58,22 +53,28 @@ Deno.serve(async (_req) => {
     };
   });
 
-  // ── 3. Upsert matches ────────────────────────────────────────────────────────
-  // NOTE: next_match_id and next_match_slot are NOT sourced from the API —
-  // they are set once manually when the bracket is seeded and must not be
-  // overwritten here. Upsert only touches the columns listed above.
+  // ── 3. Upsert matches (next_match_id / next_match_slot untouched) ───────
   const { error: matchesError } = await supabase
     .from("matches")
     .upsert(matches, { onConflict: "id" });
 
   if (matchesError) {
     return new Response(
-      JSON.stringify({ success: false, error: matchesError }),
+      JSON.stringify({ success: false, error: matchesError.message }),
       { headers: { "Content-Type": "application/json" }, status: 500 }
     );
   }
 
-  // ── 4. Check tournament phase ────────────────────────────────────────────────
+  // ── 4. Score feature-2 predictions (in-DB) ─────────────────────────────
+  const { data: f2Data, error: f2Error } = await supabase.rpc("award_feature2_points");
+  if (f2Error) {
+    return new Response(
+      JSON.stringify({ success: false, error: f2Error.message }),
+      { headers: { "Content-Type": "application/json" }, status: 500 }
+    );
+  }
+
+  // ── 5. Branch on tournament phase ──────────────────────────────────────
   const { data: activeKnockout } = await supabase
     .from("matches")
     .select("id")
@@ -81,55 +82,41 @@ Deno.serve(async (_req) => {
     .neq("status", "TIMED")
     .limit(1);
 
-  const baseUrl = Deno.env.get("SUPABASE_URL");
-  const internalHeaders = {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!}`,
-    "x-internal-secret": Deno.env.get("INTERNAL_SECRET")!,
-  };
+  const inGroupStage = !activeKnockout || activeKnockout.length === 0;
 
-  const f2Res = await fetch(
-    `${baseUrl}/functions/v1/award-feature2-points`,
-    { method: "POST", headers: internalHeaders }
-  );
-  const f2Data = await f2Res.json();
-
-  let recalcData = null;
-
-  if (!activeKnockout || activeKnockout.length === 0) {
-    // ── 5a. Still in group stage — recalculate standings ──────────────────────
-    const recalcRes = await fetch(
-      `${baseUrl}/functions/v1/recalculate-standings`,
-      { method: "POST", headers: internalHeaders }
-    );
-    recalcData = await recalcRes.json();
-
+  if (inGroupStage) {
+    const { data: standings, error } = await supabase.rpc("recalculate_standings");
+    if (error) {
+      return new Response(
+        JSON.stringify({ success: false, error: error.message }),
+        { headers: { "Content-Type": "application/json" }, status: 500 }
+      );
+    }
     return new Response(
       JSON.stringify({
         success: true,
         matches_synced: matches.length,
-        standings: recalcData,
-      }),
-      { headers: { "Content-Type": "application/json" } }
-    );
-  } else {
-    // ── 5b. Knockout stage active ─────────────────────────────────────────────
-    // link-bracket-provenance is no longer needed: next_match_id on each match
-    // makes the bracket graph explicit and is maintained separately.
-    const awardRes = await fetch(
-      `${baseUrl}/functions/v1/award-knockout-points`,
-      { method: "POST", headers: internalHeaders }
-    );
-    const awardData = await awardRes.json();
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        matches_synced: matches.length,
-        award: awardData,
-        f2:f2Data
+        f2: f2Data,
+        standings,
       }),
       { headers: { "Content-Type": "application/json" } }
     );
   }
+
+  const { data: award, error } = await supabase.rpc("award_knockout_points");
+  if (error) {
+    return new Response(
+      JSON.stringify({ success: false, error: error.message }),
+      { headers: { "Content-Type": "application/json" }, status: 500 }
+    );
+  }
+  return new Response(
+    JSON.stringify({
+      success: true,
+      matches_synced: matches.length,
+      f2: f2Data,
+      award,
+    }),
+    { headers: { "Content-Type": "application/json" } }
+  );
 });
